@@ -4,13 +4,11 @@ import numpy as np
 from pandas import DataFrame,concat
 import json
 np.random.seed(0)
-from sklearn.preprocessing import StandardScaler
 import conf.keras_models as keras_models
 from keras.callbacks import EarlyStopping, ModelCheckpoint
 from keras.models import load_model as lm
 from keras.utils.np_utils import to_categorical
 from collections import deque
-import cPickle
 
 class KerasObject():
 
@@ -36,16 +34,31 @@ class KerasObject():
 
 
     def load(self, filename):
-        with open(filename, 'rb') as FSO:
-            tmp_dict = cPickle.load(FSO)
+        with open(filename + ".dict", 'rb') as FSO:
+            tmp_dict = json.load(FSO)
 
         print "Loading model from: " + filename 
         self.__dict__.clear()
         self.__dict__.update(tmp_dict)
 
+        self.models = []
+        for model in tmp_dict["models"]:
+            self.models.append( lm(model) )
+
     def save(self, filename):
-        with open(filename, 'wb') as FSO:
-            cPickle.dump(self.__dict__, FSO, 2)
+        placeholders = []
+        tmp_models = []
+        for i,model in enumerate(self.models):
+            modelname = filename + ".fold{0}".format(i)
+            model.save( modelname )
+            tmp_models.append(model)
+            placeholders.append( modelname )
+        self.models = placeholders
+
+        with open(filename + ".dict", 'wb') as FSO:
+            json.dump(self.__dict__, FSO)
+
+        self.models = tmp_models
 
 
     def train(self, samples):
@@ -78,15 +91,14 @@ class KerasObject():
 
         N_classes = len(y_train[0])
 
-        scaler = StandardScaler()
-        x_train = scaler.fit_transform( train[self.variables].values )
+
 
         model_impl = getattr(keras_models, self.params["name"])
         model = model_impl(len(self.variables), N_classes)
         model.summary()
         class_weights = self.getClassWeights(train)
         model.fit(
-            x_train,
+            train[self.variables].values,
             y_train,
             sample_weight=train["train_weight"].values,
             validation_data=(test[self.variables].values, y_test, test["train_weight"].values),
