@@ -1,0 +1,189 @@
+{
+    "global_selection": {
+        "mt": "byTightIsolationMVArun2v1DBoldDMwLT_2 > 0.5  && iso_1 < 0.15 && passesDiMuonVeto && passesThirdLepVeto && passesTauLepVetos && trg_singlemuon",
+        "et": "byTightIsolationMVArun2v1DBoldDMwLT_2 > 0.5  && iso_1 < 0.1 && passesDiElectronVeto && passesThirdLepVeto && passesTauLepVetos && trg_singleelectron"
+    },
+    "path": "/data/higgs/data_2016", 
+    "variables": [
+        "pt_1",
+        "pt_2",
+        "eta_2",
+        "bpt_1",
+        "bpt_2",
+        "beta_1",
+        "beta_2",
+        "jpt_1",
+        "jpt_2",
+        "jphi_2",
+        "jm_1",
+        "jm_2",
+        "njets",
+        "nbtag",
+        "mt_2",
+        "pt_tt",
+        "m_sv",
+        "mjj",
+        "m_vis",
+        "met"
+    ],
+    "addvar": [
+        "fileEntry",
+        "trg_singleelectron",
+        "jdeta",
+        "mt_1",
+        "mt_2",
+        "iso_1",
+        "mjjUp",
+        "mjjDown",
+        "jdetaUp",
+        "jdetaDown",
+        "njetsUp",
+        "njetsDown",
+        "jptUp_1",
+        "jptDown_1",
+        "jptUp_2",
+        "jptDown_2",
+        "byTightIsolationMVArun2v1DBoldDMwLT_1",
+        "byTightIsolationMVArun2v1DBoldDMwLT_2"
+
+    ],
+
+    "version": "v1",
+    "lumi": 35.9,
+    "useSV": "SVFIT",
+    "target_names":{
+        "0":"ggH",
+        "1":"qqH",
+        "2":"w"  ,
+        "3":"ztt",
+        "4":"tt" ,
+        "5":"qcd",
+        "6":"zll",
+        "7":"misc"
+    },
+    "train_weight":"normalize_xsec",
+    "samples":{
+        "ggH125": {
+            "target":0,
+            "select": "q_1 * q_2 < 0", 
+            "name": "BASIS_ntuple_GluGluHToTauTau_M125_powheg_MCSummer16", 
+            "event_weight": ["puweight","stitchedWeight","trk_sf","genweight","effweight"],
+            "train_weight_scale": 1000
+        },
+        "qqH125": {
+            "target":1,
+            "select": "q_1 * q_2 < 0", 
+            "name": "BASIS_ntuple_VBFHToTauTau_M125_powheg_MCSummer16", 
+            "event_weight": ["puweight","stitchedWeight","trk_sf","genweight","effweight"],
+            "train_weight_scale": 10000
+        }, 
+        "W": {
+            "target":2,
+            "select": "q_1 * q_2 < 0", 
+            "name": "BASIS_ntuple_WXJets_merged_MCSummer16", 
+            "event_weight": ["puweight","stitchedWeight","trk_sf","genweight","effweight"],
+            "train_weight_scale": 1.0
+        },
+        "ZTT": {
+            "target":3,
+            "select": "q_1 * q_2 < 0 && gen_match_2 == 5", 
+            "name": "BASIS_ntuple_DYXJetsToLL_lowMass_merged_MCSummer16", 
+            "event_weight": ["puweight","stitchedWeight","trk_sf","genweight","effweight","zPtReweightWeight"],
+            "train_weight_scale": 1.0
+        },
+        "TTT": {
+            "target":4,
+            "select": "q_1 * q_2 < 0 && gen_match_2 == 5 ", 
+            "name": "BASIS_ntuple_TT_merged_MCSummer16", 
+            "event_weight": ["puweight","stitchedWeight","trk_sf","genweight","effweight","topWeight_run1"],
+            "train_weight_scale": 1.0
+        },
+        "TTJ": {
+            "target":4,
+            "select": "q_1 * q_2 < 0 && gen_match_2 != 5 ", 
+            "name": "BASIS_ntuple_TT_merged_MCSummer16", 
+            "event_weight": ["puweight","stitchedWeight","trk_sf","genweight","effweight","topWeight_run1"],
+            "train_weight_scale": 1.0
+        },
+        "QCD": {
+            "target":5,
+            "select": "q_1 * q_2 > 0 ", 
+            "name": {
+                "mt": "BASIS_ntuple_SingleMuon",
+                "et": "BASIS_ntuple_SingleElectron"
+            }, 
+            "event_weight": 1.0,
+            "train_weight_scale": 0.1
+        },
+
+        "ZL": {
+            "target":6,
+            "select": "q_1 * q_2 < 0 && gen_match_2 < 5", 
+            "name": "BASIS_ntuple_DYXJetsToLL_lowMass_merged_MCSummer16", 
+            "event_weight": ["puweight","stitchedWeight","trk_sf","genweight","effweight","zPtReweightWeight"],
+            "train_weight_scale": 1.0
+        },
+        "ZJ": {
+            "target":6,
+            "select": "q_1 * q_2 < 0 && gen_match_2 == 6", 
+            "name": "BASIS_ntuple_DYXJetsToLL_lowMass_merged_MCSummer16", 
+            "event_weight": ["puweight","stitchedWeight","trk_sf","genweight","effweight","zPtReweightWeight"],
+            "train_weight_scale": 1.0
+        },
+        "VVT": {
+            "target":7,
+            "select": "q_1 * q_2 < 0 && gen_match_2 == 5 ", 
+            "name": "BASIS_ntuple_VV_MCSummer16", 
+            "event_weight": ["puweight","stitchedWeight","trk_sf","genweight","effweight"],
+            "train_weight_scale": 1.0
+        },
+        "VVJ": {
+            "target":7,
+            "select": "q_1 * q_2 < 0 && gen_match_2 != 5 ", 
+            "name": "BASIS_ntuple_VV_MCSummer16", 
+            "event_weight": ["puweight","stitchedWeight","trk_sf","genweight","effweight"],
+            "train_weight_scale": 1.0
+        },
+
+        "VV_samesign": {
+            "target":5,
+            "select": "q_1 * q_2 > 0", 
+            "name": "BASIS_ntuple_VV_MCSummer16", 
+            "event_weight": ["puweight","stitchedWeight","trk_sf","genweight","effweight"],
+            "train_weight_scale": 1.0
+        },
+        "Z_samesign": {
+            "target":5,
+            "select": "q_1 * q_2 > 0", 
+            "name": "BASIS_ntuple_DYXJetsToLL_lowMass_merged_MCSummer16", 
+            "event_weight": ["puweight","stitchedWeight","trk_sf","genweight","effweight","zPtReweightWeight"],
+            "train_weight_scale": 1.0
+        },
+        "TT_samesign": {
+            "target":5,
+            "select": "q_1 * q_2 > 0", 
+            "name": "BASIS_ntuple_TT_merged_MCSummer16", 
+            "event_weight": ["puweight","stitchedWeight","trk_sf","genweight","effweight","topWeight_run1"],
+            "train_weight_scale": 1.0
+        },
+        "W_samesign": {
+            "target":5,
+            "select": "q_1 * q_2 > 0", 
+            "name": "BASIS_ntuple_WXJets_merged_MCSummer16", 
+            "event_weight": ["puweight","stitchedWeight","trk_sf","genweight","effweight"],
+            "train_weight_scale": 1.0
+        },
+
+        "data": {
+            "target":"data",
+            "select": "q_1 * q_2 < 0",
+            "event_weight": 1.0,
+            "train_weight_scale": 1.0,
+            "name": {
+                "mt": "BASIS_ntuple_SingleMuon",
+                "et": "BASIS_ntuple_SingleElectron"
+
+            }         
+        }
+	}
+}

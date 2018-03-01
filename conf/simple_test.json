@@ -1,0 +1,74 @@
+{
+    "global_selection": {
+        "mt": "jdeta >= 0 && m_sv >= 0 && pfmt_1 > 80 && passesDiMuonVeto && passesThirdLepVeto && passesTauLepVetos"
+    },
+    "path": "/data/higgs/data_2016", 
+    "variables": [
+        "m_sv",
+        "pt_tt",
+        "jdeta",
+        "mt_1",
+        "mjj",
+        "m_vis",
+        "dphi",
+        "pt_1",
+        "jeta1eta2"
+
+    ], 
+    "version": "v1",
+    "lumi": 35.9,
+    "useSV": "SVFIT",
+    "samples":{
+        "ggH": {
+            "target":0,
+            "select": "q_1 * q_2 < 0", 
+            "name": "BASIS_ntuple_GluGluHToTauTau_M125_powheg_MCSummer16", 
+            "weight": ["puweight","stitchedWeight","trk_sf","genweight","effweight"],
+            "scale": 1000000.0
+        },
+        "qqH": {
+            "target":1,
+            "select": "q_1 * q_2 < 0", 
+            "name": "BASIS_ntuple_VBFHToTauTau_M125_powheg_MCSummer16", 
+            "weight": ["puweight","stitchedWeight","trk_sf","genweight","effweight"],
+            "scale": 1000000.0
+        }, 
+        "W": {
+            "target":2,
+            "select": "q_1 * q_2 < 0", 
+            "name": "BASIS_ntuple_WXJets_merged_MCSummer16", 
+            "weight": ["puweight","stitchedWeight","trk_sf","genweight","effweight"],
+            "scale": 1000000.0
+        }, 
+        "DY": {
+            "target":3,
+            "select": "q_1 * q_2 < 0", 
+            "name": "BASIS_ntuple_DYXJetsToLL_lowMass_merged_MCSummer16", 
+            "weight": ["puweight","stitchedWeight","trk_sf","genweight","effweight"],
+            "scale": 1000000.0
+        },
+        "TT": {
+            "target":4,
+            "select": "q_1 * q_2 < 0", 
+            "name": "BASIS_ntuple_TT_merged_MCSummer16", 
+            "weight": ["puweight","stitchedWeight","trk_sf","genweight","effweight"],
+            "scale": 1000000.0
+        },
+        "QCD": {
+            "target":5,
+            "select": "q_1 * q_2 > 0", 
+            "name": {
+                "mt": "BASIS_ntuple_SingleMuon"
+            }, 
+            "weight": [],
+            "scale": 1000000.0
+        },
+        "data": {
+            "select": "q_1 * q_2 < 0", 
+            "name": {
+                "mt": "BASIS_ntuple_SingleMuon"
+
+            }         
+        }
+	}
+}

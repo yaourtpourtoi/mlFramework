@@ -1,0 +1,12 @@
+ {
+
+ 	"JECUp"   :"_CMS_scale_j_13TeVUp",
+ 	"JECDown" :"_CMS_scale_j_13TeVDown",
+ 	"T0Up"    :"_CMS_scale_t_1prong_13TeVUp",
+ 	"T0Down"  :"_CMS_scale_t_1prong_13TeVDown",
+ 	"T1Up"    :"_CMS_scale_t_1prong1pizero_13TeVUp",
+ 	"T1Down"  :"_CMS_scale_t_1prong1pizero_13TeVDown",
+ 	"T10Up"   :"_CMS_scale_t_3prong_13TeVUp",
+ 	"T10Down" :"_CMS_scale_t_3prong_13TeVDown"
+
+}

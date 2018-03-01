@@ -1,0 +1,23 @@
+{
+	"multiclass":{
+		"objective":"multi:softprob",
+		"eval_metric":"mlogloss",
+		"nthread":8,
+		"silent":1,
+		"eta": 0.03,
+		"max_depth":8,
+		"n_estimators":50,
+		"early_stopping":20
+	},
+	"binary":{
+		"objective":"binary:logistic",
+		"eval_metric":"rmse",
+		"nthread":8,
+		"silent":1,
+		"eta": 0.05,
+		"max_depth":8,
+		"n_estimators":160,
+		"subsampling":0.75,
+		"early_stopping":20
+	}
+}
