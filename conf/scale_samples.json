@@ -1,9 +1,4 @@
 {
-    "global_selection": {
-        "mt": "byTightIsolationMVArun2v1DBoldDMwLT_2 > 0.5  && iso_1 < 0.15 && passesDiMuonVeto && passesThirdLepVeto && passesTauLepVetos && trg_singlemuon",
-        "et": "byTightIsolationMVArun2v1DBoldDMwLT_2 > 0.5  && iso_1 < 0.1 && passesDiElectronVeto && passesThirdLepVeto && passesTauLepVetos && trg_singleelectron",
-        "tt": "byTightIsolationMVArun2v1DBoldDMwLT_1 > 0.5  && byTightIsolationMVArun2v1DBoldDMwLT_2 > 0.5 && passesThirdLepVeto && passesTauLepVetos && trg_doubletau"
-    },
     "path": "/data/higgs/data_2016/", 
     "variables": [
         "pt_1",
@@ -13,6 +8,8 @@
         "bpt_2",
         "beta_1",
         "beta_2",
+        "bcsv_1",
+        "bcsv_2",
         "nbtag",
         "jpt_1",
         "jpt_2",
@@ -20,6 +17,7 @@
         "jm_1",
         "jm_2",
         "njets",
+        "mt_1",
         "mt_2",
         "pt_tt",
         "pt_sum",
@@ -31,10 +29,8 @@
     "addvar": [
         "fileEntry",
         "entry",
-        "trg_singleelectron",
         "jdeta",
-        "mt_1",
-        "mt_2",
+        "eta_1",
         "iso_1",
         "mjjUp",
         "mjjDown",
@@ -47,140 +43,143 @@
         "jptUp_2",
         "jptDown_2",
         "byTightIsolationMVArun2v1DBoldDMwLT_1",
-        "byTightIsolationMVArun2v1DBoldDMwLT_2"
+        "byTightIsolationMVArun2v1DBoldDMwLT_2",
+        "passesDiMuonVeto",
+        "passesThirdLepVeto",
+        "passesTauLepVetos",
+        "trg_singlemuon",
+        "q_1",
+        "q_2",
+        "iso_1",
+        "iso_2",
+        "dilepton_veto"
 
     ],
 
     "version": "v1",
     "lumi": 35.9,
     "useSV": "SVFIT",
-    "target_names":{
-        "0":"ggH",
-        "1":"qqH",
-        "2":"w"  ,
-        "3":"ztt",
-        "4":"tt" ,
-        "5":"qcd",
-        "6":"zll",
-        "7":"misc"
-    },
 
-    "train_weight":"use_scale",
+    "train_weight":"normalize_xsec",
     "samples":{
         "ggH125": {
-            "target":0,
-            "select": "q_1 * q_2 < 0", 
+            "target":{"mt":"ggH", "et":"ggH", "tt":"ggH" },
+            "select": "-OS- && -ISO- && -VETO- && -MT- && -TRIG-", 
             "name": "BASIS_ntuple_GluGluHToTauTau_M125_powheg_MCSummer16", 
-            "event_weight": ["puweight","stitchedWeight","trk_sf","genweight","effweight"],
+            "event_weight": ["puweight","stitchedWeight","trk_sf","genweight","antilep_tauscaling","effweight"],
             "train_weight_scale": 213.2
         },
         "qqH125": {
-            "target":1,
-            "select": "q_1 * q_2 < 0", 
+            "target":{"mt":"qqH", "et":"qqH", "tt":"qqH" },
+            "select": "-OS- && -ISO- && -VETO- && -MT- && -TRIG-", 
             "name": "BASIS_ntuple_VBFHToTauTau_M125_powheg_MCSummer16", 
-            "event_weight": ["puweight","stitchedWeight","trk_sf","genweight","effweight"],
+            "event_weight": ["puweight","stitchedWeight","trk_sf","genweight","antilep_tauscaling","effweight"],
             "train_weight_scale": 2173.2
         }, 
-        "W": {
-            "target":2,
-            "select": "q_1 * q_2 < 0", 
-            "name": "BASIS_ntuple_WXJets_merged_MCSummer16", 
-            "event_weight": ["puweight","stitchedWeight","trk_sf","genweight","effweight"],
-            "train_weight_scale": 8.0
-        },
+
         "ZTT": {
-            "target":3,
-            "select": "q_1 * q_2 < 0 && gen_match_2 == 5", 
+            "target":{"mt":"ztt", "et":"ztt", "tt":"ztt" },
+            "select": "-OS- && -ISO- && -VETO- && -MT- && -TRIG- && -GENHAD-", 
             "name": "BASIS_ntuple_DYXJetsToLL_lowMass_merged_MCSummer16", 
-            "event_weight": ["puweight","stitchedWeight","trk_sf","genweight","effweight","zPtReweightWeight"],
+            "event_weight": ["puweight","stitchedWeight","trk_sf","genweight","antilep_tauscaling","effweight","zPtReweightWeight"],
             "train_weight_scale": 1.6
         },
+        "ZL": {
+            "target":{"mt":"zll", "et":"zll", "tt":"misc" },
+            "select": "-OS- && -ISO- && -VETO- && -MT- && -TRIG- && -GENLEP-", 
+            "name": "BASIS_ntuple_DYXJetsToLL_lowMass_merged_MCSummer16", 
+            "event_weight": ["puweight","stitchedWeight","trk_sf","genweight","antilep_tauscaling","effweight","zPtReweightWeight"],
+            "train_weight_scale": 19.9
+        },
+        "ZJ": {
+            "target":{"mt":"zll", "et":"zll", "tt":"misc" },
+            "select": "-OS- && -ISO- && -VETO- && -MT- && -TRIG- && -GENJET-", 
+            "name": "BASIS_ntuple_DYXJetsToLL_lowMass_merged_MCSummer16", 
+            "event_weight": ["puweight","stitchedWeight","trk_sf","genweight","antilep_tauscaling","effweight","zPtReweightWeight"],
+            "train_weight_scale": 19.9
+        },
         "TTT": {
-            "target":4,
-            "select": "q_1 * q_2 < 0 && gen_match_2 == 5 ", 
+            "target":{"mt":"tt", "et":"tt", "tt":"misc" },
+            "select": "-OS- && -ISO- && -VETO- && -MT- && -TRIG- && -GENHAD- ", 
             "name": "BASIS_ntuple_TT_merged_MCSummer16", 
-            "event_weight": ["puweight","stitchedWeight","trk_sf","genweight","effweight","topWeight_run1"],
+            "event_weight": ["puweight","stitchedWeight","trk_sf","genweight","antilep_tauscaling","effweight","topWeight_run1"],
             "train_weight_scale": 17.9
         },
         "TTJ": {
-            "target":4,
-            "select": "q_1 * q_2 < 0 && gen_match_2 != 5 ", 
+            "target":{"mt":"tt", "et":"tt", "tt":"misc" },
+            "select": "-OS- && -ISO- && -VETO- && -MT- && -TRIG- && (-GENLEP- || -GENJET-) ", 
             "name": "BASIS_ntuple_TT_merged_MCSummer16", 
-            "event_weight": ["puweight","stitchedWeight","trk_sf","genweight","effweight","topWeight_run1"],
+            "event_weight": ["puweight","stitchedWeight","trk_sf","genweight","antilep_tauscaling","effweight","topWeight_run1"],
             "train_weight_scale": 17.9
         },
-        "data_ss": {
-            "target":5,
-            "select": "q_1 * q_2 > 0 ", 
+        "VVT": {
+            "target":{"mt":"misc", "et":"misc", "tt":"misc" },
+            "select": "-OS- && -ISO- && -VETO- && -MT- && -TRIG- && -GENHAD- ", 
+            "name": "BASIS_ntuple_VV_MCSummer16", 
+            "event_weight": ["puweight","stitchedWeight","trk_sf","genweight","antilep_tauscaling","effweight"],
+            "train_weight_scale": 86
+        },
+        "VVJ": {
+            "target":{"mt":"misc", "et":"misc", "tt":"misc" },
+            "select": "-OS- && -ISO- && -VETO- && -MT- && -TRIG- && (-GENLEP- || -GENJET-)", 
+            "name": "BASIS_ntuple_VV_MCSummer16", 
+            "event_weight": ["puweight","stitchedWeight","trk_sf","genweight","antilep_tauscaling","effweight"],
+            "train_weight_scale": 86
+        },
+        "W": {
+            "target":{"mt":"w", "et":"w", "tt":"misc" },
+            "select": "-OS- && -ISO- && -VETO- && -MT- && -TRIG-", 
+            "name": "BASIS_ntuple_WXJets_merged_MCSummer16", 
+            "event_weight": ["puweight","stitchedWeight","trk_sf","genweight","antilep_tauscaling","effweight"],
+            "train_weight_scale": 8.0
+        },
+        "estimate": {
+            "target":{"mt":"qcd", "et":"qcd", "tt":"qcd" },
+            "select": {
+                "mt":"-SS- && -ISO- && -VETO- && -MT- && -TRIG-",
+                "et":"-SS- && -ISO- && -VETO- && -MT- && -TRIG-",
+                "tt":"-OS- && -ANTIISO- && -VETO- && -MT- && -TRIG-"
+            }, 
             "name": {
                 "mt": "BASIS_ntuple_SingleMuon",
                 "et": "BASIS_ntuple_SingleElectron",
                 "tt": "BASIS_ntuple_Tau"
             }, 
             "event_weight": 1.0,
-            "train_weight_scale": 6.9
+            "train_weight_scale": 7.5
         },
-
-        "ZL": {
-            "target":6,
-            "select": "q_1 * q_2 < 0 && gen_match_2 < 5", 
-            "name": "BASIS_ntuple_DYXJetsToLL_lowMass_merged_MCSummer16", 
-            "event_weight": ["puweight","stitchedWeight","trk_sf","genweight","effweight","zPtReweightWeight"],
-            "train_weight_scale": 19.9
-        },
-        "ZJ": {
-            "target":6,
-            "select": "q_1 * q_2 < 0 && gen_match_2 == 6", 
-            "name": "BASIS_ntuple_DYXJetsToLL_lowMass_merged_MCSummer16", 
-            "event_weight": ["puweight","stitchedWeight","trk_sf","genweight","effweight","zPtReweightWeight"],
-            "train_weight_scale": 19.9
-        },
-        "VVT": {
-            "target":7,
-            "select": "q_1 * q_2 < 0 && gen_match_2 == 5 ", 
+        "VV_more": {
+            "target":"none",
+            "select":"-SS- && -ISO- && -VETO- && -MT- && -TRIG-",
             "name": "BASIS_ntuple_VV_MCSummer16", 
-            "event_weight": ["puweight","stitchedWeight","trk_sf","genweight","effweight"],
-            "train_weight_scale": 86
-        },
-        "VVJ": {
-            "target":7,
-            "select": "q_1 * q_2 < 0 && gen_match_2 != 5", 
-            "name": "BASIS_ntuple_VV_MCSummer16", 
-            "event_weight": ["puweight","stitchedWeight","trk_sf","genweight","effweight"],
-            "train_weight_scale": 86
-        },
-        "VV_samesign": {
-            "target":5,
-            "select": "q_1 * q_2 > 0", 
-            "name": "BASIS_ntuple_VV_MCSummer16", 
-            "event_weight": ["puweight","stitchedWeight","trk_sf","genweight","effweight"],
+            "event_weight": ["puweight","stitchedWeight","trk_sf","genweight","antilep_tauscaling","effweight"],
             "train_weight_scale": 1.0
         },
-        "Z_samesign": {
-            "target":5,
-            "select": "q_1 * q_2 > 0", 
+        "Z_more": {
+            "target":"none",
+            "select":"-SS- && -ISO- && -VETO- && -MT- && -TRIG-",
             "name": "BASIS_ntuple_DYXJetsToLL_lowMass_merged_MCSummer16", 
-            "event_weight": ["puweight","stitchedWeight","trk_sf","genweight","effweight","zPtReweightWeight"],
+            "event_weight": ["puweight","stitchedWeight","trk_sf","genweight","antilep_tauscaling","effweight","zPtReweightWeight"],
             "train_weight_scale": 1.0
         },
-        "TT_samesign": {
-            "target":5,
-            "select": "q_1 * q_2 > 0", 
+        "TT_more": {
+            "target":"none",
+            "select":"-SS- && -ISO- && -VETO- && -MT- && -TRIG-",
             "name": "BASIS_ntuple_TT_merged_MCSummer16", 
-            "event_weight": ["puweight","stitchedWeight","trk_sf","genweight","effweight","topWeight_run1"],
+            "event_weight": ["puweight","stitchedWeight","trk_sf","genweight","antilep_tauscaling","effweight","topWeight_run1"],
             "train_weight_scale": 1.0
         },
-        "W_samesign": {
-            "target":5,
-            "select": "q_1 * q_2 > 0", 
+        "W_more": {
+            "target":"none",
+            "select":"-SS- && -ISO- && -VETO- && -MT- && -TRIG-",
             "name": "BASIS_ntuple_WXJets_merged_MCSummer16", 
-            "event_weight": ["puweight","stitchedWeight","trk_sf","genweight","effweight"],
+            "event_weight": ["puweight","stitchedWeight","trk_sf","genweight","antilep_tauscaling","effweight"],
             "train_weight_scale": 1.0
         },
 
         "data": {
-            "target":"data",
-            "select": "q_1 * q_2 < 0",
+            "target":"none",
+            "select": "-OS- && -ISO- && -VETO- && -MT- && -TRIG-",
             "event_weight": 1.0,
             "train_weight_scale": 1.0,
             "name": {
