@@ -2,6 +2,7 @@ import root_pandas as rp
 import ROOT as R
 import root_numpy as rn
 import copy
+import sys
 from array import array
 R.gROOT.SetBatch(True)
 R.gStyle.SetOptStat(0)
@@ -9,26 +10,51 @@ R.gStyle.SetOptStat(0)
 def main():
 
     version = "v1"
-    channel = "tt"
+    channel = "mt"
     path = "/data/higgs/data_2016/ntuples_{0}/{1}/ntuples_SVFIT_merged/".format(version, channel)
     ext = "_{0}_{1}.root".format(channel,version)
-    mcin = [
-        (path + "BASIS_ntuple_GluGluHToTauTau_M125_powheg_MCSummer16"+ext,"ggH125"),
-        (path + "BASIS_ntuple_VBFHToTauTau_M125_powheg_MCSummer16"+ext,"qqH125"),
-        (path + "BASIS_ntuple_WXJets_merged_MCSummer16"+ext,"W"),
-        (path + "BASIS_ntuple_DYXJetsToLL_lowMass_merged_MCSummer16"+ext,"DY"),
-        (path + "BASIS_ntuple_TT_merged_MCSummer16"+ext,"TT"),
-        (path + "BASIS_ntuple_VV_MCSummer16"+ext,"VV"),
-        (path + "BASIS_ntuple_EWKZ_merged_MCSummer16"+ext,"EWKZ"),
-    ]
-    datain = {
-        "mt":(path + "BASIS_ntuple_SingleMuon"+ext,"data"),
-        "et":(path + "BASIS_ntuple_SingleElectron"+ext,"data"),
-        "tt":(path + "BASIS_ntuple_Tau"+ext,"data")
-    }
 
+    mcin, datain = getMergedSamples(path, ext)
+    # path = "predictions/{0}/".format(channel)
+    # mcin = [
+    #     (path+"ggH125.root","ggH125",""),
+    #     (path+"qqH125.root","qqH125",""),
+    #     (path+"W.root","W",""),
+    #     (path+"ZTT.root","ZTT",""),
+    #     (path+"ZL.root","ZL",""),
+    #     (path+"ZJ.root","ZJ",""),
+    #     (path+"TTT.root","TTT",""),
+    #     (path+"TTJ.root","TTJ",""),
+    #     (path+"VVT.root","VVT",""),
+    #     (path+"VVJ.root","VVJ",""),
+    # ]
+    # mcin = [
+    #     (path + "BASIS_ntuple_GluGluHToTauTau_M125_powheg_MCSummer16"+ext,"ggH125",""),
+    #     # (path + "BASIS_ntuple_VBFHToTauTau_M125_powheg_MCSummer16"+ext,"qqH125",""),
+    #     (path + "BASIS_ntuple_WXJets_merged_MCSummer16"+ext,"W",""),
+    #     (path + "BASIS_ntuple_DYXJetsToLL_lowMass_merged_MCSummer16"+ext,"DY",""),
+    #     (path + "BASIS_ntuple_DYXJetsToLL_lowMass_merged_MCSummer16"+ext,"ZTT"," && gen_match_2 == 5"),
+    #     (path + "BASIS_ntuple_DYXJetsToLL_lowMass_merged_MCSummer16"+ext,"ZL"," && gen_match_2 < 5"),
+    #     (path + "BASIS_ntuple_DYXJetsToLL_lowMass_merged_MCSummer16"+ext,"ZJ"," && gen_match_2 == 6"),
+    #     (path + "BASIS_ntuple_TT_merged_MCSummer16"+ext,"TT",""),
+    #     (path + "BASIS_ntuple_TT_merged_MCSummer16"+ext,"TTT","&& gen_match_2 == 5"),
+    #     (path + "BASIS_ntuple_TT_merged_MCSummer16"+ext,"TTJ","&& gen_match_2 != 5"),
+    #     (path + "BASIS_ntuple_VV_MCSummer16"+ext,"VV",""),
+    #     (path + "BASIS_ntuple_VV_MCSummer16"+ext,"VVT","&& gen_match_2 == 5"),
+    #     (path + "BASIS_ntuple_VV_MCSummer16"+ext,"VVJ","&& gen_match_2 != 5"),
+    #     (path + "BASIS_ntuple_EWKZ_merged_MCSummer16"+ext,"EWKZ",""),
+    #     (path + "BASIS_ntuple_MCSum_MCSummer16"+ext,"MC",""),
+    # ]
+    # datain = {
+    #     "mt":("/data/higgs/data_2016/ntuples_{0}/{1}/ntuples_woSVFIT_merged/".format(version, channel) + "BASIS_ntuple_MCSum_MCSummer16"+ext,"data",""),
+    #     "et":("/data/higgs/data_2016/ntuples_{0}/{1}/ntuples_woSVFIT_merged/".format(version, channel) + "BASIS_ntuple_MCSum_MCSummer16"+ext,"data",""),
+    #     "tt":("/data/higgs/data_2016/ntuples_{0}/{1}/ntuples_woSVFIT_merged/".format(version, channel) + "BASIS_ntuple_MCSum_MCSummer16"+ext,"data","")
+    #     }
+    # what = ["MC"]
     binning = {
-        "eta_1": (50,-2.3,2.3),
+        "eta_1": (30,-3,3),
+        "iso_1": (100,0,1),
+        "iso_2": (100,0,1),
         "eta_2": (50,-2.3,2.3),
         "pt_1": (100,20,220),
         "pt_2": (100,20,220),
@@ -40,29 +66,37 @@ def main():
         "jphi_2": (100,-10,5),
         "bpt_1": (100,-10,220),
         "bpt_2": (100,-10,220),
+        "bcsv_1": (100,0,1),
+        "bcsv_2": (100,0,1),
         "beta_1": (100,-10,2.5),
         "beta_2": (100,-10,2.5),
         "njets": (12,0,12),
         "nbtag": (12,0,12),
-        "mt_1": (100,0,150),
+        "mt_1": (20,0,100),
         "mt_2": (100,0,150),
         "pt_tt": (100,0,150),
         "m_sv": (100,0,300),
-        "m_vis": (100,0,300),
+        "m_vis": (30,0,300),
         "mjj": (100,-10,150),
         "met": (100,0,150),
         "dzeta": (100,-100,150)
 
     }
-    cuts = {"mt":"byTightIsolationMVArun2v1DBoldDMwLT_2 > 0.5 && iso_1 < 0.15 &&  !dilepton_veto  && passesThirdLepVeto && passesTauLepVetos && trg_singlemuon  ",
-            "et":"byTightIsolationMVArun2v1DBoldDMwLT_2 > 0.5 && iso_1 < 0.1 &&  !dilepton_veto  && passesThirdLepVeto && passesTauLepVetos && trg_singleelectron  ",
-            "tt": "byTightIsolationMVArun2v1DBoldDMwLT_1 > 0.5  && byTightIsolationMVArun2v1DBoldDMwLT_2 > 0.5 && passesThirdLepVeto && passesTauLepVetos && trg_doubletau"
+    cuts = {"mt": "byTightIsolationMVArun2v1DBoldDMwLT_2 > 0.5 && iso_1 < 0.15 && mt_1 < 50 && !dilepton_veto  && passesThirdLepVeto && passesTauLepVetos && (trg_singlemuon && pt_1 > 23 && pt_2 > 30) ",
+            "et": "byTightIsolationMVArun2v1DBoldDMwLT_2 > 0.5 && iso_1 < 0.1  && mt_1 < 50 && !dilepton_veto  && passesThirdLepVeto && passesTauLepVetos && trg_singleelectron  ",
+            "tt": "byTightIsolationMVArun2v1DBoldDMwLT_1 > 0.5 && byTightIsolationMVArun2v1DBoldDMwLT_2 > 0.5 && passesThirdLepVeto && passesTauLepVetos && trg_doubletau "
             }
     cut = cuts[channel]
-    weights = ["puweight","stitchedWeight","trk_sf","genweight","effweight","topWeight_run1","zPtReweightWeight"]
+    weights = ["puweight","stitchedWeight","trk_sf","genweight","effweight","topWeight_run1","zPtReweightWeight","antilep_tauscaling"]
+    # weights = ["puweight","stitchedWeight","trk_sf","genweight","effweight","topWeight_run1","zPtReweightWeight"]
     scale = {"EWKZ":"1", "VV":"1","QCD_SS":"1","QCD":"1","DY":"1","qqH125":"10","ggH125":"10","W":"1","TT":"1"}
     lumi = "35.9"
+    region = "os"
+    what = ["VVT","VVJ","TTT","TTJ","W","ZJ","ZL","ZTT","EWKZ","QCD"]
 
+
+
+    # what.sort()
     variables = [
         "pt_1",
         "pt_2",
@@ -88,14 +122,19 @@ def main():
         "m_vis",
         "met"
     ]
-    variables = ["dzeta"]
+    if len(sys.argv) == 2:
+        variables = [ sys.argv[1] ]
+    elif len(sys.argv) == 3:
+        variables = [ sys.argv[1] ]
+        region = sys.argv[2] 
+
 
     # histos= fillHistos(mcin, datain[channel], cut, weights, scale, "m_sv",binning, what = ["qqH125","EWKZ","ggH125","VV","QCD","TT","W","DY"])
     for var in variables:
         print "producing ", var
-        histos= fillHistos(mcin, datain[channel], cut, weights, lumi, var,binning.get(var,(100,-50,50)), what = ["qqH125","ggH125","VV","QCD","TT","W","DY"])
+        histos= fillHistos(channel, mcin, datain[channel], cut, region, weights, lumi, var,binning.get(var,(100,-50,50)), what = what)
         #makeNormalizedPlot( histos = histos, scale = scale, name =  var)
-        makeStackedPlot( histos = histos,name = var)
+        makeStackedPlot( histos = histos, name = var)
 
 def makeNormalizedPlot(histos, scale,name):
 
@@ -141,26 +180,25 @@ def makeNormalizedPlot(histos, scale,name):
 
 def makeStackedPlot(histos, name):
 
-    histos["data"].GetXaxis().SetNdivisions(0)
+    histos["data"].GetXaxis().SetLabelSize(0)
 
 
     cv= createRatioCanvas("cv")
-  
+    maxVal = max(histos["data"].GetMaximum(), histos["stack"].GetMaximum() )*1.10
     cv.cd(2)
     tmp = copy.deepcopy( histos["data"] )
-    tmp.GetXaxis().SetLabelFont(63)
-    tmp.GetXaxis().SetLabelSize(14)
+    tmp.GetXaxis().SetLabelSize(0)
     tmp.GetYaxis().SetLabelFont(63)
     tmp.GetYaxis().SetLabelSize(14)
     tmp.SetTitle("")
-    tmp.GetYaxis().SetRangeUser( 0.1, 1000 )
+    tmp.GetYaxis().SetRangeUser( 0.1, maxVal / 100 )
     tmp.Draw("e1")
     histos["stack"].Draw("same HIST")
     tmp.Draw("same e1")
     
 
     cv.cd(1)
-    histos["data"].GetYaxis().SetRangeUser(1000, max(histos["data"].GetMaximum(), histos["stack"].GetMaximum() )*1.20 )
+    histos["data"].GetYaxis().SetRangeUser(maxVal / 100,  maxVal)
     histos["ratio"].GetYaxis().SetNdivisions(5)
     histos["data"].GetXaxis().SetLabelFont(63)
     histos["data"].GetXaxis().SetLabelSize(14)
@@ -189,19 +227,25 @@ def makeStackedPlot(histos, name):
  
 
 
-def fillHistos(mcin, datain, cut, weights, lumi, variable, binning ,what = []):
+def fillHistos(channel, mcin, datain, cut,region, weights, lumi, variable, binning ,what = []):
 
     histos = {}
+    if region == "os":
+        sign_cut = "&& q_1*q_2 < 0"
+    else:
+        sign_cut = "&& q_1*q_2 > 0"
+    qcd_cut = "&& q_1*q_2 > 0"
 
-    for sample,name in mcin:
+    for sample,name,addcut in mcin:
 
         tmp =   rp.read_root( paths = sample,
-                              where = cut + "&& q_1*q_2 < 0",
+                              where = cut + sign_cut + addcut,
                               columns = weights + [variable]  )
+        print "Loading ", name, len(tmp)
 
-
-        tmp.eval( "eweight = " + "*".join( [lumi] + weights),  inplace = True )
-        
+        if name == "ZTT": tmp.eval( "eweight = " + "*".join( ["34.1"] + weights),  inplace = True )
+        else: tmp.eval( "eweight = " + "*".join( [lumi] + weights),  inplace = True )
+        # tmp.eval( "eweight = " + "*".join( [lumi] + weights),  inplace = True )
 
         histos[name] = R.TH1D(variable + name,name,*(binning))
 
@@ -218,45 +262,94 @@ def fillHistos(mcin, datain, cut, weights, lumi, variable, binning ,what = []):
 
 #######################################################
 
-
-    tmp =   rp.read_root( paths = datain[0],
-                          where = cut+ "&& q_1*q_2 > 0",
-                          columns = weights + [variable] )
-
-
-    histos["QCD_SS"] = R.TH1D(variable + "QCD_SS","QCD_SS",*(binning))
-    histos["QCD_SS"].Sumw2(True)
-    histos["QCD_SS"].SetFillColor( getColor( "QCD" ) )
-    histos["QCD_SS"].SetLineColor( R.kBlack )
-    tmp.eval( "eweight = 1"  , inplace = True )
-
-    rn.fill_hist( histos["QCD_SS"], array = tmp[variable].values,
-                                 weights = tmp["eweight"].values)
-
-    histos["QCD"] = copy.deepcopy( histos["QCD_SS"] )
-    for sample,name in mcin:
-        tmp =   rp.read_root( paths = sample,
-                              where = cut + "&& q_1*q_2 > 0",
-                              columns = weights + [variable]  )
+    if channel != "tt":
+        tmp =   rp.read_root( paths = datain[0],
+                              where = cut+ qcd_cut,
+                              columns = weights + [variable] )
 
 
-        tmp.eval( "eweight = " + "*".join( [lumi] + weights) , inplace = True )
+        histos["QCD_SS"] = R.TH1D(variable + "QCD_SS","QCD_SS",*(binning))
+        histos["QCD_SS"].Sumw2(True)
+        histos["QCD_SS"].SetFillColor( getColor( "QCD" ) )
+        histos["QCD_SS"].SetLineColor( R.kBlack )
+        tmp.eval( "eweight = 1"  , inplace = True )
+
+        rn.fill_hist( histos["QCD_SS"], array = tmp[variable].values,
+                                     weights = tmp["eweight"].values)
+
+        histos["QCD"] = copy.deepcopy( histos["QCD_SS"] )
+        for sample,name,addcut in mcin:
+            if not name in what: continue
+            tmp =   rp.read_root( paths = sample,
+                                  where = cut + qcd_cut + addcut,
+                                  columns = weights + [variable]  )
 
 
-        tmp_SS = R.TH1D(variable + name+"SS",name+"SS",*(binning))
+            if name == "ZTT": tmp.eval( "eweight = " + "*".join( ["34.1"] + weights),  inplace = True )
+            else: tmp.eval( "eweight = " + "*".join( [lumi] + weights),  inplace = True )
+            # tmp.eval( "eweight = " + "*".join( [lumi] + weights),  inplace = True )
 
-        rn.fill_hist( tmp_SS, array = tmp[variable].values,
-                                    weights = tmp["eweight"].values )
 
-        histos["QCD"].Add( tmp_SS, -1 )
+            tmp_SS = R.TH1D(variable + name+"SS",name+"SS",*(binning))
+
+            rn.fill_hist( tmp_SS, array = tmp[variable].values,
+                                        weights = tmp["eweight"].values )
+
+            histos["QCD"].Add( tmp_SS, -1 )
+    else:
+        regions = {
+            "B":"&& ((byMediumIsolationMVArun2v1DBoldDMwLT_1 && byLooseIsolationMVArun2v1DBoldDMwLT_2 && !byTightIsolationMVArun2v1DBoldDMwLT_2) || (byMediumIsolationMVArun2v1DBoldDMwLT_2 && byLooseIsolationMVArun2v1DBoldDMwLT_1 && !byTightIsolationMVArun2v1DBoldDMwLT_1)) && q_1*q_2 < 0",
+            "C":"&& byTightIsolationMVArun2v1DBoldDMwLT_1 > 0.5 && byTightIsolationMVArun2v1DBoldDMwLT_2 > 0.5 && q_1*q_2 > 0",
+            "D":"&& ((byMediumIsolationMVArun2v1DBoldDMwLT_1 && byLooseIsolationMVArun2v1DBoldDMwLT_2 && !byTightIsolationMVArun2v1DBoldDMwLT_2) || (byMediumIsolationMVArun2v1DBoldDMwLT_2 && byLooseIsolationMVArun2v1DBoldDMwLT_1 && !byTightIsolationMVArun2v1DBoldDMwLT_1)) && q_1*q_2 > 0",
+        }
+
+        datahists = {}
+        for reg, isocut in regions.items():
+            tmp = rp.read_root( paths = datain[0],
+                              where = "passesThirdLepVeto && passesTauLepVetos && trg_doubletau" + isocut,
+                              columns = weights + [variable] )
+            tmp.eval( "eweight = 1"  , inplace = True )
+
+            datahists[reg] = R.TH1D(reg + "data",reg + "data",*(binning))
+            rn.fill_hist( datahists[reg], array = tmp[variable].values,
+                                          weights = tmp["eweight"].values)
+        
+
+        for sample,name,addcut in mcin:
+            for reg, isocut in regions.items():
+            # if not name in what: continue
+                tmp =   rp.read_root( paths = sample,
+                                      where = "passesThirdLepVeto && passesTauLepVetos && trg_doubletau" + isocut + addcut,
+                                      columns = weights + [variable]  )
+
+
+                if name == "ZTT": tmp.eval( "eweight = " + "*".join( ["34.1"] + weights),  inplace = True )
+                else: tmp.eval( "eweight = " + "*".join( [lumi] + weights),  inplace = True )
+
+
+                tmp_MC = R.TH1D(variable + name+reg,name+reg,*(binning))
+
+                rn.fill_hist( tmp_MC, array = tmp[variable].values,
+                                            weights = tmp["eweight"].values )
+
+                datahists[reg].Add( tmp_MC, -1 )
+
+        histos["QCD"] = copy.deepcopy(datahists["B"])
+        print  datahists["C"].Integral()  / datahists["D"].Integral()
+        histos["QCD"].Scale( ( datahists["C"].Integral() ) / float(datahists["D"].Integral() ) )
+        histos["QCD"].Sumw2(True)
+        histos["QCD"].SetFillColor( getColor( "QCD" ) )
+        histos["QCD"].SetLineColor( R.kBlack )  
+
 
     # print histos["QCD"].Integral(), "QCD"
 
 #############################################
     tmp =   rp.read_root( paths = datain[0],
-                          where = cut+ "&& q_1*q_2 < 0",
+                          where = cut+ sign_cut,
                           columns = weights + [variable] )
     tmp.eval( "eweight = 1"  , inplace = True )
+    # tmp.eval( "eweight = " + "*".join( [lumi] + weights),  inplace = True )
 
     data = R.TH1D(variable + "data","data",*(binning))
     data.Sumw2(True)
@@ -278,10 +371,10 @@ def fillHistos(mcin, datain, cut, weights, lumi, variable, binning ,what = []):
         ratio.Add( histos[h] )
     ratio.Divide(data)
 
-    histos["ratio"] = copy.deepcopy( ratio )
-    histos["stack"] = copy.deepcopy( stack )
-    histos["data"] = copy.deepcopy( data )
-    histos["leg"] = copy.deepcopy( leg )
+    histos["ratio"]    = copy.deepcopy( ratio )
+    histos["stack"]    = copy.deepcopy( stack )
+    histos["data"]     = copy.deepcopy( data )
+    histos["leg"]      = copy.deepcopy( leg )
 
     return histos
 
@@ -329,18 +422,45 @@ def createRatioCanvas(name, errorBandFillColor=14, errorBandStyle=3354 ):
     return cv
 
 def getColor(name):
+
     if name in ["TT","TTT","TTJ"]: return R.TColor.GetColor(155,152,204)
     if name in ["sig"]:            return R.kRed
     if name in ["bkg"]:            return R.kBlue
-    if name in ["qqH125"]:         return R.kRed
-    if name in ["ggH125"]:         return R.kBlue
+    if name in ["qqH"]:            return R.TColor.GetColor(204,102,0)
+    if name in ["ggH"]:            return R.TColor.GetColor(255,128,0)
     if name in ["W"]:              return R.TColor.GetColor(222,90,106)
-    if name in ["VVT","VVJ","VV"]: return R.TColor.GetColor(88,211,247)
+    if name in ["VVT","VVJ","VV"]: return R.TColor.GetColor(175,35,80)
     if name in ["ZL","ZJ","ZLJ"]:  return R.TColor.GetColor(100,192,232)
-
-    if name in ["QCD"]:            return R.TColor.GetColor(250,202,255)
+    if name in ["QCD","WSS"]:      return R.TColor.GetColor(250,202,255)
     if name in ["ZTT","DY"]:       return R.TColor.GetColor(248,206,104)
     else: return R.kYellow
 
+def getMergedSamples(path, ext):
+    mcin = [
+        (path + "BASIS_ntuple_GluGluHToTauTau_M125_powheg_MCSummer16"+ext,"ggH125",""),
+        (path + "BASIS_ntuple_VBFHToTauTau_M125_powheg_MCSummer16"+ext,"qqH125",""),
+        (path + "BASIS_ntuple_WXJets_merged_MCSummer16"+ext,"W",""),
+        (path + "BASIS_ntuple_DYXJetsToLL_lowMass_merged_MCSummer16"+ext,"DY",""),
+        (path + "BASIS_ntuple_DYXJetsToLL_lowMass_merged_MCSummer16"+ext,"ZTT"," && gen_match_2 == 5"),
+        (path + "BASIS_ntuple_DYXJetsToLL_lowMass_merged_MCSummer16"+ext,"ZL"," && gen_match_2 < 5"),
+        (path + "BASIS_ntuple_DYXJetsToLL_lowMass_merged_MCSummer16"+ext,"ZJ"," && gen_match_2 == 6"),
+        (path + "BASIS_ntuple_TT_merged_MCSummer16"+ext,"TT",""),
+        (path + "BASIS_ntuple_TT_merged_MCSummer16"+ext,"TTT","&& gen_match_2 == 5"),
+        (path + "BASIS_ntuple_TT_merged_MCSummer16"+ext,"TTJ","&& gen_match_2 != 5"),
+        (path + "BASIS_ntuple_VV_MCSummer16"+ext,"VV",""),
+        (path + "BASIS_ntuple_VV_MCSummer16"+ext,"VVT","&& gen_match_2 == 5"),
+        (path + "BASIS_ntuple_VV_MCSummer16"+ext,"VVJ","&& gen_match_2 != 5"),
+        (path + "BASIS_ntuple_EWKZ_merged_MCSummer16"+ext,"EWKZ",""),
+    ]
+    datain = {
+        "mt":(path + "BASIS_ntuple_SingleMuon"+ext,"data",""),
+        "et":(path + "BASIS_ntuple_SingleElectron"+ext,"data",""),
+        "tt":(path + "BASIS_ntuple_Tau"+ext,"data","")
+    }  
+    return mcin, datain
+
 if __name__ == '__main__':
+
     main()
+
+
