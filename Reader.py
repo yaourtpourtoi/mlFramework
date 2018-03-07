@@ -8,45 +8,9 @@ import yaml
 
 def main():
 
-    SR = Reader("mt","conf/scale_samples.json",2)
-
-    print "For testing"
-    # for i in SR.get(what = "nominal"):
-    #     print i[0]["train_weight"][0]
-    data = SR.getSamplesForTraining()
-    a = data[0].query("hist_name == 'ZTT'")
-    print "ZTT", a["train_weight"].iloc[0]
-
-    a = data[0].query("hist_name == 'ZL'")
-    print "ZL", a["train_weight"].iloc[0]
-
-    a = data[0].query("hist_name == 'ZJ'")
-    print "ZJ", a["train_weight"].iloc[0]
-
-    a = data[0].query("hist_name == 'TTT'")
-    print "TTT",a["train_weight"].iloc[0]
-
-    a = data[0].query("hist_name == 'TTJ'")
-    print "TTJ", a["train_weight"].iloc[0]
-
-    a = data[0].query("hist_name == 'VVT'")
-    print "VVT", a["train_weight"].iloc[0]
-
-    a = data[0].query("hist_name == 'VVJ'")
-    print "VVJ", a["train_weight"].iloc[0]
-
-    a = data[0].query("hist_name == 'W'")
-    print "W", a["train_weight"].iloc[0]
-
-    a = data[0].query("hist_name == 'ggH125'")
-    print "ggH125", a["train_weight"].iloc[0]
-
-    a = data[0].query("hist_name == 'qqH125'")
-    print "qqH125", a["train_weight"].iloc[0]
-
-    a = data[0].query("hist_name == 'data_ss'")
-    print "data_ss", a["train_weight"].iloc[0]
-
+    SR = Reader("tt","conf/scale_samples.json",2)
+    with open("dump.json","w") as FSO:
+        json.dump(SR.config, FSO, indent = 4, sort_keys=True )
 
 class Reader():
 
@@ -58,12 +22,18 @@ class Reader():
         self.trainReweighting = ""
         self.folds = folds
         self.processes = []
-        self.config = self.__flattenConfig(config_file)
+        
         with open("conf/hist_names.json","r") as FSO:
             self.hist_names = json.load(FSO)
 
-        with open("conf/reweighting.json","r") as FSO:
-            self.reweight = json.load(FSO)
+        with open("conf/cuts.json","r") as FSO:
+            cuts = json.load(FSO)
+            for c in cuts:
+                cuts[c] = self._assertChannel( cuts[c] )
+            self.cut_dict = cuts
+
+        self.config = self._flattenConfig(config_file)
+
 
     def __iter__(self):
         return self
@@ -72,12 +42,12 @@ class Reader():
         try:
             sample = self.itersamples[ self.idx ]
             self.idx += 1
-            return self.loadForMe( sample )
+            return self.loadForMe( sample ), sample["histname"]
         except IndexError as e:
             raise StopIteration
 
 
-    def __flattenConfig(self,config_file):
+    def _flattenConfig(self,config_file):
         '''
         Read dataset configuration file and flatten the return object to the current use case.
         '''
@@ -89,29 +59,39 @@ class Reader():
             print "Check {0}. Probably a ',' ".format(config_file)
             sys.exit(0)
 
+        targets = []
         config["channel"] = self.channel
+        config["target_names"] = {}
         self.trainReweighting = config["train_weight"] 
 
-        config["global_selection"] = config["global_selection"][self.channel]
         config["path"] = "{path}/ntuples_{version}/{channel}/ntuples_{useSV}_merged".format( **config )
-        config["target_names"] = {int(k):v for k,v in config["target_names"].items()}
 
         for sample in config["samples"]:
             
             self.processes.append(sample)
 
-            if type(config["samples"][sample]["name"] ) is dict:
-                sample_name = config["samples"][sample]["name"][ self.channel ]
-            else:
-                sample_name = config["samples"][sample]["name"]
+            sample_name = self._assertChannel( config["samples"][sample]["name"] )
+            config["samples"][sample]["target"] = self._assertChannel(config["samples"][sample]["target"] )
+            targets.append( config["samples"][sample]["target"]  )
 
             config["samples"][sample]["name"]    = "{path}/{name}_{channel}_{version}.root".format(name = sample_name, **config)
-            config["samples"][sample]["select"] += " && {global_selection}".format(**config)
+            config["samples"][sample]["select"] = self._parseCut( config["samples"][sample]["select"] )
             
             if sample != "data" and sample != "data_ss":
-                config["samples"][sample]["shapes"]  = self.__getShapePaths( config["samples"][sample]["name"] )
+                config["samples"][sample]["shapes"]  = self._getShapePaths( config["samples"][sample]["name"] )
                 if type(config["samples"][sample]["event_weight"]) is list:
                     config["addvar"] = list( set( config["addvar"] + config["samples"][sample]["event_weight"] ) )
+
+        targets.sort()
+        targets = [ t for t in targets if t != "none" ]
+        target_map = {}
+
+        for i,t in enumerate(set(targets)):
+            config["target_names"][i] = t
+            target_map[t] = i
+
+        for sample in config["samples"]:
+            config["samples"][sample]["target"]  = target_map.get( config["samples"][sample]["target"], "none" )  
 
         return config
 
@@ -119,7 +99,7 @@ class Reader():
     def getSamplesForTraining(self):
         self.setNominalSamples()
         samples = []
-        for sample in self:
+        for sample,histname in self:
             samples.append(sample)
         print "Combining for training"
         return self.combineFolds(samples)
@@ -127,31 +107,33 @@ class Reader():
     def setNominalSamples(self):
         self.itersamples = []
         self.idx = 0
-        for sample in self.config["samples"]:
-            if sample == "data" or "samesign" in sample: continue
+        samples = self.config["samples"].keys()
+        samples.sort()
+        for sample in samples:
+            if sample == "data" or "_more" in sample: continue
 
-            tmp = self.__getCommonSettings(sample)
+            tmp = self._getCommonSettings(sample)
 
             tmp["path"] = self.config["samples"][sample]["name"] 
-            tmp["hist_name"   ] = sample
-            tmp["reweight"    ] = True
+            tmp["histname"   ] = sample
             tmp["rename"      ] = {}
 
             self.itersamples.append( tmp )
 
         return self
 
-    def setSameSignSamples(self):
+    def setLooserSamples(self):
         self.itersamples = []
         self.idx = 0
-        for sample in self.config["samples"]:
-            if not "samesign" in sample: continue
+        samples = self.config["samples"].keys()
+        samples.sort()
+        for sample in samples:
+            if not "_more" in sample: continue
 
-            tmp = self.__getCommonSettings(sample)
+            tmp = self._getCommonSettings(sample)
 
             tmp["path"] = self.config["samples"][sample]["name"] 
-            tmp["hist_name"   ] = sample
-            tmp["reweight"    ] = True
+            tmp["histname"   ] = sample
             tmp["rename"      ] = {}
 
             self.itersamples.append( tmp )
@@ -162,11 +144,10 @@ class Reader():
         self.itersamples = []
         self.idx = 0
 
-        tmp = self.__getCommonSettings("data")
+        tmp = self._getCommonSettings("data")
 
         tmp["path"] = self.config["samples"]["data"]["name"] 
-        tmp["hist_name"   ] = "data_obs"
-        tmp["reweight"    ] = False
+        tmp["histname"   ] = "data_obs"
         tmp["rename"      ] = {}
 
         self.itersamples.append( tmp )
@@ -176,17 +157,18 @@ class Reader():
     def setTESSamples(self):
         self.itersamples = []
         self.idx = 0
-        for sample in self.config["samples"]:
-            if sample == "data" or sample == "data_ss" or "samesign" in sample: continue
+        samples = self.config["samples"].keys()
+        samples.sort()
+        for sample in samples:
+            if sample == "data" or sample == "estimate" or "_more" in sample: continue
 
             for shape in self.config["samples"][sample]["shapes"]:
                 if "JEC" in shape: continue
 
-                tmp = self.__getCommonSettings(sample)
+                tmp = self._getCommonSettings(sample)
 
                 tmp["path"] = self.config["samples"][sample]["shapes"][shape] 
-                tmp["hist_name"   ] = sample + self.hist_names[shape]
-                tmp["reweight"    ] = False
+                tmp["histname"   ] = sample + self.hist_names[shape]
                 tmp["rename"      ] = {}
 
                 self.itersamples.append( tmp )
@@ -196,18 +178,19 @@ class Reader():
     def setJECSamples(self):
         self.itersamples = []
         self.idx = 0
-        for sample in self.config["samples"]:
-            if sample == "data" or sample == "data_ss" or "samesign" in sample: continue
+        samples = self.config["samples"].keys()
+        samples.sort()
+        for sample in samples:
+            if sample == "data" or sample == "estimate" or "_ss" in sample: continue
 
             for shape in self.config["samples"][sample]["shapes"]:
                 if not "JEC" in shape: continue
 
-                tmp = self.__getCommonSettings(sample)
+                tmp = self._getCommonSettings(sample)
 
                 tmp["path"] = self.config["samples"][sample]["shapes"][shape] 
-                tmp["hist_name"   ] = sample + self.hist_names[shape]
-                tmp["reweight"    ] = False
-                tmp["rename"      ] = self.__getRenaming( shape.replace("JEC","") )
+                tmp["histname"   ] = sample + self.hist_names[shape]
+                tmp["rename"      ] = self._getRenaming( shape.replace("JEC","") )
 
                 self.itersamples.append( tmp )
 
@@ -216,27 +199,26 @@ class Reader():
 
     def loadForMe(self, sample_info):
 
-        DF = self.__getDF(sample_path = sample_info["path"], 
+
+        DF = self._getDF(sample_path = sample_info["path"], 
                           select = sample_info["select"])
+
+        print "Loading ", sample_info["histname"], len(DF)
 
         DF.eval( "event_weight = " + sample_info["event_weight"], inplace = True  )
 
-        DF["hist_name"] = sample_info["hist_name"]
+        # DF["histname"] = sample_info["histname"]
         DF["target"] = sample_info["target"]
 
         if not self.trainReweighting:
             DF["train_weight"] = 1.0
         else:
-            DF["train_weight"] = self.__getTrainWeight(DF, scale = sample_info["train_weight_scale"] )
-
-        if sample_info["reweight"]:
-            self.__addReweightWeights(DF)
+            DF["train_weight"] = self._getTrainWeight(DF, scale = sample_info["train_weight_scale"] )
 
         if sample_info["rename"]:
             DF.rename(columns = sample_info["rename"], inplace = True)
 
-
-        return self.__getFolds( DF )
+        return self._getFolds( DF )
 
 
 
@@ -247,21 +229,32 @@ class Reader():
             for i in xrange(len(folds)):
                 folds[i].append( sample[i] )
 
-        for i,fold in enumerate(folds):  
+        for i,fold in enumerate(folds): 
             folds[i] = pandas.concat( fold, ignore_index=True).sample(frac=1., random_state = 41).reset_index(drop=True)
-            # if self.trainReweighting == "normalize_xsec":
-            #     folds[i]["train_weight"] /= folds[i]["event_weight"].sum()
+
         return folds
 
     def get(self, what):
         if what == "nominal"  : return self.setNominalSamples()
-        if what == "samesign" : return self.setSameSignSamples()
+        if what == "more"     : return self.setLooserSamples()
         if what == "data"     : return self.setDataSample()
         if what == "tes"      : return self.setTESSamples()
         if what == "jec"      : return self.setJECSamples()
 
+    def _parseCut(self, cutstring):
+        cutstring = self._assertChannel( cutstring )
+        for alias,cut in self.cut_dict.items():
+            cutstring = cutstring.replace( alias, cut )
+        return cutstring
 
-    def __getShapePaths(self, sample):
+    def _assertChannel(self, entry):
+
+        if type( entry ) is dict:
+            return entry[ self.channel ]
+        else:
+            return entry      
+
+    def _getShapePaths(self, sample):
 
         shapes = {"T0Up":"","T0Down":"","T1Up":"","T1Down":"","T10Up":"","T10Down":"","JECUp":sample,"JECDown":sample}
 
@@ -274,18 +267,18 @@ class Reader():
 
         return shapes
 
-    def __getCommonSettings(self, sample):
+    def _getCommonSettings(self, sample):
 
         settings = {}
-        settings["event_weight"] = self.__getEventWeight(sample)
-        settings["target"      ] = self.config["samples"][sample]["target"]
+        settings["event_weight"] = self._getEventWeight(sample)
+        settings["target"      ] = self.config["samples"][sample]["target"] 
         settings["select"      ] = self.config["samples"][sample]["select"]
         settings["train_weight_scale"] = self.config["samples"][sample]["train_weight_scale"]
         
         return settings
 
 
-    def __getEventWeight(self, sample):
+    def _getEventWeight(self, sample):
         if type( self.config["samples"][sample]["event_weight"] ) is list:
             return "*".join( self.config["samples"][sample]["event_weight"] + [ str(self.config["lumi"]) ] )
 
@@ -295,7 +288,7 @@ class Reader():
         else:
             return 1.0
 
-    def __getTrainWeight(self, DF, scale):
+    def _getTrainWeight(self, DF, scale):
         if self.trainReweighting == "normalize_evt":
             evts = len(DF)
             if evts > 0: return 10000 / float(evts)
@@ -309,7 +302,7 @@ class Reader():
         else:
             return 1.0
 
-    def __getRenaming(self, corr):
+    def _getRenaming(self, corr):
 
         tmp =[]
         for nom in ["mjj","jdeta","njets","jpt"]:
@@ -319,12 +312,7 @@ class Reader():
 
         return dict( tmp )
 
-    def __addReweightWeights(self, DF):
-
-        for rw in self.reweight:
-            DF[rw] = DF.eval( self.reweight[rw] )
-
-    def __getFolds(self, df):
+    def _getFolds(self, df):
 
         if self.folds != 2: raise NotImplementedError("Only implemented two folds so far!!!")
         folds = []
@@ -334,15 +322,14 @@ class Reader():
 
         return folds
 
-    def __getDF( self, sample_path, select ):
+    def _getDF( self, sample_path, select ):
 
         branches = set( self.config["variables"] + self.config["addvar"] )
-        print "loading ", sample_path.split("/")[-1]
         tmp = rp.read_root( paths = sample_path,
                              where = select,
-                             columns = branches)   
+                             columns = branches)
 
-        tmp.replace(-10,-10, inplace = True)
+        tmp.replace(-999.,-10, inplace = True)
         return tmp
 
 if __name__ == '__main__':
