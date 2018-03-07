@@ -103,7 +103,7 @@ class KerasObject():
             sample_weight=train["train_weight"].values,
             validation_data=(test[self.variables].values, y_test, test["train_weight"].values),
             batch_size=self.params["batch_size"],
-            nb_epoch=self.params["epochs"],
+            epochs=self.params["epochs"],
             shuffle=True,
             class_weight = class_weights,
             callbacks=[EarlyStopping(patience=self.params["early_stopping"])])
@@ -138,14 +138,6 @@ class KerasObject():
 
         prediction = DataFrame( self.models[fold].predict(test[self.variables].values) )
 
-        if self.target_names: prediction.rename( columns = self.target_names, inplace=True  )
-
-        summary = DataFrame( test["hist_name"] )
-        summary["weight"] =  test["event_weight"]
-        summary["predicted_class"] = prediction.idxmax(axis=1)
-        summary["predicted_prob" ] = prediction.max(axis=1)
-        for c in test:
-            if "reweight" in c: summary[c] = test[c]
-
-        return summary
+        return DataFrame(dtype = float, data = {"predicted_class":prediction.idxmax(axis=1).values,
+                                 "predicted_prob": prediction.max(axis=1).values } )
 
