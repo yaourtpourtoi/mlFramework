@@ -1,12 +1,33 @@
 {
-	"reweight_CMS_htt_ttbarShape_13TeVUp"          : "event_weight * topWeight_run1",
-    "reweight_CMS_htt_ttbarShape_13TeVDown"        : "event_weight / topWeight_run1",
-    "reweight_CMS_htt_dyShape_13TeVUp"             : "event_weight * zPtReweightWeight",
-    "reweight_CMS_htt_dyShape_13TeVDown"           : "event_weight / zPtReweightWeight",
-    "reweight_CMS_htt_jetToTauFake_13TeVUp"        : "1 - (pt_2 < 200)*0.002*pt_2 - (pt_2>=200)*0.4",
-    "reweight_CMS_htt_jetToTauFake_13TeVDown"      : "1 + (pt_2 < 200)*0.002*pt_2 + (pt_2>=200)*0.4",
-    "reweight_CMS_scale_met_clustered_13TeVUp"     : "event_weight",
-    "reweight_CMS_scale_met_clustered_13TeVDown"   : "event_weight",
-    "reweight_CMS_scale_met_unclustered_13TeVUp"   : "event_weight",
-    "reweight_CMS_scale_met_unclustered_13TeVDown" : "event_weight"    
+	"reweight_CMS_htt_ttbarShape_13TeVUp"                : "event_weight * topWeight_run1",
+    "reweight_CMS_htt_ttbarShape_13TeVDown"              : "event_weight / topWeight_run1",
+    "reweight_CMS_htt_dyShape_13TeVUp"                   : "event_weight * zPtReweightWeight",
+    "reweight_CMS_htt_dyShape_13TeVDown"                 : "event_weight / zPtReweightWeight",
+    "reweight_CMS_htt_jetToTauFake_13TeVUp"              : "1 - (pt_2 < 200)*0.002*pt_2 - (pt_2>=200)*0.4",
+    "reweight_CMS_htt_jetToTauFake_13TeVDown"            : "1 + (pt_2 < 200)*0.002*pt_2 + (pt_2>=200)*0.4",
+    "reweight_CMS_scale_met_clustered_13TeVUp"           : "event_weight",
+    "reweight_CMS_scale_met_clustered_13TeVDown"         : "event_weight",
+    "reweight_CMS_scale_met_unclustered_13TeVUp"         : "event_weight",
+    "reweight_CMS_scale_met_unclustered_13TeVDown"       : "event_weight",
+    "reweight_CMS_htt_zmumuShape_VBF_13TeVUp"            : "event_weight",
+    "reweight_CMS_htt_zmumuShape_VBF_13TeVDown"          : "event_weight",
+    "reweight_CMS_ZLShape_mt_1prong_13TeVUp"             : "event_weight",
+    "reweight_CMS_ZLShape_mt_1prong_13TeVDown"           : "event_weight",
+    "reweight_CMS_ZLShape_mt_1prong1pizero_13TeVUp"      : "event_weight",
+    "reweight_CMS_ZLShape_mt_1prong1pizero_13TeVDown"    : "event_weight",
+    "reweight_CMS_mFakeTau_1prong_13TeVUp"               : "event_weight",
+    "reweight_CMS_mFakeTau_1prong_13TeVDown"             : "event_weight",
+    "reweight_CMS_mFakeTau_1prong1pizero_13TeVUp"        : "event_weight",
+    "reweight_CMS_mFakeTau_1prong1pizero_13TeVDown"      : "event_weight",
+    "reweight_CMS_eFakeTau_1prong_13TeVUp"               : "event_weight",
+    "reweight_CMS_eFakeTau_1prong_13TeVDown"             : "event_weight",
+    "reweight_CMS_eFakeTau_1prong1pizero_13TeVUp"        : "event_weight",
+    "reweight_CMS_eFakeTau_1prong1pizero_13TeVDown"      : "event_weight",
+    "reweight_CMS_scale_gg_13TeVUp"                      : "event_weight",
+    "reweight_CMS_scale_gg_13TeVDown"                    : "event_weight",
+    "reweight_TopMassTreatment_13TeVUp"                  : "event_weight",
+    "reweight_TopMassTreatment_13TeVDown"                : "event_weight"
 }
+
+
+
