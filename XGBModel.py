@@ -114,7 +114,9 @@ class XGBObject():
         devents = xgb.DMatrix( test[ self.variables ].values )
         prediction = DataFrame( self.models[fold].predict( devents ) )
 
-        if self.target_names: prediction.rename( columns = self.target_names, inplace=True  )
+        if self.target_names:
+            self.target_names = {int(k):v for k,v in self.target_names.items()}
+            prediction.rename( columns = self.target_names, inplace=True  )
 
         summary = DataFrame( test["hist_name"] )
         summary["weight"] =          test["event_weight"]
