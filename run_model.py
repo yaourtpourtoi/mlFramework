@@ -1,23 +1,25 @@
 from Reader import Reader
 from Plotter import Plotter 
 from Collector import Collector
-import numpy as np
 import json
 import sys
+import argparse
 
 def main():
 
-    if len(sys.argv) > 1:
-        use = sys.argv[1]
-    else:
-        use = "xgb"
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-c', dest='channel', help='Decay channel' ,choices = ['mt','et','tt'], default = 'mt')
+    parser.add_argument('-m', dest='model',   help='ML model to use' ,choices = ['keras','xgb'],  default = 'keras')
+    parser.add_argument('-t', dest='task',   help='Train new model' , action='store_true')
+    args = parser.parse_args()
         
     run(samples = "conf/scale_samples.json",
-        channel="mt",
-        use = use,
+        channel=args.channel,
+        use = args.model,
+        task = args.task
           )
 
-def run(samples,channel, use, preprocess_chain = []):
+def run(samples,channel, use, task, preprocess_chain = []):
 
     if use == "xgb":
         from XGBModel import XGBObject as modelObject
@@ -30,86 +32,52 @@ def run(samples,channel, use, preprocess_chain = []):
     folds = 2
     outfile = "htt_"+channel+".inputs-sm-13TeV-ML.root"
     read = Reader(channel,samples, folds)
-    target_names = read.config["target_names"]
-
-    coll = Collector( channel, outfile, folds, target_names )
-    plot = Plotter( outfile, naming = read.processes )
-
+    target_names = read.config["target_names"]    
     
-    print "Loading simulation"
-    tmp = read.getSamplesForTraining()
-    showWeights(tmp[0])
-    showWeights(tmp[1])
-    model = modelObject( parameters, read.config["variables"], target_names = target_names )
-    model.train( tmp )
-    # model.save("model." + use)
+    if task:
+        print "Training new model"
+        print "Loading simulation"
+        tmp = read.getSamplesForTraining()
+        model = modelObject( parameters, read.config["variables"], target_names = target_names )
+        model.train( tmp )
+        model.save(".".join([channel, use]))
 
-    # model = modelObject( filename = "model."+use )
+    else:
+        print "Loading model and predicting."
+        model = modelObject( filename = ".".join([channel, use]) )
 
     where = ""
+    coll = Collector( channel, outfile, target_names )
     print "Predicting simulation"
-    for tmp in read.get("nominal"):
+    for tmp, sample in read.get(what = "nominal"):
         pred =  model.predict( tmp, where )
-        coll.writePrediction( pred )
-
-    print "Adding same sign to predictions"
-    for tmp in read.get("samesign"):
+        coll.addPrediction(pred, tmp, sample)
+        
+    print "Adding looser samples to predictions"
+    for tmp, sample in read.get(what = "more"):
         pred =  model.predict( tmp, where )
-        coll.writePrediction( pred )
-
+        coll.addPrediction(pred, tmp, sample)
+        
     print "Predicting data"
-    for tmp in read.get("data"):
+    for tmp, sample in read.get(what = "data"):
         pred =  model.predict( tmp, where )
-        coll.writePrediction( pred )
+        coll.addPrediction(pred, tmp, sample)
+        
+    print "Predicting TES shapes"
+    for tmp, sample in read.get(what = "tes"):
+      pred =  model.predict( tmp, where )
+      coll.addPrediction(pred, tmp, sample)
 
-    # print "Predicting TES shapes"
-    # for tmp in read.get("tes"):
-    #   pred =  model.predict( tmp, where )
-    #   coll.writePrediction( pred )
+    print "Predicting JES shapes"
+    for tmp, sample in read.get(what = "jec"):
+      pred =  model.predict( tmp, where )
+      coll.addPrediction(pred, tmp, sample)   
 
-    # print "Predicting JES shapes"
-    # for tmp in read.get("jec"):
-    #   pred =  model.predict( tmp, where )
-    #   coll.writePrediction( pred )    
-
-    coll.combineFolds()
+    coll.createDC("pred_prob",True)
+    coll.DCfile.Close()
+    plot = Plotter( outfile, naming = read.processes )
     plot.makePlots()
     plot.combineImages( )
-def showWeights(data):
-
-    a = data.query("hist_name == 'ZTT'")
-    print "ZTT", a["train_weight"].iloc[0], len(a)
-
-    a = data.query("hist_name == 'ZL'")
-    print "ZL", a["train_weight"].iloc[0], len(a)
-
-    a = data.query("hist_name == 'ZJ'")
-    print "ZJ", a["train_weight"].iloc[0], len(a)
-
-    a = data.query("hist_name == 'TTT'")
-    print "TTT",a["train_weight"].iloc[0], len(a)
-
-    a = data.query("hist_name == 'TTJ'")
-    print "TTJ", a["train_weight"].iloc[0], len(a)
-
-    a = data.query("hist_name == 'VVT'")
-    print "VVT", a["train_weight"].iloc[0], len(a)
-
-    a = data.query("hist_name == 'VVJ'")
-    print "VVJ", a["train_weight"].iloc[0], len(a)
-
-    a = data.query("hist_name == 'W'")
-    print "W", a["train_weight"].iloc[0], len(a)
-
-    a = data.query("hist_name == 'ggH125'")
-    print "ggH125", a["train_weight"].iloc[0], len(a)
-
-    a = data.query("hist_name == 'qqH125'")
-    print "qqH125", a["train_weight"].iloc[0], len(a)
-
-    a = data.query("hist_name == 'data_ss'")
-    print "data_ss", a["train_weight"].iloc[0], len(a)
-
 
 
 if __name__ == '__main__':
