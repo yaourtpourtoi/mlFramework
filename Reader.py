@@ -4,11 +4,11 @@ import root_pandas as rp
 import os
 import sys
 import yaml
-
+from helper import calc
 
 def main():
 
-    SR = Reader("tt","conf/scale_samples.json",2)
+    SR = Reader("mt","conf/scale_samples.json",2)
     with open("dump.json","w") as FSO:
         json.dump(SR.config, FSO, indent = 4, sort_keys=True )
 
@@ -22,7 +22,8 @@ class Reader():
         self.trainReweighting = ""
         self.folds = folds
         self.processes = []
-        
+        self.needToAddVars = []
+
         with open("conf/hist_names.json","r") as FSO:
             self.hist_names = json.load(FSO)
 
@@ -31,8 +32,8 @@ class Reader():
             for c in cuts:
                 cuts[c] = self._assertChannel( cuts[c] )
             self.cut_dict = cuts
-
-        self.config = self._flattenConfig(config_file)
+        self.config_file = config_file
+        self.config = self._flattenConfig()
 
 
     def __iter__(self):
@@ -42,56 +43,65 @@ class Reader():
         try:
             sample = self.itersamples[ self.idx ]
             self.idx += 1
+            print "Loading ",sample["histname"] , sample["path"].split("/")[-1],
             return self.loadForMe( sample ), sample["histname"]
         except IndexError as e:
             raise StopIteration
 
 
-    def _flattenConfig(self,config_file):
+    def _flattenConfig(self):
         '''
         Read dataset configuration file and flatten the return object to the current use case.
         '''
         try:
-            with open(config_file,"r") as FSO:
+            with open(self.config_file,"r") as FSO:
                 config = json.load(FSO)
         except ValueError as e:
             print e
-            print "Check {0}. Probably a ',' ".format(config_file)
+            print "Check {0}. Probably a ',' ".format(self.config_file)
             sys.exit(0)
 
         targets = []
         config["channel"] = self.channel
         config["target_names"] = {}
-        self.trainReweighting = config["train_weight"] 
+        config["variables"] = self._assertChannel( config["variables"] )
+        config["version"] = self._assertChannel( config["version"] )
+        if self.channel == "mt":
+            config["variables"], self.needToAddVars = self._somethingMissing( config["variables"] )
 
         config["path"] = "{path}/ntuples_{version}/{channel}/ntuples_{useSV}_merged".format( **config )
 
         for sample in config["samples"]:
             
+            snap = config["samples"][sample]
             self.processes.append(sample)
 
-            sample_name = self._assertChannel( config["samples"][sample]["name"] )
-            config["samples"][sample]["target"] = self._assertChannel(config["samples"][sample]["target"] )
-            targets.append( config["samples"][sample]["target"]  )
+            sample_name = self._assertChannel( snap["name"] )
+            snap["target"] = self._assertChannel(snap["target"] )
+            targets.append( snap["target"]  )
 
-            config["samples"][sample]["name"]    = "{path}/{name}_{channel}_{version}.root".format(name = sample_name, **config)
-            config["samples"][sample]["select"] = self._parseCut( config["samples"][sample]["select"] )
+            snap["name"]    = "{path}/{name}_{channel}_{version}.root".format(name = sample_name, **config)
+            snap["select"] = self._parseCut( snap["select"] )
+
+            snap["train_weight_scale"] = self._assertChannel( snap["train_weight_scale"] )
             
             if sample != "data" and sample != "data_ss":
-                config["samples"][sample]["shapes"]  = self._getShapePaths( config["samples"][sample]["name"] )
-                if type(config["samples"][sample]["event_weight"]) is list:
-                    config["addvar"] = list( set( config["addvar"] + config["samples"][sample]["event_weight"] ) )
+                snap["shapes"]  = self._getShapePaths( snap["name"] )
+                if type(snap["event_weight"]) is list:
+                    config["addvar"] = list( set( config["addvar"] + snap["event_weight"] ) )
+
+            config["samples"][sample] = snap
 
         targets.sort()
         targets = [ t for t in targets if t != "none" ]
-        target_map = {}
+        target_map = {"none":-1}
 
         for i,t in enumerate(set(targets)):
             config["target_names"][i] = t
             target_map[t] = i
 
         for sample in config["samples"]:
-            config["samples"][sample]["target"]  = target_map.get( config["samples"][sample]["target"], "none" )  
+            config["samples"][sample]["target"]  = target_map.get( config["samples"][sample]["target"], -1 )  
 
         return config
 
@@ -181,7 +191,7 @@ class Reader():
         samples = self.config["samples"].keys()
         samples.sort()
         for sample in samples:
-            if sample == "data" or sample == "estimate" or "_ss" in sample: continue
+            if sample == "data" or sample == "estimate" or "_more" in sample: continue
 
             for shape in self.config["samples"][sample]["shapes"]:
                 if not "JEC" in shape: continue
@@ -198,19 +208,14 @@ class Reader():
 
 
     def loadForMe(self, sample_info):
-
-
+ 
         DF = self._getDF(sample_path = sample_info["path"], 
                           select = sample_info["select"])
-
-        print "Loading ", sample_info["histname"], len(DF)
-
+        print len(DF)
         DF.eval( "event_weight = " + sample_info["event_weight"], inplace = True  )
-
-        # DF["histname"] = sample_info["histname"]
         DF["target"] = sample_info["target"]
 
-        if not self.trainReweighting:
+        if not self.config["train_weight"]:
             DF["train_weight"] = 1.0
         else:
             DF["train_weight"] = self._getTrainWeight(DF, scale = sample_info["train_weight_scale"] )
@@ -218,9 +223,9 @@ class Reader():
         if sample_info["rename"]:
             DF.rename(columns = sample_info["rename"], inplace = True)
 
+
+
         return self._getFolds( DF )
-
-
 
     def combineFolds(self, samples):
 
@@ -240,6 +245,14 @@ class Reader():
         if what == "data"     : return self.setDataSample()
         if what == "tes"      : return self.setTESSamples()
         if what == "jec"      : return self.setJECSamples()
+
+    def _somethingMissing(self, variables):
+        missing = []
+        if "dijetpt"  in variables: missing.append( variables.pop( variables.index("dijetpt") ) )
+        if "dijetphi" in variables: missing.append( variables.pop( variables.index("dijetphi") ) )
+        if "pt_vis"    in variables: missing.append( variables.pop( variables.index("pt_vis") ) )
+
+        return variables, missing
 
     def _parseCut(self, cutstring):
         cutstring = self._assertChannel( cutstring )
@@ -289,15 +302,15 @@ class Reader():
             return 1.0
 
     def _getTrainWeight(self, DF, scale):
-        if self.trainReweighting == "normalize_evt":
+        if self.config["train_weight"] == "normalize_evt":
             evts = len(DF)
             if evts > 0: return 10000 / float(evts)
 
-        elif self.trainReweighting == "normalize_xsec":
-            return DF["event_weight"].abs() * scale
+        elif self.config["train_weight"] == "normalize_xsec":
+            return DF["event_weight"].sum() 
 
-        elif self.trainReweighting == "use_scale":
-            return scale
+        elif self.config["train_weight"] == "use_scale":
+            return DF["event_weight"].abs() * scale
 
         else:
             return 1.0
@@ -328,9 +341,15 @@ class Reader():
         tmp = rp.read_root( paths = sample_path,
                              where = select,
                              columns = branches)
+        if self.needToAddVars:
+            for new in self.needToAddVars:
+                tmp[new] = tmp.apply( calc(new), axis=1 )
 
         tmp.replace(-999.,-10, inplace = True)
+
         return tmp
+
+
 
 if __name__ == '__main__':
     main()

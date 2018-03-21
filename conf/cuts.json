@@ -24,7 +24,7 @@
 	"-ANTIISO-":{
 		"mt":"byTightIsolationMVArun2v1DBoldDMwLT_2  && iso_1 < 0.15",
 		"et":"byTightIsolationMVArun2v1DBoldDMwLT_2  && iso_1 < 0.1",
-		"tt":"((byMediumIsolationMVArun2v1DBoldDMwLT_1 && byLooseIsolationMVArun2v1DBoldDMwLT_2 && !byTightIsolationMVArun2v1DBoldDMwLT_2) || (byMediumIsolationMVArun2v1DBoldDMwLT_2 && byLooseIsolationMVArun2v1DBoldDMwLT_1 && !byTightIsolationMVArun2v1DBoldDMwLT_1))"
+		"tt":"(byTightIsolationMVArun2v1DBoldDMwLT_1 && byLooseIsolationMVArun2v1DBoldDMwLT_2 && !byTightIsolationMVArun2v1DBoldDMwLT_2)"
 	},
 	"-TRIG-":{
 		"mt":"( trg_singlemuon && pt_1 > 23 && pt_2 > 30)",

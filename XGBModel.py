@@ -1,9 +1,9 @@
 import xgboost as xgb
-from json import load
+import json
 from pandas import DataFrame, concat
 from numpy import unique
 from collections import deque
-import cPickle
+
 
 def main():
     obj = XGBObject()
@@ -21,7 +21,7 @@ class XGBObject():
                 raise Warning("Warning! Object not defined. Load from file or set 'params' and 'variables'")
             else:
                 with open(parameter_file,"r") as FSO:
-                    params = load(FSO)
+                    params = json.load(FSO)
                 self.params = params
         except Warning as e:
             print e
@@ -32,16 +32,34 @@ class XGBObject():
 
 
     def load(self, filename):
-        with open(filename, 'rb') as FSO:
-            tmp_dict = cPickle.load(FSO)
+        with open(filename + ".dict", 'rb') as FSO:
+            tmp_dict = json.load(FSO)
 
         print "Loading model from: " + filename 
         self.__dict__.clear()
         self.__dict__.update(tmp_dict)
 
+
+        self.models = []
+        for model in tmp_dict["models"]:
+            self.models.append( xgb.Booster({'nthread':8}) ) 
+            self.models[-1].load_model(model)
+
+
     def save(self, filename):
-        with open(filename, 'wb') as FSO:
-            cPickle.dump(self.__dict__, FSO, 2)
+        placeholders = []
+        tmp_models = []
+        for i,model in enumerate(self.models):
+            modelname = filename + ".fold{0}".format(i)
+            model.save_model( modelname )
+            tmp_models.append(model)
+            placeholders.append( modelname )
+        self.models = placeholders
+
+        with open(filename + ".dict", 'wb') as FSO:
+            json.dump(self.__dict__, FSO)
+
+        self.models = tmp_models
 
 
     def train(self, samples):
@@ -91,6 +109,7 @@ class XGBObject():
                         evals = [(dtest,"test")],
                         early_stopping_rounds = self.params["early_stopping"]
                         )
+        print bst.attributes()
         return bst
 
     def predict(self, samples, where=""):
@@ -114,19 +133,8 @@ class XGBObject():
         devents = xgb.DMatrix( test[ self.variables ].values )
         prediction = DataFrame( self.models[fold].predict( devents ) )
 
-        if self.target_names:
-            self.target_names = {int(k):v for k,v in self.target_names.items()}
-            prediction.rename( columns = self.target_names, inplace=True  )
-
-        summary = DataFrame( test["hist_name"] )
-        summary["weight"] =          test["event_weight"]
-        summary["var"] =             test["jpt_1"]
-        summary["predicted_class"] = prediction.idxmax(axis=1)
-        summary["predicted_prob" ] = prediction.max(axis=1)
-        for c in test:
-            if "reweight" in c: summary[c] = test[c]
-
-        return summary
+        return DataFrame(dtype = float, data = {"predicted_class":prediction.idxmax(axis=1).values,
+                                 "predicted_prob": prediction.max(axis=1).values } )
 
 
 

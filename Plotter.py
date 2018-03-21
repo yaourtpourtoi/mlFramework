@@ -11,20 +11,32 @@ from math import sqrt
 import sys
 
 def main():
-    p = Plotter("htt_mt.inputs-sm-13TeV-ML.root", [])
+    p = Plotter("mt")
     p.makePlots()
     p.combineImages()
 
 class Plotter():
 
-    def __init__(self, filename, naming):
-        self.filename = filename
+    def __init__(self, channel, naming = [], path = ""):
+        if path:
+            self.filename = "/".join([path, "htt_{0}.inputs-sm-13TeV-ML.root".format(channel) ])
+        else:
+            self.filename = "htt_{0}.inputs-sm-13TeV-ML.root".format(channel)
+        self.channel = channel
         self.images = []
         self.tiles = []
         self.sig = ["ggH125","qqH125","sig"]
         self.bkg = ["TT","TTT","TTJ","VV","VVT","VVJ","QCD","ZTT","ZL","ZJ","W"]
         self.naming = ["ggH125","qqH125","TTT","TTJ","QCD","VVT","VVJ","ZTT","ZL","ZJ","W"]
         self.naming.sort()
+
+        self.plotPath = "/".join(["plots",path,channel])
+
+        if not os.path.exists(self.plotPath):
+            os.makedirs(self.plotPath)
+
+
+
         if not self.loadFile():
             print self.filename, "not found!!"
             return None
@@ -43,6 +55,7 @@ class Plotter():
 
         for key in self.file.GetListOfKeys():
             dirname = key.GetName()
+            if not self.channel in dirname: continue
             if isinstance( self.file.Get( dirname ), R.TDirectory):
                 histos[dirname] = { "stack": R.THStack(dirname, dirname), "leg": R.TLegend(0.82, 0.03, 0.98, 0.92) }
                 TDir = self.file.Get( dirname )
@@ -106,6 +119,8 @@ class Plotter():
                 totalHists[TDir][hist] = copy.deepcopy( folder.Get( hist )  )
 
         inclusive = {}
+        cat = "{0}_incl".format(self.channel)
+        
         for h in hists :
             for i,d in enumerate( TDirs ):
                 if i == 0:
@@ -113,7 +128,7 @@ class Plotter():
                 else:
                     inclusive[h].Add( totalHists[d][h] )
         
-        self.histos["_incl"] = { "stack": R.THStack("incl", "incl"), "leg": R.TLegend(0.82, 0.03, 0.98, 0.92) }
+        self.histos[cat] = { "stack": R.THStack("incl", "incl"), "leg": R.TLegend(0.82, 0.03, 0.98, 0.92) }
         inclhist = inclusive.keys()
         inclhist.sort()
         for hist in inclhist:
@@ -121,31 +136,31 @@ class Plotter():
                 tmp = copy.deepcopy( inclusive[hist] )
                 tmp.SetFillColor( self.getColor( hist ) )
 
-                self.histos["_incl"]["leg"].AddEntry(tmp, hist)
-                self.histos["_incl"]["stack"].Add( tmp  )
+                self.histos[cat]["leg"].AddEntry(tmp, hist)
+                self.histos[cat]["stack"].Add( tmp  )
 
             elif hist == "data_obs":
-                self.histos["_incl"]["data"] =  copy.deepcopy( inclusive[hist] )
-                self.histos["_incl"]["data"].GetXaxis().SetLabelSize(0)
-                self.histos["_incl"]["data"].GetYaxis().SetLabelFont(63)
-                self.histos["_incl"]["data"].GetYaxis().SetLabelSize(14)
+                self.histos[cat]["data"] =  copy.deepcopy( inclusive[hist] )
+                self.histos[cat]["data"].GetXaxis().SetLabelSize(0)
+                self.histos[cat]["data"].GetYaxis().SetLabelFont(63)
+                self.histos[cat]["data"].GetYaxis().SetLabelSize(14)
 
-        stack = self.histos["_incl"]["stack"].GetHists()
+        stack = self.histos[cat]["stack"].GetHists()
         try:
-            self.histos["_incl"]["ratio"] = copy.deepcopy( stack[0] )
+            self.histos[cat]["ratio"] = copy.deepcopy( stack[0] )
             for i in xrange( 1, len(stack) ):
                 if stack[i] in self.sig: continue
-                self.histos["_incl"]["ratio"].Add( copy.deepcopy( stack[i] ) )
+                self.histos[cat]["ratio"].Add( copy.deepcopy( stack[i] ) )
 
-            self.histos["_incl"]["ratio"].Divide( self.histos["_incl"]["data"] )
-            self.histos["_incl"]["ratio"].GetYaxis().SetRangeUser(0.5, 1.5)
-            self.histos["_incl"]["ratio"].GetYaxis().SetNdivisions(6)
-            self.histos["_incl"]["ratio"].GetXaxis().SetNdivisions(10)
-            self.histos["_incl"]["ratio"].GetXaxis().SetLabelFont(63)
-            self.histos["_incl"]["ratio"].GetXaxis().SetLabelSize(14)
-            self.histos["_incl"]["ratio"].GetYaxis().SetLabelFont(63)
-            self.histos["_incl"]["ratio"].GetYaxis().SetLabelSize(14)
-            self.histos["_incl"]["ratio"].SetTitle("")
+            self.histos[cat]["ratio"].Divide( self.histos[cat]["data"] )
+            self.histos[cat]["ratio"].GetYaxis().SetRangeUser(0.5, 1.5)
+            self.histos[cat]["ratio"].GetYaxis().SetNdivisions(6)
+            self.histos[cat]["ratio"].GetXaxis().SetNdivisions(10)
+            self.histos[cat]["ratio"].GetXaxis().SetLabelFont(63)
+            self.histos[cat]["ratio"].GetXaxis().SetLabelSize(14)
+            self.histos[cat]["ratio"].GetYaxis().SetLabelFont(63)
+            self.histos[cat]["ratio"].GetYaxis().SetLabelSize(14)
+            self.histos[cat]["ratio"].SetTitle("")
         except KeyError as e:
             print "missing histogram(s) for: ", e, " in ", TDir
             print "Check root files!"
@@ -188,8 +203,8 @@ class Plotter():
             cv.cd(2)
             R.gPad.RedrawAxis()
 
-            cv.Print(cat+'.png')
-            self.images.append( cat+'.png' )       
+            cv.Print("{0}/{1}.png".format(self.plotPath,cat) )
+            self.images.append( "{0}/{1}.png".format(self.plotPath,cat) )       
 
 
     def blindBins(self, h, bins, canvas ):
@@ -294,7 +309,7 @@ class Plotter():
             plt.imshow(image)
             a.set_title(title)
         fig.set_size_inches(np.array(fig.get_size_inches()) * n_images)
-        plt.savefig("comb.png")
+        plt.savefig("{0}/comb.png".format(self.plotPath))
 
     def getColor(self, name):
         if name in ["TT","TTT","TTJ"]: return R.TColor.GetColor(155,152,204)

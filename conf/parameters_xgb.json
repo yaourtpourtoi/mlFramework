@@ -4,9 +4,10 @@
 		"eval_metric":"mlogloss",
 		"nthread":8,
 		"silent":1,
-		"eta": 0.03,
+		"eta": 0.025,
 		"max_depth":8,
-		"n_estimators":50,
+		"subsampling":0.75,
+		"n_estimators":500,
 		"early_stopping":20
 	},
 	"binary":{

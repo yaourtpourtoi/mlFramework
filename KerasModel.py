@@ -9,6 +9,8 @@ from keras.callbacks import EarlyStopping, ModelCheckpoint
 from keras.models import load_model as lm
 from keras.utils.np_utils import to_categorical
 from collections import deque
+import time
+import os
 
 class KerasObject():
 
@@ -83,40 +85,33 @@ class KerasObject():
 
     def trainSingle(self, train, test):
 
-        # N_classes = len( np.unique( train["target"].values ) )
 
         # writing targets in keras readable shape
+        best = str(int(time.time()))
         y_train = to_categorical( train["target"].values )
         y_test  = to_categorical( test["target"].values )
 
         N_classes = len(y_train[0])
 
-
-
         model_impl = getattr(keras_models, self.params["name"])
         model = model_impl(len(self.variables), N_classes)
         model.summary()
-        class_weights = self.getClassWeights(train)
         model.fit(
             train[self.variables].values,
             y_train,
             sample_weight=train["train_weight"].values,
+            # validation_split = 0.25,
             validation_data=(test[self.variables].values, y_test, test["train_weight"].values),
             batch_size=self.params["batch_size"],
             epochs=self.params["epochs"],
-            shuffle=True,
-            class_weight = class_weights,
-            callbacks=[EarlyStopping(patience=self.params["early_stopping"])])
+            shuffle=False,
+            callbacks=[EarlyStopping(patience=self.params["early_stopping"]), ModelCheckpoint( best + ".model", save_best_only=True, verbose = 1) ])
+
+        print "Reloading best model"
+        model = lm(best + ".model")
+        os.remove( best + ".model" )
 
         return model
-
-    def getClassWeights(self,train):
-        classes = np.unique(train["target"])
-        class_weights = {}
-        for c in classes:
-            class_weights[c] = 1000 / train.query( "target == {0} ".format(c) )["event_weight"].sum()
-            class_weights[c] = 0.0
-        return class_weights
 
     def predict(self, samples, where=""):
 

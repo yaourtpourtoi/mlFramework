@@ -3,15 +3,21 @@ import ROOT as R
 import root_numpy as rn
 import copy
 import sys
+import os
 from array import array
 R.gROOT.SetBatch(True)
 R.gStyle.SetOptStat(0)
 
 def main():
+    if not os.path.exists("plots"):
+        os.mkdir("plots")
+    if not os.path.exists("plots/Xcheck"):
+        os.mkdir("plots/Xcheck")
 
     version = "v1"
     channel = "mt"
-    path = "/data/higgs/data_2016/ntuples_{0}/{1}/ntuples_SVFIT_merged/".format(version, channel)
+    sv = "SVFIT"
+    path = "/data/higgs/data_2016/ntuples_{0}/{1}/ntuples_{2}_merged/".format(version, channel,sv)
     ext = "_{0}_{1}.root".format(channel,version)
 
     mcin, datain = getMergedSamples(path, ext)
@@ -30,7 +36,7 @@ def main():
     # ]
     # mcin = [
     #     (path + "BASIS_ntuple_GluGluHToTauTau_M125_powheg_MCSummer16"+ext,"ggH125",""),
-    #     # (path + "BASIS_ntuple_VBFHToTauTau_M125_powheg_MCSummer16"+ext,"qqH125",""),
+    #     (path + "BASIS_ntuple_VBFHToTauTau_M125_powheg_MCSummer16"+ext,"qqH125",""),
     #     (path + "BASIS_ntuple_WXJets_merged_MCSummer16"+ext,"W",""),
     #     (path + "BASIS_ntuple_DYXJetsToLL_lowMass_merged_MCSummer16"+ext,"DY",""),
     #     (path + "BASIS_ntuple_DYXJetsToLL_lowMass_merged_MCSummer16"+ext,"ZTT"," && gen_match_2 == 5"),
@@ -44,19 +50,24 @@ def main():
     #     (path + "BASIS_ntuple_VV_MCSummer16"+ext,"VVJ","&& gen_match_2 != 5"),
     #     (path + "BASIS_ntuple_EWKZ_merged_MCSummer16"+ext,"EWKZ",""),
     #     (path + "BASIS_ntuple_MCSum_MCSummer16"+ext,"MC",""),
+    #     (path + "BASIS_ntuple_ST_tW_antitop_5f_inclusiveDecays_powheg_ext1_MCSummer16"+ext,"test",""),
     # ]
+    # sv = "SVFIT"
+    # path = "/data/higgs/data_2016/ntuples_{0}/{1}/ntuples_{2}_merged/".format('v2', channel,sv)
+    # ext = "_{0}_{1}.root".format(channel,'v2')
     # datain = {
-    #     "mt":("/data/higgs/data_2016/ntuples_{0}/{1}/ntuples_woSVFIT_merged/".format(version, channel) + "BASIS_ntuple_MCSum_MCSummer16"+ext,"data",""),
-    #     "et":("/data/higgs/data_2016/ntuples_{0}/{1}/ntuples_woSVFIT_merged/".format(version, channel) + "BASIS_ntuple_MCSum_MCSummer16"+ext,"data",""),
-    #     "tt":("/data/higgs/data_2016/ntuples_{0}/{1}/ntuples_woSVFIT_merged/".format(version, channel) + "BASIS_ntuple_MCSum_MCSummer16"+ext,"data","")
+    #     "mt":(path + "BASIS_ntuple_MCSum_MCSummer16"+ext,"data",""),
+    #     "et":(path + "BASIS_ntuple_MCSum_MCSummer16"+ext,"data",""),
+    #     "tt":(path + "BASIS_ntuple_MCSum_MCSummer16"+ext,"data","")
     #     }
     # what = ["MC"]
+
     binning = {
-        "eta_1": (30,-3,3),
+        "eta_1": (15,-3,3),
         "iso_1": (100,0,1),
         "iso_2": (100,0,1),
-        "eta_2": (50,-2.3,2.3),
-        "pt_1": (100,20,220),
+        "eta_2": (15,-3,3),
+        "pt_1": (20,20,100),
         "pt_2": (100,20,220),
         "jpt_1": (100,-10,220),
         "jpt_2": (100,-10,220),
@@ -68,6 +79,8 @@ def main():
         "bpt_2": (100,-10,220),
         "bcsv_1": (100,0,1),
         "bcsv_2": (100,0,1),
+        "jcsv_1": (100,0,1),
+        "jcsv_2": (100,0,1),
         "beta_1": (100,-10,2.5),
         "beta_2": (100,-10,2.5),
         "njets": (12,0,12),
@@ -75,14 +88,18 @@ def main():
         "mt_1": (20,0,100),
         "mt_2": (100,0,150),
         "pt_tt": (100,0,150),
-        "m_sv": (100,0,300),
+        "m_sv": (30,0,300),
         "m_vis": (30,0,300),
         "mjj": (100,-10,150),
         "met": (100,0,150),
+        "trg_mutaucross": (1,0.5,1.5),
+        "met_centrality":(100,-2,2),
+        "sphericity":(100,0,1),
         "dzeta": (100,-100,150)
 
     }
     cuts = {"mt": "byTightIsolationMVArun2v1DBoldDMwLT_2 > 0.5 && iso_1 < 0.15 && mt_1 < 50 && !dilepton_veto  && passesThirdLepVeto && passesTauLepVetos && (trg_singlemuon && pt_1 > 23 && pt_2 > 30) ",
+    # cuts = {"mt": "byTightIsolationMVArun2v1DBoldDMwLT_2 > 0.5 && iso_1 < 0.15 && mt_1 < 50 && !dilepton_veto  && passesThirdLepVeto && passesTauLepVetos && trg_mutaucross",
             "et": "byTightIsolationMVArun2v1DBoldDMwLT_2 > 0.5 && iso_1 < 0.1  && mt_1 < 50 && !dilepton_veto  && passesThirdLepVeto && passesTauLepVetos && trg_singleelectron  ",
             "tt": "byTightIsolationMVArun2v1DBoldDMwLT_1 > 0.5 && byTightIsolationMVArun2v1DBoldDMwLT_2 > 0.5 && passesThirdLepVeto && passesTauLepVetos && trg_doubletau "
             }
@@ -92,11 +109,10 @@ def main():
     scale = {"EWKZ":"1", "VV":"1","QCD_SS":"1","QCD":"1","DY":"1","qqH125":"10","ggH125":"10","W":"1","TT":"1"}
     lumi = "35.9"
     region = "os"
-    what = ["VVT","VVJ","TTT","TTJ","W","ZJ","ZL","ZTT","EWKZ","QCD"]
+    what = ["VVT","VVJ","TTT","TTJ","W","ZJ","ZL","ZTT","QCD"]
+    # what = ["TTT","TTJ"]
+    what.sort()
 
-
-
-    # what.sort()
     variables = [
         "pt_1",
         "pt_2",
@@ -222,10 +238,33 @@ def makeStackedPlot(histos, name):
     cv.cd(2)
     R.gPad.RedrawAxis()
 
-    cv.Print("test_" +name+'.png') 
+    cv.Print("plots/Xcheck/" +name+'.png') 
 
- 
 
+def fillHisto(path, select, var, weights, lumi, name, binning, weight = True):
+
+        tmp =   rp.read_root( paths = path,
+                              where = select,
+                              columns = weights + [var]  )
+
+        if weight:
+            if name == "ZTT": tmp.eval( "eweight = " + "*".join( ["34.1"] + weights),  inplace = True )
+            else: tmp.eval( "eweight = " + "*".join( [lumi] + weights),  inplace = True )
+        else:
+            tmp.eval( "eweight = 1"  , inplace = True )
+
+        tmpHist = R.TH1D(name,name,*(binning))
+
+        tmpHist.GetXaxis().SetLabelSize(0.08)
+        tmpHist.GetYaxis().SetLabelSize(0.08)
+        tmpHist.SetFillColor( getColor( name ) )
+        tmpHist.SetLineColor( R.kBlack )
+        tmpHist.Sumw2(True)
+
+        rn.fill_hist( tmpHist, array = tmp[var].values,
+                               weights = tmp["eweight"].values )
+
+        return tmpHist
 
 def fillHistos(channel, mcin, datain, cut,region, weights, lumi, variable, binning ,what = []):
 
@@ -238,123 +277,57 @@ def fillHistos(channel, mcin, datain, cut,region, weights, lumi, variable, binni
 
     for sample,name,addcut in mcin:
 
-        tmp =   rp.read_root( paths = sample,
-                              where = cut + sign_cut + addcut,
-                              columns = weights + [variable]  )
-        print "Loading ", name, len(tmp)
-
-        if name == "ZTT": tmp.eval( "eweight = " + "*".join( ["34.1"] + weights),  inplace = True )
-        else: tmp.eval( "eweight = " + "*".join( [lumi] + weights),  inplace = True )
-        # tmp.eval( "eweight = " + "*".join( [lumi] + weights),  inplace = True )
-
-        histos[name] = R.TH1D(variable + name,name,*(binning))
-
-        histos[name].GetXaxis().SetLabelSize(0.08)
-        histos[name].GetYaxis().SetLabelSize(0.08)
-        histos[name].SetFillColor( getColor( name ) )
-        histos[name].SetLineColor( R.kBlack )
-
-
-        rn.fill_hist( histos[name], array = tmp[variable].values,
-                                    weights = tmp["eweight"].values )
+        print "Loading ", name
+        histos[name] = fillHisto(sample, cut + sign_cut + addcut, variable, weights, lumi, name, binning)
         # print histos[name].Integral(), name
 
 
 #######################################################
+    if "QCD" in what:
+        print "Estimating QCD"
+        if channel != "tt":
 
-    if channel != "tt":
-        tmp =   rp.read_root( paths = datain[0],
-                              where = cut+ qcd_cut,
-                              columns = weights + [variable] )
+            histos["QCD"] = fillHisto(datain[0], cut+ qcd_cut, variable, weights, lumi, "QCD", binning, weight = False)
+            for sample,name,addcut in mcin:
+                if not name in what: continue
+                tmp_SS = fillHisto(sample, cut + qcd_cut + addcut, variable, weights, lumi, name+"SS", binning, weight = True)
+                histos["QCD"].Add( tmp_SS, -1 )
+        else:
+            # regions = {
+            #     "B":"&& ((byTightIsolationMVArun2v1DBoldDMwLT_1 && byLooseIsolationMVArun2v1DBoldDMwLT_2 && !byTightIsolationMVArun2v1DBoldDMwLT_2) || (byTightIsolationMVArun2v1DBoldDMwLT_2 && byLooseIsolationMVArun2v1DBoldDMwLT_1 && !byTightIsolationMVArun2v1DBoldDMwLT_1)) && q_1*q_2 < 0",
+            #     "C":"&& byTightIsolationMVArun2v1DBoldDMwLT_1 > 0.5 && byTightIsolationMVArun2v1DBoldDMwLT_2 > 0.5 && q_1*q_2 > 0",
+            #     "D":"&& ((byTightIsolationMVArun2v1DBoldDMwLT_1 && byLooseIsolationMVArun2v1DBoldDMwLT_2 && !byTightIsolationMVArun2v1DBoldDMwLT_2) || (byTightIsolationMVArun2v1DBoldDMwLT_2 && byLooseIsolationMVArun2v1DBoldDMwLT_1 && !byTightIsolationMVArun2v1DBoldDMwLT_1)) && q_1*q_2 > 0",
+            # }
 
+            regions = {
+                "B":"&& ( (byTightIsolationMVArun2v1DBoldDMwLT_1 && byLooseIsolationMVArun2v1DBoldDMwLT_2 && !byTightIsolationMVArun2v1DBoldDMwLT_2) ) && q_1*q_2 < 0",
+                "C":"&& byTightIsolationMVArun2v1DBoldDMwLT_1 && byTightIsolationMVArun2v1DBoldDMwLT_2 && q_1*q_2 > 0",
+                "D":"&& ( (byTightIsolationMVArun2v1DBoldDMwLT_1 && byLooseIsolationMVArun2v1DBoldDMwLT_2 && !byTightIsolationMVArun2v1DBoldDMwLT_2) ) && q_1*q_2 > 0",
+            }
+            vetos = "passesThirdLepVeto && passesTauLepVetos && trg_doubletau"
 
-        histos["QCD_SS"] = R.TH1D(variable + "QCD_SS","QCD_SS",*(binning))
-        histos["QCD_SS"].Sumw2(True)
-        histos["QCD_SS"].SetFillColor( getColor( "QCD" ) )
-        histos["QCD_SS"].SetLineColor( R.kBlack )
-        tmp.eval( "eweight = 1"  , inplace = True )
-
-        rn.fill_hist( histos["QCD_SS"], array = tmp[variable].values,
-                                     weights = tmp["eweight"].values)
-
-        histos["QCD"] = copy.deepcopy( histos["QCD_SS"] )
-        for sample,name,addcut in mcin:
-            if not name in what: continue
-            tmp =   rp.read_root( paths = sample,
-                                  where = cut + qcd_cut + addcut,
-                                  columns = weights + [variable]  )
-
-
-            if name == "ZTT": tmp.eval( "eweight = " + "*".join( ["34.1"] + weights),  inplace = True )
-            else: tmp.eval( "eweight = " + "*".join( [lumi] + weights),  inplace = True )
-            # tmp.eval( "eweight = " + "*".join( [lumi] + weights),  inplace = True )
-
-
-            tmp_SS = R.TH1D(variable + name+"SS",name+"SS",*(binning))
-
-            rn.fill_hist( tmp_SS, array = tmp[variable].values,
-                                        weights = tmp["eweight"].values )
-
-            histos["QCD"].Add( tmp_SS, -1 )
-    else:
-        regions = {
-            "B":"&& ((byMediumIsolationMVArun2v1DBoldDMwLT_1 && byLooseIsolationMVArun2v1DBoldDMwLT_2 && !byTightIsolationMVArun2v1DBoldDMwLT_2) || (byMediumIsolationMVArun2v1DBoldDMwLT_2 && byLooseIsolationMVArun2v1DBoldDMwLT_1 && !byTightIsolationMVArun2v1DBoldDMwLT_1)) && q_1*q_2 < 0",
-            "C":"&& byTightIsolationMVArun2v1DBoldDMwLT_1 > 0.5 && byTightIsolationMVArun2v1DBoldDMwLT_2 > 0.5 && q_1*q_2 > 0",
-            "D":"&& ((byMediumIsolationMVArun2v1DBoldDMwLT_1 && byLooseIsolationMVArun2v1DBoldDMwLT_2 && !byTightIsolationMVArun2v1DBoldDMwLT_2) || (byMediumIsolationMVArun2v1DBoldDMwLT_2 && byLooseIsolationMVArun2v1DBoldDMwLT_1 && !byTightIsolationMVArun2v1DBoldDMwLT_1)) && q_1*q_2 > 0",
-        }
-
-        datahists = {}
-        for reg, isocut in regions.items():
-            tmp = rp.read_root( paths = datain[0],
-                              where = "passesThirdLepVeto && passesTauLepVetos && trg_doubletau" + isocut,
-                              columns = weights + [variable] )
-            tmp.eval( "eweight = 1"  , inplace = True )
-
-            datahists[reg] = R.TH1D(reg + "data",reg + "data",*(binning))
-            rn.fill_hist( datahists[reg], array = tmp[variable].values,
-                                          weights = tmp["eweight"].values)
-        
-
-        for sample,name,addcut in mcin:
+            datahists = {}
             for reg, isocut in regions.items():
-            # if not name in what: continue
-                tmp =   rp.read_root( paths = sample,
-                                      where = "passesThirdLepVeto && passesTauLepVetos && trg_doubletau" + isocut + addcut,
-                                      columns = weights + [variable]  )
+                datahists[reg]= fillHisto(datain[0],vetos + isocut, variable, weights, lumi, "data"+reg, binning, weight = False)
 
+            for sample,name,addcut in mcin:
+                if not name in what: continue
+                for reg, isocut in regions.items():
 
-                if name == "ZTT": tmp.eval( "eweight = " + "*".join( ["34.1"] + weights),  inplace = True )
-                else: tmp.eval( "eweight = " + "*".join( [lumi] + weights),  inplace = True )
+                    tmp_MC = fillHisto(sample,vetos + isocut + addcut, variable, weights, lumi, name+reg, binning, weight = True)
+                    datahists[reg].Add( tmp_MC, -1 )
 
-
-                tmp_MC = R.TH1D(variable + name+reg,name+reg,*(binning))
-
-                rn.fill_hist( tmp_MC, array = tmp[variable].values,
-                                            weights = tmp["eweight"].values )
-
-                datahists[reg].Add( tmp_MC, -1 )
-
-        histos["QCD"] = copy.deepcopy(datahists["B"])
-        print  datahists["C"].Integral()  / datahists["D"].Integral()
-        histos["QCD"].Scale( ( datahists["C"].Integral() ) / float(datahists["D"].Integral() ) )
-        histos["QCD"].Sumw2(True)
-        histos["QCD"].SetFillColor( getColor( "QCD" ) )
-        histos["QCD"].SetLineColor( R.kBlack )  
+            histos["QCD"] = copy.deepcopy(datahists["B"])
+            histos["QCD"].Scale(  datahists["C"].Integral()  / float(datahists["D"].Integral() ) )
+            histos["QCD"].SetFillColor( getColor( "QCD" ) )
+            histos["QCD"].SetLineColor( R.kBlack )  
 
 
     # print histos["QCD"].Integral(), "QCD"
 
 #############################################
-    tmp =   rp.read_root( paths = datain[0],
-                          where = cut+ sign_cut,
-                          columns = weights + [variable] )
-    tmp.eval( "eweight = 1"  , inplace = True )
-    # tmp.eval( "eweight = " + "*".join( [lumi] + weights),  inplace = True )
 
-    data = R.TH1D(variable + "data","data",*(binning))
-    data.Sumw2(True)
-    rn.fill_hist( data, array = tmp[variable].values,
-                        weights = tmp["eweight"].values)
+    data = fillHisto(datain[0],cut+ sign_cut, variable, weights, lumi, "data", binning, weight = False )
 
 
     leg = R.TLegend(0.82, 0.03, 0.98, 0.92)

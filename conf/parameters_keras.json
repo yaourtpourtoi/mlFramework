@@ -2,7 +2,7 @@
 	"model":{
 		"name":"smhtt_dropout",
 		"batch_size":1000,
-		"epochs":30,
+		"epochs":1000,
 		"early_stopping":20
 	}
 }
