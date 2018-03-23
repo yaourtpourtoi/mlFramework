@@ -14,9 +14,9 @@ def main():
     if not os.path.exists("plots/Xcheck"):
         os.mkdir("plots/Xcheck")
 
-    version = "v1"
-    channel = "mt"
-    sv = "SVFIT"
+    version = "v2"
+    channel = "et"
+    sv = "woSVFIT"
     path = "/data/higgs/data_2016/ntuples_{0}/{1}/ntuples_{2}_merged/".format(version, channel,sv)
     ext = "_{0}_{1}.root".format(channel,version)
 
@@ -35,32 +35,32 @@ def main():
     #     (path+"VVJ.root","VVJ",""),
     # ]
     # mcin = [
-    #     (path + "BASIS_ntuple_GluGluHToTauTau_M125_powheg_MCSummer16"+ext,"ggH125",""),
-    #     (path + "BASIS_ntuple_VBFHToTauTau_M125_powheg_MCSummer16"+ext,"qqH125",""),
-    #     (path + "BASIS_ntuple_WXJets_merged_MCSummer16"+ext,"W",""),
-    #     (path + "BASIS_ntuple_DYXJetsToLL_lowMass_merged_MCSummer16"+ext,"DY",""),
-    #     (path + "BASIS_ntuple_DYXJetsToLL_lowMass_merged_MCSummer16"+ext,"ZTT"," && gen_match_2 == 5"),
-    #     (path + "BASIS_ntuple_DYXJetsToLL_lowMass_merged_MCSummer16"+ext,"ZL"," && gen_match_2 < 5"),
-    #     (path + "BASIS_ntuple_DYXJetsToLL_lowMass_merged_MCSummer16"+ext,"ZJ"," && gen_match_2 == 6"),
-    #     (path + "BASIS_ntuple_TT_merged_MCSummer16"+ext,"TT",""),
-    #     (path + "BASIS_ntuple_TT_merged_MCSummer16"+ext,"TTT","&& gen_match_2 == 5"),
-    #     (path + "BASIS_ntuple_TT_merged_MCSummer16"+ext,"TTJ","&& gen_match_2 != 5"),
-    #     (path + "BASIS_ntuple_VV_MCSummer16"+ext,"VV",""),
-    #     (path + "BASIS_ntuple_VV_MCSummer16"+ext,"VVT","&& gen_match_2 == 5"),
-    #     (path + "BASIS_ntuple_VV_MCSummer16"+ext,"VVJ","&& gen_match_2 != 5"),
-    #     (path + "BASIS_ntuple_EWKZ_merged_MCSummer16"+ext,"EWKZ",""),
-    #     (path + "BASIS_ntuple_MCSum_MCSummer16"+ext,"MC",""),
-    #     (path + "BASIS_ntuple_ST_tW_antitop_5f_inclusiveDecays_powheg_ext1_MCSummer16"+ext,"test",""),
+    #     # (path + "BASIS_ntuple_GluGluHToTauTau_M125_powheg_MCSummer16"+ext,"ggH125",""),
+    #     # (path + "BASIS_ntuple_VBFHToTauTau_M125_powheg_MCSummer16"+ext,"qqH125",""),
+    #     # (path + "BASIS_ntuple_WXJets_merged_MCSummer16"+ext,"W",""),
+    #     # (path + "BASIS_ntuple_DYXJetsToLL_lowMass_merged_MCSummer16"+ext,"DY",""),
+    #     # (path + "BASIS_ntuple_DYXJetsToLL_lowMass_merged_MCSummer16"+ext,"ZTT"," && gen_match_2 == 5"),
+    #     # (path + "BASIS_ntuple_DYXJetsToLL_lowMass_merged_MCSummer16"+ext,"ZL"," && gen_match_2 < 5"),
+    #     # (path + "BASIS_ntuple_DYXJetsToLL_lowMass_merged_MCSummer16"+ext,"ZJ"," && gen_match_2 == 6"),
+    #     # (path + "BASIS_ntuple_TT_merged_MCSummer16"+ext,"TT",""),
+    #     # (path + "BASIS_ntuple_TT_merged_MCSummer16"+ext,"TTT","&& gen_match_2 == 5"),
+    #     # (path + "BASIS_ntuple_TT_merged_MCSummer16"+ext,"TTJ","&& gen_match_2 != 5"),
+    #     # (path + "BASIS_ntuple_VV_MCSummer16"+ext,"VV",""),
+    #     # (path + "BASIS_ntuple_VV_MCSummer16"+ext,"VVT","&& gen_match_2 == 5"),
+    #     # (path + "BASIS_ntuple_VV_MCSummer16"+ext,"VVJ","&& gen_match_2 != 5"),
+    #     # (path + "BASIS_ntuple_EWKZ_merged_MCSummer16"+ext,"EWKZ",""),
+    #     (path + "BASIS_ntuple_WXJets_merged_MCSummer16"+ext,"v1",""),
+    #     # (path + "BASIS_ntuple_Tau"+ext,"MC",""),
     # ]
-    # sv = "SVFIT"
+    # sv = "woSVFIT"
     # path = "/data/higgs/data_2016/ntuples_{0}/{1}/ntuples_{2}_merged/".format('v2', channel,sv)
     # ext = "_{0}_{1}.root".format(channel,'v2')
     # datain = {
     #     "mt":(path + "BASIS_ntuple_MCSum_MCSummer16"+ext,"data",""),
-    #     "et":(path + "BASIS_ntuple_MCSum_MCSummer16"+ext,"data",""),
-    #     "tt":(path + "BASIS_ntuple_MCSum_MCSummer16"+ext,"data","")
+    #     "et":(path + "BASIS_ntuple_WXJets_merged_MCSummer16"+ext,"data",""),
+    #     "tt":(path + "BASIS_ntuple_WXJets_merged_MCSummer16"+ext,"data","")
     #     }
-    # what = ["MC"]
+    # what = ["v1"]
 
     binning = {
         "eta_1": (15,-3,3),
@@ -68,7 +68,7 @@ def main():
         "iso_2": (100,0,1),
         "eta_2": (15,-3,3),
         "pt_1": (20,20,100),
-        "pt_2": (100,20,220),
+        "pt_2": (5,30,230),
         "jpt_1": (100,-10,220),
         "jpt_2": (100,-10,220),
         "jm_1": (100,-10,100),
@@ -100,16 +100,16 @@ def main():
     }
     cuts = {"mt": "byTightIsolationMVArun2v1DBoldDMwLT_2 > 0.5 && iso_1 < 0.15 && mt_1 < 50 && !dilepton_veto  && passesThirdLepVeto && passesTauLepVetos && (trg_singlemuon && pt_1 > 23 && pt_2 > 30) ",
     # cuts = {"mt": "byTightIsolationMVArun2v1DBoldDMwLT_2 > 0.5 && iso_1 < 0.15 && mt_1 < 50 && !dilepton_veto  && passesThirdLepVeto && passesTauLepVetos && trg_mutaucross",
-            "et": "byTightIsolationMVArun2v1DBoldDMwLT_2 > 0.5 && iso_1 < 0.1  && mt_1 < 50 && !dilepton_veto  && passesThirdLepVeto && passesTauLepVetos && trg_singleelectron  ",
+            "et": "byTightIsolationMVArun2v1DBoldDMwLT_2 < 0.5 && byVLooseIsolationMVArun2v1DBoldDMwLT_2 > 0.5 && iso_1 < 0.1 && mt_1 < 50  && !dilepton_veto  && passesThirdLepVeto && passesTauLepVetos && trg_singleelectron  ",
             "tt": "byTightIsolationMVArun2v1DBoldDMwLT_1 > 0.5 && byTightIsolationMVArun2v1DBoldDMwLT_2 > 0.5 && passesThirdLepVeto && passesTauLepVetos && trg_doubletau "
             }
     cut = cuts[channel]
-    weights = ["puweight","stitchedWeight","trk_sf","genweight","effweight","topWeight_run1","zPtReweightWeight","antilep_tauscaling"]
-    # weights = ["puweight","stitchedWeight","trk_sf","genweight","effweight","topWeight_run1","zPtReweightWeight"]
+    # weights = ["puweight","stitchedWeight","trk_sf","genweight","effweight","topWeight_run1","zPtReweightWeight","antilep_tauscaling"]
+    weights = ["puweight","stitchedWeight","trk_sf","genweight","effweight","topWeight_run1","antilep_tauscaling"]
     scale = {"EWKZ":"1", "VV":"1","QCD_SS":"1","QCD":"1","DY":"1","qqH125":"10","ggH125":"10","W":"1","TT":"1"}
     lumi = "35.9"
     region = "os"
-    what = ["VVT","VVJ","TTT","TTJ","W","ZJ","ZL","ZTT","QCD"]
+    what = ["VVT","VVJ","TTT","TTJ","W","ZJ","ZL","ZTT"]
     # what = ["TTT","TTJ"]
     what.sort()
 
@@ -250,7 +250,7 @@ def fillHisto(path, select, var, weights, lumi, name, binning, weight = True):
         if weight:
             if name == "ZTT": tmp.eval( "eweight = " + "*".join( ["34.1"] + weights),  inplace = True )
             else: tmp.eval( "eweight = " + "*".join( [lumi] + weights),  inplace = True )
-        else:
+        else:        
             tmp.eval( "eweight = 1"  , inplace = True )
 
         tmpHist = R.TH1D(name,name,*(binning))

@@ -43,7 +43,6 @@ class Reader():
         try:
             sample = self.itersamples[ self.idx ]
             self.idx += 1
-            print "Loading ",sample["histname"] , sample["path"].split("/")[-1],
             return self.loadForMe( sample ), sample["histname"]
         except IndexError as e:
             raise StopIteration
@@ -208,10 +207,12 @@ class Reader():
 
 
     def loadForMe(self, sample_info):
- 
+
+        print "Loading ",sample_info["histname"] , sample_info["path"].split("/")[-1],
         DF = self._getDF(sample_path = sample_info["path"], 
                           select = sample_info["select"])
         print len(DF)
+
         DF.eval( "event_weight = " + sample_info["event_weight"], inplace = True  )
         DF["target"] = sample_info["target"]
 

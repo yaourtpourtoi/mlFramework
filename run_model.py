@@ -90,7 +90,7 @@ def run(samples,channel, use, train,short, preprocess_chain = []):
     coll = Collector( channel = channel, 
                       target_names = target_names, 
                       path = use, 
-                      recreate = False,
+                      recreate = True,
                       rebin = False )
 
     print "Predicting simulation"

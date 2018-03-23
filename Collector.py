@@ -36,13 +36,13 @@ def main():
     C = Collector(channel = args.channel, 
                   target_names = read.config["target_names"],
                   path = args.model,
-                  rebin = True )
+                  rebin = False )
+
+    C.createDC(args.var, args.all)
 
     P = Plotter( channel = args.channel,
                  naming = read.processes,
                  path = args.model )
-
-    C.createDC(args.var, args.all)
 
     P.makePlots()
     P.combineImages( )
