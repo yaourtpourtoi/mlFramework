@@ -15,52 +15,18 @@ def main():
         os.mkdir("plots/Xcheck")
 
     version = "v2"
-    channel = "et"
-    sv = "woSVFIT"
-    path = "/data/higgs/data_2016/ntuples_{0}/{1}/ntuples_{2}_merged/".format(version, channel,sv)
-    ext = "_{0}_{1}.root".format(channel,version)
+    channel = "tt"
+    svfit = "woSVFIT"
 
-    mcin, datain = getMergedSamples(path, ext)
-    # path = "predictions/{0}/".format(channel)
-    # mcin = [
-    #     (path+"ggH125.root","ggH125",""),
-    #     (path+"qqH125.root","qqH125",""),
-    #     (path+"W.root","W",""),
-    #     (path+"ZTT.root","ZTT",""),
-    #     (path+"ZL.root","ZL",""),
-    #     (path+"ZJ.root","ZJ",""),
-    #     (path+"TTT.root","TTT",""),
-    #     (path+"TTJ.root","TTJ",""),
-    #     (path+"VVT.root","VVT",""),
-    #     (path+"VVJ.root","VVJ",""),
-    # ]
-    # mcin = [
-    #     # (path + "BASIS_ntuple_GluGluHToTauTau_M125_powheg_MCSummer16"+ext,"ggH125",""),
-    #     # (path + "BASIS_ntuple_VBFHToTauTau_M125_powheg_MCSummer16"+ext,"qqH125",""),
-    #     # (path + "BASIS_ntuple_WXJets_merged_MCSummer16"+ext,"W",""),
-    #     # (path + "BASIS_ntuple_DYXJetsToLL_lowMass_merged_MCSummer16"+ext,"DY",""),
-    #     # (path + "BASIS_ntuple_DYXJetsToLL_lowMass_merged_MCSummer16"+ext,"ZTT"," && gen_match_2 == 5"),
-    #     # (path + "BASIS_ntuple_DYXJetsToLL_lowMass_merged_MCSummer16"+ext,"ZL"," && gen_match_2 < 5"),
-    #     # (path + "BASIS_ntuple_DYXJetsToLL_lowMass_merged_MCSummer16"+ext,"ZJ"," && gen_match_2 == 6"),
-    #     # (path + "BASIS_ntuple_TT_merged_MCSummer16"+ext,"TT",""),
-    #     # (path + "BASIS_ntuple_TT_merged_MCSummer16"+ext,"TTT","&& gen_match_2 == 5"),
-    #     # (path + "BASIS_ntuple_TT_merged_MCSummer16"+ext,"TTJ","&& gen_match_2 != 5"),
-    #     # (path + "BASIS_ntuple_VV_MCSummer16"+ext,"VV",""),
-    #     # (path + "BASIS_ntuple_VV_MCSummer16"+ext,"VVT","&& gen_match_2 == 5"),
-    #     # (path + "BASIS_ntuple_VV_MCSummer16"+ext,"VVJ","&& gen_match_2 != 5"),
-    #     # (path + "BASIS_ntuple_EWKZ_merged_MCSummer16"+ext,"EWKZ",""),
-    #     (path + "BASIS_ntuple_WXJets_merged_MCSummer16"+ext,"v1",""),
-    #     # (path + "BASIS_ntuple_Tau"+ext,"MC",""),
-    # ]
-    # sv = "woSVFIT"
-    # path = "/data/higgs/data_2016/ntuples_{0}/{1}/ntuples_{2}_merged/".format('v2', channel,sv)
-    # ext = "_{0}_{1}.root".format(channel,'v2')
-    # datain = {
-    #     "mt":(path + "BASIS_ntuple_MCSum_MCSummer16"+ext,"data",""),
-    #     "et":(path + "BASIS_ntuple_WXJets_merged_MCSummer16"+ext,"data",""),
-    #     "tt":(path + "BASIS_ntuple_WXJets_merged_MCSummer16"+ext,"data","")
-    #     }
-    # what = ["v1"]
+
+    mcin, datain, asimov= getMergedSamples(channel, version, svfit)
+    what = ["VVT","VVJ","TTT","TTJ","W","ZJ","ZL","ZTT","QCD"]
+    what.sort()
+
+    # check = "W"
+    # mcin, datain, asimov= getXCheck( check = check, channel = channel, vs = ["v1","v2"], svfit = svfit)
+    # what = [check]
+
 
     binning = {
         "eta_1": (15,-3,3),
@@ -89,7 +55,7 @@ def main():
         "mt_2": (100,0,150),
         "pt_tt": (100,0,150),
         "m_sv": (30,0,300),
-        "m_vis": (30,0,300),
+        "m_vis": (20,0,200),
         "mjj": (100,-10,150),
         "met": (100,0,150),
         "trg_mutaucross": (1,0.5,1.5),
@@ -98,20 +64,16 @@ def main():
         "dzeta": (100,-100,150)
 
     }
-    cuts = {"mt": "byTightIsolationMVArun2v1DBoldDMwLT_2 > 0.5 && iso_1 < 0.15 && mt_1 < 50 && !dilepton_veto  && passesThirdLepVeto && passesTauLepVetos && (trg_singlemuon && pt_1 > 23 && pt_2 > 30) ",
-    # cuts = {"mt": "byTightIsolationMVArun2v1DBoldDMwLT_2 > 0.5 && iso_1 < 0.15 && mt_1 < 50 && !dilepton_veto  && passesThirdLepVeto && passesTauLepVetos && trg_mutaucross",
-            "et": "byTightIsolationMVArun2v1DBoldDMwLT_2 < 0.5 && byVLooseIsolationMVArun2v1DBoldDMwLT_2 > 0.5 && iso_1 < 0.1 && mt_1 < 50  && !dilepton_veto  && passesThirdLepVeto && passesTauLepVetos && trg_singleelectron  ",
+    cuts = {"mt": "byTightIsolationMVArun2v1DBoldDMwLT_2 > 0.5 && iso_1 < 0.15 && mt_1 < 50 && !dilepton_veto  && passesThirdLepVeto && passesTauLepVetos && ( (trg_singlemuon && pt_1 > 23 && pt_2 > 30) || trg_mutaucross && pt_1 <= 23 && pt_2 > 30 ) ",
+            "et": "byTightIsolationMVArun2v1DBoldDMwLT_2 > 0.5 && iso_1 < 0.1 && mt_1 < 50  && !dilepton_veto  && passesThirdLepVeto && passesTauLepVetos && trg_singleelectron  ",
             "tt": "byTightIsolationMVArun2v1DBoldDMwLT_1 > 0.5 && byTightIsolationMVArun2v1DBoldDMwLT_2 > 0.5 && passesThirdLepVeto && passesTauLepVetos && trg_doubletau "
             }
     cut = cuts[channel]
-    # weights = ["puweight","stitchedWeight","trk_sf","genweight","effweight","topWeight_run1","zPtReweightWeight","antilep_tauscaling"]
-    weights = ["puweight","stitchedWeight","trk_sf","genweight","effweight","topWeight_run1","antilep_tauscaling"]
+    weights = ["puweight","stitchedWeight","trk_sf","genweight","effweight","topWeight_run1","zPtReweightWeight","antilep_tauscaling"]
     scale = {"EWKZ":"1", "VV":"1","QCD_SS":"1","QCD":"1","DY":"1","qqH125":"10","ggH125":"10","W":"1","TT":"1"}
     lumi = "35.9"
     region = "os"
-    what = ["VVT","VVJ","TTT","TTJ","W","ZJ","ZL","ZTT"]
-    # what = ["TTT","TTJ"]
-    what.sort()
+
 
     variables = [
         "pt_1",
@@ -148,9 +110,10 @@ def main():
     # histos= fillHistos(mcin, datain[channel], cut, weights, scale, "m_sv",binning, what = ["qqH125","EWKZ","ggH125","VV","QCD","TT","W","DY"])
     for var in variables:
         print "producing ", var
-        histos= fillHistos(channel, mcin, datain[channel], cut, region, weights, lumi, var,binning.get(var,(100,-50,50)), what = what)
+        histos= fillHistos(channel, mcin, datain, cut, region, weights, lumi, var,binning.get(var,(100,-50,50)), what = what, asimov = asimov )
         #makeNormalizedPlot( histos = histos, scale = scale, name =  var)
         makeStackedPlot( histos = histos, name = var)
+        saveToFile(histos = histos, name = var, channel = channel)
 
 def makeNormalizedPlot(histos, scale,name):
 
@@ -240,6 +203,18 @@ def makeStackedPlot(histos, name):
 
     cv.Print("plots/Xcheck/" +name+'.png') 
 
+def saveToFile(histos, name, channel):
+
+    rfile = R.TFile( "htt_{channel}.inputs_sm_{var}.root".format(channel = channel, var = name) ,"RECREATE" )
+    rdir = "{channel}_inclusive".format(channel = channel)
+    rfile.mkdir(rdir)
+
+    for hist in histos:
+        if hist in ["ratio","leg","stack"]: continue
+        rfile.cd(rdir)
+        histos[hist].Write()
+    rfile.Close()
+
 
 def fillHisto(path, select, var, weights, lumi, name, binning, weight = True):
 
@@ -255,8 +230,10 @@ def fillHisto(path, select, var, weights, lumi, name, binning, weight = True):
 
         tmpHist = R.TH1D(name,name,*(binning))
 
-        tmpHist.GetXaxis().SetLabelSize(0.08)
-        tmpHist.GetYaxis().SetLabelSize(0.08)
+        tmpHist.GetXaxis().SetLabelFont(63)
+        tmpHist.GetXaxis().SetLabelSize(14)
+        tmpHist.GetYaxis().SetLabelFont(63)
+        tmpHist.GetYaxis().SetLabelSize(14)
         tmpHist.SetFillColor( getColor( name ) )
         tmpHist.SetLineColor( R.kBlack )
         tmpHist.Sumw2(True)
@@ -266,7 +243,7 @@ def fillHisto(path, select, var, weights, lumi, name, binning, weight = True):
 
         return tmpHist
 
-def fillHistos(channel, mcin, datain, cut,region, weights, lumi, variable, binning ,what = []):
+def fillHistos(channel, mcin, datain, cut,region, weights, lumi, variable, binning , what = [], asimov = False):
 
     histos = {}
     if region == "os":
@@ -274,7 +251,6 @@ def fillHistos(channel, mcin, datain, cut,region, weights, lumi, variable, binni
     else:
         sign_cut = "&& q_1*q_2 > 0"
     qcd_cut = "&& q_1*q_2 > 0"
-
     for sample,name,addcut in mcin:
 
         print "Loading ", name
@@ -327,7 +303,7 @@ def fillHistos(channel, mcin, datain, cut,region, weights, lumi, variable, binni
 
 #############################################
 
-    data = fillHisto(datain[0],cut+ sign_cut, variable, weights, lumi, "data", binning, weight = False )
+    data = fillHisto(datain[0],cut+ sign_cut, variable, weights, lumi, "data_obs", binning, weight = asimov )
 
 
     leg = R.TLegend(0.82, 0.03, 0.98, 0.92)
@@ -408,8 +384,12 @@ def getColor(name):
     if name in ["ZTT","DY"]:       return R.TColor.GetColor(248,206,104)
     else: return R.kYellow
 
-def getMergedSamples(path, ext):
-    mcin = [
+def getMergedSamples(channel, version, svfit):
+
+    path = "/data/higgs/data_2016/ntuples_{0}/{1}/ntuples_{2}_merged/".format(version, channel,svfit)
+    ext = "_{0}_{1}.root".format(channel,version)
+
+    mc = [
         (path + "BASIS_ntuple_GluGluHToTauTau_M125_powheg_MCSummer16"+ext,"ggH125",""),
         (path + "BASIS_ntuple_VBFHToTauTau_M125_powheg_MCSummer16"+ext,"qqH125",""),
         (path + "BASIS_ntuple_WXJets_merged_MCSummer16"+ext,"W",""),
@@ -425,12 +405,72 @@ def getMergedSamples(path, ext):
         (path + "BASIS_ntuple_VV_MCSummer16"+ext,"VVJ","&& gen_match_2 != 5"),
         (path + "BASIS_ntuple_EWKZ_merged_MCSummer16"+ext,"EWKZ",""),
     ]
-    datain = {
+    data = {
         "mt":(path + "BASIS_ntuple_SingleMuon"+ext,"data",""),
         "et":(path + "BASIS_ntuple_SingleElectron"+ext,"data",""),
         "tt":(path + "BASIS_ntuple_Tau"+ext,"data","")
     }  
-    return mcin, datain
+    return mc, data[channel], False
+
+def getXCheck( check, channel, vs, svfit ):
+
+    path = "/data/higgs/data_2016/ntuples_{version}/{channel}/ntuples_{svfit}_merged/"
+    ext = "_{channel}_{version}.root"
+
+    mc = {
+        "ggH125": [path + "BASIS_ntuple_GluGluHToTauTau_M125_powheg_MCSummer16"+ext,"ggH125",""],
+        "qqH125": [path + "BASIS_ntuple_VBFHToTauTau_M125_powheg_MCSummer16"+ext,"qqH125",""],
+        "W":      [path + "BASIS_ntuple_WXJets_merged_MCSummer16"+ext,"W",""],
+        "DY":     [path + "BASIS_ntuple_DYXJetsToLL_lowMass_merged_MCSummer16"+ext,"DY",""],
+        "ZTT":    [path + "BASIS_ntuple_DYXJetsToLL_lowMass_merged_MCSummer16"+ext,"ZTT"," && {0}".format( genM("had", channel) ) ],
+        "ZL":     [path + "BASIS_ntuple_DYXJetsToLL_lowMass_merged_MCSummer16"+ext,"ZL", " && {0}".format( genM("lep", channel) ) ],
+        "ZJ":     [path + "BASIS_ntuple_DYXJetsToLL_lowMass_merged_MCSummer16"+ext,"ZJ", " && {0}".format( genM("jet", channel) ) ],
+        "TT":     [path + "BASIS_ntuple_TT_merged_MCSummer16"+ext,"TT",""],
+        "TTT":    [path + "BASIS_ntuple_TT_merged_MCSummer16"+ext,"TTT"," && {0}".format( genM("had", channel) ) ],
+        "TTJ":    [path + "BASIS_ntuple_TT_merged_MCSummer16"+ext,"TTJ"," && !{0}".format( genM("had", channel) ) ],
+        "VV":     [path + "BASIS_ntuple_VV_MCSummer16"+ext,"VV",""],
+        "VVT":    [path + "BASIS_ntuple_VV_MCSummer16"+ext,"VVT"," && {0}".format( genM("had", channel) ) ],
+        "VVJ":    [path + "BASIS_ntuple_VV_MCSummer16"+ext,"VVJ"," && !{0}".format( genM("had", channel) ) ],
+        "EWKZ":   [path + "BASIS_ntuple_EWKZ_merged_MCSummer16"+ext,"EWKZ",""],
+    }
+    data = {
+        "mt":[path + "BASIS_ntuple_SingleMuon"+ext,"data",""],
+        "et":[path + "BASIS_ntuple_SingleElectron"+ext,"data",""],
+        "tt":[path + "BASIS_ntuple_Tau"+ext,"data",""]
+    }
+
+    if check == "data":
+        asimov = True
+        old = ( data[channel][0].format(channel = channel, version = vs[0], svfit = svfit), data[channel][1], data[channel][2] )
+        new = ( data[channel][0].format(channel = channel, version = vs[1], svfit = svfit), data[channel][1]+"new", data[channel][2] )
+    else:
+        asimov = True
+        old = ( mc[check][0].format(channel = channel, version = vs[0], svfit = svfit), mc[check][1], mc[check][2] )
+        new = ( mc[check][0].format(channel = channel, version = vs[1], svfit = svfit), mc[check][1], mc[check][2] )
+
+
+    return [old], new, asimov
+
+def genM( what, channel ):
+    gens = {
+        "lep":{
+            "mt":"(gen_match_2 < 5)",
+            "et":"(gen_match_2 < 5)",
+            "tt":"( !( gen_match_1 == 5 && gen_match_2 == 5 ) && gen_match_1 < 6 && gen_match_2 < 6  )"
+        },
+        "had":{
+            "mt":"(gen_match_2 == 5)",
+            "et":"(gen_match_2 == 5)",
+            "tt":"( gen_match_1 == 5 && gen_match_2 == 5 )"
+        },
+        "jet":{
+            "mt":"(gen_match_2 == 6)",
+            "et":"(gen_match_2 == 6)",
+            "tt":"( gen_match_1 == 6 || gen_match_2 == 6 )"
+        }
+    }
+    return gens[what][channel]
+
 
 if __name__ == '__main__':
 
