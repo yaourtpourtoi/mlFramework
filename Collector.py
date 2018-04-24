@@ -8,6 +8,8 @@ import json
 import root_numpy as rn
 import root_pandas as rp
 from array import array
+from AnalysisCut import Cut
+from FakeFactorUtils import FakeFactor
 
 def main():
     from Reader import Reader
@@ -45,7 +47,7 @@ def main():
                  path = args.model )
 
     P.makePlots()
-    P.combineImages( )
+    # P.combineImages( )
 
 class Collector():
 
@@ -125,13 +127,27 @@ class Collector():
     def d(self, target):
         return "_".join([self.channel, target]) 
 
+    def applySF(self, df):
+        with open("conf/scalefactors.json","r") as FSO:
+            sfs = json.load(FSO)
+
+        for sf in sfs:
+            if type(sfs[sf]) is dict:
+                apl = sfs[sf].get( self.channel, "" )
+            else:
+                apl = sfs[sf]
+
+            if not apl: continue
+
+            df.eval("event_weight = event_weight* {0}".format( apl ), inplace = True )
+
     def addPrediction(self, prediction, df, sample):
         for i in xrange( len(df) ):
 
             df[i]["pred_prob"] =  prediction[i]["predicted_prob"]
             df[i]["pred_class"] = prediction[i]["predicted_class"]
-            if sample == "ZTT":
-                df[i]["event_weight"] *= 0.95
+            self.applySF(df[i])
+
             if i == 0: mode = "w"
             else: mode = "a"
             df[i].to_root("{0}/{1}.root".format(self.predictionPath, sample), key="TauCheck", mode = mode)
@@ -206,6 +222,8 @@ class Collector():
 
 
     def writeTemplates(self, var, templates, reweight = False):
+        print "Write Templates"
+
         for template in templates:
             histname = template.split("/")[-1].replace(".root","")
             templ_content = rp.read_root( paths = template )
@@ -237,9 +255,25 @@ class Collector():
 
 
     def estimateQCD(self, var, looseMC, reweight = False):
-        with open("conf/cuts.json","r") as FSO:
-            cuts = json.load(FSO)
+        with open("conf/fakefactor_config.json","r") as FSO:
+            ff_info = json.load(FSO)
+            ff_file= ff_info["ff_file"][self.channel]
 
+        print "Estimating Jet Fakes"
+        for i,template in enumerate(looseMC):
+            if not "data" in template: continue
+            FF = FakeFactor( var, ff_file, self.channel, data_file = template )
+
+            for c,t in self.target_names.items():
+                binning = self.binning[var].get(t, self.binning[var]["def"] )
+                ff_select = Cut("pred_class == {0} && -OS- && -ANTIISO- ".format( int(c) ), self.channel)
+                FFHist = FF.calc( binning, ff_select )
+
+                self.DCfile.cd( self.d( t ) )
+                FFHist.Write()
+                del FFHist
+
+        print "Estimating QCD"
         if self.channel != "tt":
 
             for c,t in self.target_names.items():
@@ -253,7 +287,8 @@ class Collector():
                     tmpHist = R.TH1D("QCD"+str(i), "QCD"+str(i), *binning)
                     tmpHist.Sumw2()
                     templ_content = rp.read_root( paths  = template,
-                                                  where = "pred_class == {0}".format(int(c)) )
+                                                  where =  Cut("pred_class == {0} && -SS- && -ISO-".format( int(c) ), self.channel).get() 
+                                                )
 
                     if var == "pred_prob":
                         templ_content[var].replace(1.0,0.9999, inplace = True)
@@ -275,7 +310,6 @@ class Collector():
                 tmpQCD.Write()
         else:
 
-
             for c,t in self.target_names.items():
 
                 binning = self.binning[var].get(t, self.binning[var]["def"] )
@@ -296,7 +330,8 @@ class Collector():
                             tmpHist =  R.TH1D(sign+str(i)+iso, sign+str(i)+iso, *binning)
                             try:
                                 templ_content = rp.read_root( paths  = template,
-                                                              where = "pred_class == {0} && {1} && {2}".format(int(c), cuts[iso]["tt"], cuts[sign]  ) )
+                                                              where = Cut("pred_class == {0} && {1} && {2}".format( int(c), iso, sign ), self.channel).get()
+                                                            )
                             except IndexError:
                                 pass
                             rn.fill_hist( tmpHist, array = templ_content[var].values,
