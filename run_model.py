@@ -1,6 +1,7 @@
 from Reader import Reader
 from Plotter import Plotter 
 from Collector import Collector
+import copy
 import pandas
 import json
 import sys
@@ -142,7 +143,7 @@ def trainScaler(folds, variables):
 
 def applyScaler(scaler, folds, variables):
     if not scaler: return folds
-    newFolds = folds
+    newFolds = copy.deepcopy(folds)
     for fold in newFolds:
         fold[variables] = scaler.transform( fold[variables] )
     return newFolds
