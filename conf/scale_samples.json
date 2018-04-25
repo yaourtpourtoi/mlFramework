@@ -182,7 +182,13 @@
             "event_weight": ["puweight","stitchedWeight","trk_sf","genweight","antilep_tauscaling","effweight"],
             "train_weight_scale": {"mt":2173.2, "et":1932.3, "tt":505.3 }
         }, 
-
+        "EWKZ": {
+            "target":{"mt":"ztt", "et":"ztt", "tt":"ztt" },
+            "select": "-OS- && -ISO- && -VETO- && -MT- && -TRIG-", 
+            "name": "BASIS_ntuple_EWKZ_merged_MCSummer16", 
+            "event_weight": ["puweight","stitchedWeight","trk_sf","genweight","antilep_tauscaling","effweight","zPtReweightWeight"],
+            "train_weight_scale": {"mt":1.6, "et":2.3, "tt":3.4 }
+        },
         "ZTT": {
             "target":{"mt":"ztt", "et":"ztt", "tt":"ztt" },
             "select": "-OS- && -ISO- && -VETO- && -MT- && -TRIG- && -GENHAD-", 
