@@ -8,7 +8,8 @@ import json
 import root_numpy as rn
 import root_pandas as rp
 from array import array
-from AnalysisCut import Cut
+from CutObject import Cut
+from VarObject import Var
 from FakeFactorUtils import FakeFactor
 
 def main():
@@ -35,12 +36,13 @@ def main():
                   config_file = "conf/scale_samples.json",
                   folds = 2)
 
-    C = Collector(channel = args.channel, 
+    C = Collector(channel = args.channel,
+                  var_name = args.var,
                   target_names = read.config["target_names"],
                   path = args.model,
                   rebin = False )
 
-    C.createDC(args.var, args.all)
+    C.createDC(args.all)
 
     P = Plotter( channel = args.channel,
                  naming = read.processes,
@@ -51,8 +53,9 @@ def main():
 
 class Collector():
 
-    def __init__(self, channel , target_names={}, path = "", recreate = False, rebin = False):
+    def __init__(self, channel, var_name, target_names={}, path = "", recreate = False, rebin = False):
         self.channel = channel
+
         self.rebin = rebin
         self.predictionPath = "/".join(["predictions",path, channel])
 
@@ -77,41 +80,11 @@ class Collector():
         with open("conf/reweighting.json","r") as FSO:
             self.reweight = json.load(FSO)
 
-        self.binning = {
-            "pred_prob": {"def": (8, array("d", [0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0] ) )},
-            "eta_1":     {"def": (30,-3,3)},
-            "iso_1":     {"def": (100,0,1)},
-            "iso_2":     {"def": (100,0,1)},
-            "eta_2":     {"def": (50,-2.3,2.3)},
-            "pt_1":      {"def": (100,20,220)},
-            "pt_2":      {"def": (100,20,220)},
-            "jpt_1":     {"def": (100,-10,220)},
-            "jpt_2":     {"def": (100,-10,220)},
-            "jm_1":      {"def": (100,-10,100)},
-            "jm_2":      {"def": (100,-10,100)},
-            "jphi_1":    {"def": (100,-10,5)},
-            "jphi_2":    {"def": (100,-10,5)},
-            "bpt_1":     {"def": (100,-10,220)},
-            "bpt_2":     {"def": (100,-10,220)},
-            "bcsv_1":    {"def": (100,0,1)},
-            "bcsv_2":    {"def": (100,0,1)},
-            "beta_1":    {"def": (100,-10,2.5)},
-            "beta_2":    {"def": (100,-10,2.5)},
-            "njets":     {"def": (12,0,12)},
-            "nbtag":     {"def": (12,0,12)},
-            "mt_1":      {"def": (100,0,100)},
-            "mt_2":      {"def": (100,0,150)},
-            "pt_tt":     {"def": (100,0,150)},
-            "m_sv":      {"def": (30,0,300)},
-            "m_vis":     {"def": (30,0,300)},
-            "mjj":       {"def": (100,-10,150)},
-            "met":       {"def": (100,0,150)},
-            "dzeta":     {"def": (100,-100,150)}
-        }
-        if rebin:
-            self.binning["pred_prob"] = {"def": (8, array("d", [0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0] ) ), 
-                                         "ggH": (100,0.2, 1.0  ),
-                                         "qqH": (100,0.2, 1.0  )}
+        self.var = Var( var_name )
+        if rebin and var_name == "pred_prob":
+            self.var.binning = {"def": (8, array("d", [0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0] ) ), 
+                                "ggH": (100,0.2, 1.0  ),
+                                "qqH": (100,0.2, 1.0  )}
 
     def __del__(self):
         if self.DCfile and not self.FileClosed:
@@ -152,7 +125,7 @@ class Collector():
             else: mode = "a"
             df[i].to_root("{0}/{1}.root".format(self.predictionPath, sample), key="TauCheck", mode = mode)
 
-    def createDC(self, var, writeAll = True, abs_path = ""):
+    def createDC(self, writeAll = True, abs_path = ""):
         if not self.DCfile or self.FileClosed:
             print "Where should I write?"
             return
@@ -167,10 +140,10 @@ class Collector():
         nominal  = [ path+s for s in files if not "_CMS_" in s and not "_more" in s and not "estimate" in s]
 
 
-        self.writeTemplates(var, nominal, writeAll)
-        self.estimateQCD(var, looseMC, writeAll)
+        self.writeTemplates( nominal, writeAll)
+        self.estimateQCD( looseMC, writeAll)
         if writeAll:
-            self.writeTemplates(var, shapes)
+            self.writeTemplates( shapes)
 
         self.DCfile.Close()
         self.FileClosed = True
@@ -180,10 +153,10 @@ class Collector():
             self.setRebinning()
             self.createDCFile()
 
-            self.writeTemplates(var, nominal, writeAll)
-            self.estimateQCD(var, looseMC, writeAll)
+            self.writeTemplates( nominal, writeAll)
+            self.estimateQCD( looseMC, writeAll)
             if writeAll:
-                self.writeTemplates(var, shapes)
+                self.writeTemplates( shapes)
 
             self.DCfile.Close()
             self.FileClosed = True
@@ -221,24 +194,25 @@ class Collector():
         DC.Close()
 
 
-    def writeTemplates(self, var, templates, reweight = False):
+    def writeTemplates(self, templates, reweight = False):
         print "Write Templates"
 
         for template in templates:
             histname = template.split("/")[-1].replace(".root","")
             templ_content = rp.read_root( paths = template )
-            if var == "pred_prob":
-                templ_content[var].replace(1.0,0.9999, inplace = True)
+            if self.var.name == "pred_prob":
+                templ_content[self.var.name].replace(1.0,0.9999, inplace = True)
 
             classes = np.unique( templ_content["pred_class"] )
             for c in classes:
 
-                binning = self.binning[var].get( self.target_names[int(c)], self.binning[var]["def"] )
+                binning = self.var.bins( int(c) )
                 tmpCont = templ_content.query( "pred_class == {0}".format(int(c)) )
 
-                tmpHist = R.TH1D(histname,histname,*binning )
+                tmpHist = R.TH1D(histname,histname,*self.var.bins( int(c) ) )
+                tmpHist.GetXaxis().SetTitle( self.var.name )
                 tmpHist.Sumw2()
-                rn.fill_hist( tmpHist, array = tmpCont[var].values,
+                rn.fill_hist( tmpHist, array = tmpCont[self.var.name].values,
                               weights = tmpCont["event_weight"].values )
 
                 self.DCfile.cd( self.d( self.target_names[int(c)] ) )
@@ -249,12 +223,12 @@ class Collector():
                     for rw in self.reweight:
                         rwname = rw.replace("reweight",histname).replace("CHAN",self.channel).replace("CAT", self.target_names[int(c)] )
                         tmpHist = R.TH1D(rwname,rwname,*binning)
-                        rn.fill_hist( tmpHist, array = tmpCont[var].values,
+                        rn.fill_hist( tmpHist, array = tmpCont[self.var.name].values,
                                       weights = tmpCont.eval( self.reweight[rw] ).values )
                         tmpHist.Write()
 
 
-    def estimateQCD(self, var, looseMC, reweight = False):
+    def estimateQCD(self, looseMC, reweight = False):
         with open("conf/fakefactor_config.json","r") as FSO:
             ff_info = json.load(FSO)
             ff_file= ff_info["ff_file"][self.channel]
@@ -262,10 +236,10 @@ class Collector():
         print "Estimating Jet Fakes"
         for i,template in enumerate(looseMC):
             if not "data" in template: continue
-            FF = FakeFactor( var, ff_file, self.channel, data_file = template )
+            FF = FakeFactor( self.var.name, ff_file, self.channel, data_file = template )
 
             for c,t in self.target_names.items():
-                binning = self.binning[var].get(t, self.binning[var]["def"] )
+                binning = self.var.bins( t )
                 ff_select = Cut("pred_class == {0} && -OS- && -ANTIISO- ".format( int(c) ), self.channel)
                 FFHist = FF.calc( binning, ff_select )
 
@@ -277,7 +251,7 @@ class Collector():
         if self.channel != "tt":
 
             for c,t in self.target_names.items():
-                binning = self.binning[var].get(t, self.binning[var]["def"] )
+                binning = self.var.bins( t )
 
                 tmpQCD = R.TH1D("QCD","QCD",*binning)
 
@@ -290,10 +264,10 @@ class Collector():
                                                   where =  Cut("pred_class == {0} && -SS- && -ISO-".format( int(c) ), self.channel).get() 
                                                 )
 
-                    if var == "pred_prob":
-                        templ_content[var].replace(1.0,0.9999, inplace = True)
+                    if self.var.name == "pred_prob":
+                        templ_content[self.var.name].replace(1.0,0.9999, inplace = True)
 
-                    rn.fill_hist( tmpHist, array = templ_content[var].values,
+                    rn.fill_hist( tmpHist, array = templ_content[self.var.name].values,
                                   weights = templ_content["event_weight"].values )
 
                     if "estimate" in template: tmpQCD.Add(tmpHist)
@@ -312,7 +286,7 @@ class Collector():
 
             for c,t in self.target_names.items():
 
-                binning = self.binning[var].get(t, self.binning[var]["def"] )
+                binning = self.var.bins( t )
 
                 tmpHists = { "-ISO-":    {"-SS-": R.TH1D("ssiso"+t,"ssiso"+t,*binning),   "-OS-": R.TH1D("osiso"+t,"osiso"+t,*binning)},
                              "-ANTIISO-":{"-SS-": R.TH1D("ssaiso"+t,"ssaiso"+t,*binning), "-OS-": R.TH1D("osaiso"+t,"osaiso"+t,*binning)} 
@@ -334,7 +308,7 @@ class Collector():
                                                             )
                             except IndexError:
                                 pass
-                            rn.fill_hist( tmpHist, array = templ_content[var].values,
+                            rn.fill_hist( tmpHist, array = templ_content[self.var.name].values,
                                           weights = templ_content["event_weight"].values )
 
                             if "data" in template or "estimate" in template: addV = 1
