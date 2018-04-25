@@ -88,7 +88,8 @@ def run(samples,channel, use, train,short, preprocess_chain = []):
         model = modelObject( filename = modelname )
 
     where = ""
-    coll = Collector( channel = channel, 
+    coll = Collector( channel = channel,
+                      var_name = "pred_prob",
                       target_names = target_names, 
                       path = use, 
                       recreate = True,
@@ -120,8 +121,7 @@ def run(samples,channel, use, train,short, preprocess_chain = []):
             pred =  model.predict( applyScaler(scaler, sample, variables), where )
             coll.addPrediction(pred, sample, sampleName)   
 
-    coll.createDC(var = "pred_prob",
-                  writeAll = True)
+    coll.createDC(writeAll = True)
 
     plot = Plotter( channel= channel,
                     naming = read.processes,
