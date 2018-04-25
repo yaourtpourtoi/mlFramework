@@ -23,37 +23,57 @@ def main():
 
     plot(histos,"log")
 
-def plot( histos, canvas = "semi", outfile = "", descriptions = {} ):
+def plot( histos, signal=[], canvas = "semi", outfile = "", descriptions = {} ):
+
+
 
     data = histos.pop("data",None)
+    signal_hists = []
+
+    for i,s in enumerate(signal):
+        tmp = histos.pop(s, None)
+        if tmp:
+            applySignalHistStyle(tmp, s,3)
+            signal_hists.append( tmp )
+            
     yields = [ ( h.Integral(), name ) for name,h in histos.items() ]
     yields.sort()
     what = [ y[1] for y in yields ]
 
-    ratio = copy.deepcopy(  histos[ what[0] ] )
+    cumul = copy.deepcopy(  histos[ what[0] ] )
     applyHistStyle( histos[ what[0] ] , what[0] )
 
     stack = R.THStack("stack", "")
     stack.Add( copy.deepcopy( histos[ what[0] ] ) )
     
-    if canvas == "semi":                      leg = R.TLegend(0.82, 0.03, 0.98, 0.92)
-    if canvas == "linear" or canvas == "log": leg = R.TLegend(0.82, 0.4, 0.98, 0.92)
-
-    leg.AddEntry( histos[ what[0] ], what[0] )
-
     for h in what[1:]:
         applyHistStyle( histos[h] , h )
-        leg.AddEntry( histos[h], h )
         stack.Add( copy.deepcopy( histos[h] ) )
-        ratio.Add( histos[h] )
+        cumul.Add( histos[h] )
 
     if not data:
-        data = copy.deepcopy( ratio )
+        data = copy.deepcopy( cumul )
 
-    ratio.Divide( data )
+    ratio = copy.deepcopy( data )
+    ratio.Divide( cumul )
 
-    applyHistStyle(data, "")
+    applySignalHistStyle(data, "data")
     applyHistStyle(ratio, "")
+
+    if canvas == "semi":                      
+        leg = R.TLegend(0.82, 0.03, 0.98, 0.92)
+        leg.SetTextSize(0.05)
+    if canvas == "linear" or canvas == "log":
+        leg = R.TLegend(0.82, 0.29, 0.98, 0.92)
+        leg.SetTextSize(0.035)
+    
+    leg.AddEntry( data, "data obs." )
+
+    for n in reversed(what):
+        leg.AddEntry( histos[n], getFancyName(n) )
+    for s in signal_hists:
+        leg.AddEntry( s, getFancyName( s.GetName() ) )
+
 
     maxVal = max( stack.GetMaximum(), data.GetMaximum() ) * 1.2
     dummy_up    = copy.deepcopy( data )
@@ -65,6 +85,7 @@ def plot( histos, canvas = "semi", outfile = "", descriptions = {} ):
     dummy_down.SetTitle("")
     dummy_down.GetYaxis().SetRangeUser( 0.1 , maxVal/ 40 )
     dummy_down.GetXaxis().SetLabelSize(0)
+    dummy_down.GetXaxis().SetTitle("")
 
     dummy_ratio = copy.deepcopy( ratio )
     dummy_ratio.Reset()
@@ -75,30 +96,37 @@ def plot( histos, canvas = "semi", outfile = "", descriptions = {} ):
     dummy_ratio.GetXaxis().SetTitleOffset(1)
     dummy_ratio.GetXaxis().SetTitle( descriptions.get( "xaxis", "some quantity" ) )
 
-    cms1 = R.TLatex( 0.1, 0.93, "CMS" )
-    cms2 = R.TLatex( 0.155, 0.93, descriptions.get( "plottype", "ProjectWork" ) )
+    cms1 = R.TLatex( 0.08, 0.93, "CMS" )
+    cms2 = R.TLatex( 0.135, 0.93, descriptions.get( "plottype", "ProjectWork" ) )
 
+    chtex = {"et":r"e#tau","mt":r"#mu#tau","tt":r"#tau#tau","em":r"e#mu"}
     ch = descriptions.get( "channel", "  " )
+    ch = chtex.get(ch,ch)
+    channel = R.TLatex( 0.60, 0.932, ch )
+
     lumi = descriptions.get( "lumi", "xx.y" )
     som = descriptions.get( "SoM", "13" )
-    l = r"{0}   {1} ".format(ch, lumi)
+    l = lumi + r" fb^{-1}"
     r = " ({0} TeV)".format(som)
-    righttop = R.TLatex( 0.60, 0.932, l+r"fb_{}^{-1}"+r)
+    righttop = R.TLatex( 0.635, 0.932, l+r)
 
     cms1.SetNDC();
     cms2.SetNDC();
     righttop.SetNDC();
+    channel.SetNDC();
     if canvas == "semi":
-        cms1.SetTextSize(0.055);            
+        cms1.SetTextSize(0.055)            
         cms2.SetTextFont(12)
-        cms2.SetTextSize(0.055);
-        righttop.SetTextSize(0.05);
+        cms2.SetTextSize(0.055)
+        righttop.SetTextSize(0.05)
+        channel.SetTextSize(0.06)
 
     if canvas == "linear" or canvas == "log":
         cms1.SetTextSize(0.04);            
         cms2.SetTextFont(12)
         cms2.SetTextSize(0.04);
         righttop.SetTextSize(0.035);
+        channel.SetTextSize(0.045)
 
 
     if canvas == "semi":
@@ -116,6 +144,9 @@ def plot( histos, canvas = "semi", outfile = "", descriptions = {} ):
         dummy_down.Draw()
         stack.Draw("same hist")
         data.Draw("same e1")
+        for s in signal_hists:
+            s.Draw("same hist")
+
         R.gPad.RedrawAxis()
         cv.cd(3)
         dummy_ratio.Draw()
@@ -146,6 +177,7 @@ def plot( histos, canvas = "semi", outfile = "", descriptions = {} ):
     cv.cd(1)
     cms1.Draw()
     cms2.Draw()
+    channel.Draw()
     righttop.Draw()
 
     cv.SaveAs( outfile )
@@ -176,12 +208,12 @@ def createRatioSemiLogCanvas(name):
     cv.cd(1)
     R.gPad.SetTopMargin(0.08)
     R.gPad.SetBottomMargin(0)
-    R.gPad.SetLeftMargin(0.1)
+    R.gPad.SetLeftMargin(0.08)
     R.gPad.SetRightMargin(0.2)
 
     cv.cd(2)
     R.gPad.SetTopMargin(0.05)
-    R.gPad.SetLeftMargin(0.1)
+    R.gPad.SetLeftMargin(0.08)
     R.gPad.SetBottomMargin(0.05)
     R.gPad.SetRightMargin(0.2)
     R.gPad.SetLogy()
@@ -190,7 +222,7 @@ def createRatioSemiLogCanvas(name):
     cv.cd(3)
     R.gPad.SetTopMargin(0.03)
     R.gPad.SetBottomMargin(0.3)
-    R.gPad.SetLeftMargin(0.1)
+    R.gPad.SetLeftMargin(0.08)
     R.gPad.SetRightMargin(0.2)
     R.gPad.SetGridy()
 
@@ -215,17 +247,16 @@ def createRatioCanvas(name):
     # Set pad margins 1
     cv.cd(1)
     R.gPad.SetTopMargin(0.08)
-    R.gPad.SetBottomMargin(0.025)
-    R.gPad.SetLeftMargin(0.1)
+    R.gPad.SetBottomMargin(0.01)
+    R.gPad.SetLeftMargin(0.08)
     R.gPad.SetRightMargin(0.2)
 
     cv.cd(2)
-    R.gPad.SetTopMargin(0.025)
+    R.gPad.SetTopMargin(0.03)
     R.gPad.SetBottomMargin(0.3)
-    R.gPad.SetLeftMargin(0.1)
+    R.gPad.SetLeftMargin(0.08)
     R.gPad.SetRightMargin(0.2)
     R.gPad.SetGridy()
-    # tmpRatio.Draw()
 
     cv.cd(1)
     return cv
@@ -239,19 +270,50 @@ def applyHistStyle(hist, name):
     hist.SetFillColor( getColor( name ) )
     hist.SetLineColor( R.kBlack )
 
+def applySignalHistStyle(hist, name, width = 1):
+
+    hist.GetXaxis().SetLabelFont(63)
+    hist.GetXaxis().SetLabelSize(14)
+    hist.GetYaxis().SetLabelFont(63)
+    hist.GetYaxis().SetLabelSize(14)
+    hist.SetLineWidth( width )
+    hist.SetLineColor( getColor( name ) )
+
+
+def getFancyName(name):
+    if name == "ZL":         return r"Z (l#rightarrow#tau)"
+    if name == "ZJ":         return r"Z (jet#rightarrow#tau)"
+    if name == "ZTT":        return r"Z #rightarrow #tau#tau"
+    if name == "TTT":        return r"t#bar{t} (#tau#rightarrow#tau)"
+    if name == "TTJ":        return r"t#bar{t} (jet#rightarrow#tau)"
+    if name == "VVT":        return r"VV (#tau#rightarrow#tau)"
+    if name == "VVJ":        return r"VV (jet#rightarrow#tau)"
+    if name == "W":          return r"W + jet"
+    if name == "QCD":        return r"MultiJet"
+    if name == "jetFakes":   return r"jet #rightarrow #tau_{h}"
+    if name == "EWKZ":       return r"EWKZ"
+    if name in ["qqH","qqH125"]:    return "VBF"
+    if name in ["ggH","ggH125"]:    return "ggF"
+
+    return name
+
+
+
 def getColor(name):
 
-    if name in ["TT","TTT","TTJ"]: return R.TColor.GetColor(155,152,204)
-    if name in ["sig"]:            return R.kRed
-    if name in ["bkg"]:            return R.kBlue
-    if name in ["qqH"]:            return R.TColor.GetColor(204,102,0)
-    if name in ["ggH"]:            return R.TColor.GetColor(255,128,0)
-    if name in ["W"]:              return R.TColor.GetColor(222,90,106)
-    if name in ["VV","VVJ","VVT"]: return R.TColor.GetColor(175,35,80)
-    if name in ["ZL","ZJ","ZLJ"]:  return R.TColor.GetColor(100,192,232)
-    if name in ["QCD","WSS"]:      return R.TColor.GetColor(250,202,255)
-    if name in ["ZTT","DY","real"]:       return R.TColor.GetColor(248,206,104)
-    if name in ["jetFakes"]:             return R.TColor.GetColor(192,232,100)
+    if name in ["TT","TTT","TTJ"]:  return R.TColor.GetColor(155,152,204)
+    if name in ["sig"]:             return R.kRed
+    if name in ["bkg"]:             return R.kBlue
+    if name in ["qqH","qqH125"]:    return R.TColor.GetColor(0,100,0)
+    if name in ["ggH","ggH125"]:    return R.TColor.GetColor(0,0,100)
+    if name in ["W"]:               return R.TColor.GetColor(222,90,106)
+    if name in ["VV","VVJ","VVT"]:  return R.TColor.GetColor(175,35,80)
+    if name in ["ZL","ZJ","ZLJ"]:   return R.TColor.GetColor(100,192,232)
+    if name in ["EWKZ"]:            return R.TColor.GetColor(8,247,183)
+    if name in ["QCD","WSS"]:       return R.TColor.GetColor(250,202,255)
+    if name in ["ZTT","DY","real"]: return R.TColor.GetColor(248,206,104)
+    if name in ["jetFakes"]:        return R.TColor.GetColor(192,232,100)
+    if name in ["data"]:            return R.TColor.GetColor(0,0,0)
     else: return R.kYellow
 
 if __name__ == '__main__':
