@@ -12,9 +12,13 @@ R.gROOT.SetBatch(True)
 R.gStyle.SetOptStat(0)
 
 def main():
-    channel = "tt"
+    import argparse
 
-    Frac = Fractions(channel, ["m_vis","pred_class"], [ (7, array("d",[0,50,80,110,150,200,250,300,1000] ) ) , (8, -0.5,7.5)  ] )
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-c', dest='channel', help='Decay channel' ,choices = ['mt','et','tt'], default = 'mt')
+    args = parser.parse_args()
+
+    Frac = Fractions(args.channel, ["m_vis","pred_class"], [ (7, array("d",[0,50,80,110,150,200,250,300,1000] ) ) , (8, -0.5,7.5)  ] )
     # Frac = Fractions(channel, ["pt_2","pred_class"], [ (5, array("d",[0,30,40,60,100,1000] ) ) , (8, -0.5,7.5)  ] )
     # Frac = Fractions(channel, ["pt_2","pred_class"], [ (5, array("d",[0,30,40,60,100,1000] ) ) , (8, array("d",[-0.5,0.5,1.5,2.5,3.5,4.5,5.5,6.5,7.5]) ) ] )
     # Frac = Fractions(channel, ["pt_2","pred_class"], [ (5, array("d",[0,30,40,60,100,1000] ) ) , (1, array("d",[-0.5,7.5]) ) ] )
@@ -126,7 +130,7 @@ class FakeFactor():
             data_content = rp.read_root( paths = self.data_file,
                                          where = cut.get(),
                                          columns =inputs+ [self.variable] + self.frac_var )
-            print len(data_content)
+
             data_content.eval(" aiso1 = {0} ".format( Cut("-ANTIISO1-","tt").getForDF() ), inplace = True  )
             data_content.eval(" aiso2 = {0} ".format( Cut("-ANTIISO2-","tt").getForDF() ), inplace = True  )
             data_content["FF"] = data_content.apply( self.addFF , axis =1 )     
