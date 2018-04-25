@@ -10,9 +10,16 @@ import copy
 from math import sqrt
 import sys
 import PlotUtils as pl
+from VarObject import Var
 
 def main():
-    p = Plotter(channel = "mt",path = "keras")
+    import argparse
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-c', dest='channel', help='Decay channel' ,choices = ['mt','et','tt'], default = 'mt')
+    args = parser.parse_args()
+
+    p = Plotter(channel = args.channel, path = "keras")
     p.makePlots()
     # p.combineImages()
 
@@ -24,12 +31,14 @@ class Plotter():
         else:
             self.filename = "htt_{0}.inputs-sm-13TeV-ML.root".format(channel)
         self.channel = channel
+        self.var = None
         self.images = []
         self.tiles = []
-        self.sig = ["ggH125","qqH125","sig"]
+        self.sig = ["ggH125","qqH125"]
         self.bkg = ["TT","TTT","TTJ","VV","VVT","VVJ","QCD","ZTT","ZL","ZJ","W"]
-        # self.naming = ["ggH125","qqH125","TTT","TTJ","QCD","VVT","VVJ","ZTT","ZL","ZJ","W"]
-        self.naming = ["TTT","VVT","ZTT","ZL","jetFakes"]
+        self.naming = {"FF":["TTT","VVT","EWKZ","ZTT","ZL","jetFakes","ggH125","qqH125"],
+                       "ER":["TTT","TTJ","VVT","VVJ","QCD","EWKZ","ZTT","ZL","ZJ","W","ggH125","qqH125"] 
+        }
         # self.naming.sort()
 
         self.plotPath = "/".join(["plots",path,channel])
@@ -59,17 +68,22 @@ class Plotter():
             dirname = key.GetName()
             if not self.channel in dirname: continue
             if isinstance( self.file.Get( dirname ), R.TDirectory):
-                histos[dirname] = {}
+                histos[dirname+"_FF"] = {}
+                histos[dirname+"_ER"] = {}
                 TDir = self.file.Get( dirname )
                 hists = [ t.GetName() for t  in TDir.GetListOfKeys() ]
-                hists.sort()
-#                hists = ["VVT","TTT","ZL","ZTT","QCD","VVJ","TTJ","ZJ","W","data_obs"]
                 for hist in hists:
-                    if hist in self.naming:
-                        histos[dirname][hist] = copy.deepcopy( TDir.Get( hist ) )
+                    if hist in self.naming["FF"]:
+                        histos[dirname+"_FF"][hist] = copy.deepcopy( TDir.Get( hist ) )
+
+                    if hist in self.naming["ER"]:
+                        histos[dirname+"_ER"][hist] = copy.deepcopy( TDir.Get( hist ) )
 
                     elif hist == "data_obs":
-                        histos[dirname]["data"] =  copy.deepcopy( TDir.Get( hist ) ) 
+                        histos[dirname+"_FF"]["data"] =  copy.deepcopy( TDir.Get( hist ) )
+                        histos[dirname+"_ER"]["data"] =  copy.deepcopy( TDir.Get( hist ) )
+                        if not self.var:
+                            self.var = Var( histos[dirname+"_FF"]["data"].GetXaxis().GetTitle() )
 
 
 
@@ -96,15 +110,20 @@ class Plotter():
                 else:
                     inclusive[h].Add( totalHists[d][h] )
         
-        self.histos[cat] = {  }
+        self.histos[cat+"_FF"] = {  }
+        self.histos[cat+"_ER"] = {  }
         inclhist = inclusive.keys()
         inclhist.sort()
         for hist in inclhist:
-            if hist in self.naming:
-                self.histos[cat][hist] = copy.deepcopy( inclusive[hist] )
+            if hist in self.naming["FF"]:
+                self.histos[cat+"_FF"][hist] = copy.deepcopy( inclusive[hist] )
+
+            if hist in self.naming["ER"]:
+                self.histos[cat+"_ER"][hist] = copy.deepcopy( inclusive[hist] )
 
             elif hist == "data_obs":
-                self.histos[cat]["data"] =  copy.deepcopy( inclusive[hist] )
+                self.histos[cat+"_FF"]["data"] =  copy.deepcopy( inclusive[hist] )
+                self.histos[cat+"_ER"]["data"] =  copy.deepcopy( inclusive[hist] )
 
   
 
@@ -112,7 +131,11 @@ class Plotter():
 
         for cat in self.histos.keys():
 
-            pl.plot(self.histos[cat], "semi", descriptions = {"plottype": "ProjectWork", "xaxis":"pred_prob", "channel":self.channel,"som": "13", "lumi":"35.9"  }, outfile = "{0}/{1}.png".format(self.plotPath,cat) )
+            pl.plot(histos = self.histos[cat],
+                    signal = self.sig,
+                    canvas = "semi", 
+                    descriptions = {"plottype": "ProjectWork", "xaxis":self.var.tex, "channel":self.channel,"som": "13", "lumi":"35.9"  },
+                    outfile = "{0}/{1}.png".format(self.plotPath,cat) )
      
     def blindBins(self, h, bins, canvas ):
 
@@ -217,20 +240,6 @@ class Plotter():
             a.set_title(title)
         fig.set_size_inches(np.array(fig.get_size_inches()) * n_images)
         plt.savefig("{0}/comb.png".format(self.plotPath))
-
-    def getColor(self, name):
-        if name in ["TT","TTT","TTJ"]: return R.TColor.GetColor(155,152,204)
-        if name in ["sig"]:            return R.kRed
-        if name in ["bkg"]:            return R.kBlue
-        if name in ["qqH"]:            return R.TColor.GetColor(204,102,0)
-        if name in ["ggH"]:            return R.TColor.GetColor(255,128,0)
-        if name in ["W"]:              return R.TColor.GetColor(222,90,106)
-        if name in ["VVT","VVJ"]:      return R.TColor.GetColor(175,35,80)
-        if name in ["ZL","ZJ","ZLJ"]:  return R.TColor.GetColor(100,192,232)
-        if name in ["QCD","WSS"]:      return R.TColor.GetColor(250,202,255)
-        if name in ["ZTT","DY"]:       return R.TColor.GetColor(248,206,104)
-        if name in ["jetFakes"]:             return R.TColor.GetColor(192,232,100)
-        else: return R.kYellow
 
 if __name__ == '__main__':
     main()
