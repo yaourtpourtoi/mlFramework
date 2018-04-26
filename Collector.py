@@ -10,7 +10,7 @@ import root_pandas as rp
 from array import array
 from Tools.utils.CutObject import Cut
 from Tools.utils.VarObject import Var
-from Tools.utils.FakeFactorUtils import FakeFactor
+from Tools.utils.FakeFactor import FakeFactor
 Cut.cutfile = "conf/cuts.json"
 FakeFactor.fraction_path = "conf/ff_config.json"
 FakeFactor.fraction_path = "fractions"

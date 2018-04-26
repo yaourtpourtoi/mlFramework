@@ -10,7 +10,7 @@ import copy
 from math import sqrt
 import sys
 from Tools.utils.VarObject import Var
-import Tools.utils.PlotUtils as pl
+import Tools.utils.Plotting as pl
 
 def main():
     import argparse
