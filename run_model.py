@@ -128,7 +128,6 @@ def run(samples,channel, use, train,short, preprocess_chain = []):
                     path = use )
 
     plot.makePlots()
-    plot.combineImages( )
 
 
 def trainScaler(folds, variables):

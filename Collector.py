@@ -8,9 +8,13 @@ import json
 import root_numpy as rn
 import root_pandas as rp
 from array import array
-from CutObject import Cut
-from VarObject import Var
-from FakeFactorUtils import FakeFactor
+from Tools.utils.CutObject import Cut
+from Tools.utils.VarObject import Var
+from Tools.utils.FakeFactorUtils import FakeFactor
+Cut.cutfile = "conf/cuts.json"
+FakeFactor.fraction_path = "conf/ff_config.json"
+FakeFactor.fraction_path = "fractions"
+
 
 def main():
     from Reader import Reader
@@ -29,7 +33,7 @@ def main():
     print "Using prediction from {0}".format(args.model)
     print "Writing {0} to datacard".format( args.var )
     if args.all:
-        print "Add shape templates in datacard"
+        print "Add systematic templates in datacard"
     print "---------------------------------"
 
     read = Reader(channel=args.channel,
@@ -78,7 +82,7 @@ class Collector():
         self.createDCFile()
 
         with open("conf/reweighting.json","r") as FSO:
-            self.reweight = json.load(FSO)
+            self.systematics = json.load(FSO)
 
         self.var = Var( var_name )
         if rebin and var_name == "pred_prob":
@@ -194,7 +198,7 @@ class Collector():
         DC.Close()
 
 
-    def writeTemplates(self, templates, reweight = False):
+    def writeTemplates(self, templates, add_systematics = False):
         print "Write Templates"
 
         for template in templates:
@@ -219,33 +223,34 @@ class Collector():
 
                 tmpHist.Write()
 
-                if reweight:
-                    for rw in self.reweight:
+                if add_systematics:
+                    for rw in self.systematics:
                         rwname = rw.replace("reweight",histname).replace("CHAN",self.channel).replace("CAT", self.target_names[int(c)] )
                         tmpHist = R.TH1D(rwname,rwname,*binning)
                         rn.fill_hist( tmpHist, array = tmpCont[self.var.name].values,
-                                      weights = tmpCont.eval( self.reweight[rw] ).values )
+                                      weights = tmpCont.eval( self.systematics[rw] ).values )
                         tmpHist.Write()
 
 
-    def estimateQCD(self, looseMC, reweight = False):
-        with open("conf/fakefactor_config.json","r") as FSO:
-            ff_info = json.load(FSO)
-            ff_file= ff_info["ff_file"][self.channel]
+    def estimateQCD(self, looseMC, add_systematics = False):
 
         print "Estimating Jet Fakes"
         for i,template in enumerate(looseMC):
             if not "data" in template: continue
-            FF = FakeFactor( self.var.name, ff_file, self.channel, data_file = template )
+            FF = FakeFactor( self.var.name, self.channel, data_file = template, add_systematics = add_systematics )
 
             for c,t in self.target_names.items():
                 binning = self.var.bins( t )
                 ff_select = Cut("pred_class == {0} && -OS- && -ANTIISO- ".format( int(c) ), self.channel)
-                FFHist = FF.calc( binning, ff_select )
+                FFHistos = FF.calc( binning, ff_select )
 
                 self.DCfile.cd( self.d( t ) )
-                FFHist.Write()
-                del FFHist
+
+
+                for name,FFHist in FFHistos.items():
+                    FFHist.Write()
+                    FFHist.Delete()
+                    
 
         print "Estimating QCD"
         if self.channel != "tt":
@@ -274,7 +279,7 @@ class Collector():
                     else:                  tmpQCD.Add(tmpHist, -1)
 
                 self.DCfile.cd( self.d( t ) )
-                if reweight:
+                if add_systematics:
                     for rw in ["QCD_WSFUncert_{chan}_{cat}_13TeVUp","QCD_WSFUncert_{chan}_{cat}_13TeVDown"]:
                         rwname = rw.format( chan = self.channel, cat = t )
                         tmp = copy.deepcopy( tmpQCD )
@@ -319,7 +324,7 @@ class Collector():
                 tmpHists["-ANTIISO-"]["-OS-"].SetName("QCD")
 
                 self.DCfile.cd( self.d( t ) )
-                if reweight:
+                if add_systematics:
                     for rw in ["QCD_WSFUncert_{chan}_{cat}_13TeVUp","QCD_WSFUncert_{chan}_{cat}_13TeVDown"]:
                         rwname = rw.format( chan = self.channel, cat = t )
                         tmp = copy.deepcopy( tmpHists["-ANTIISO-"]["-OS-"] )
