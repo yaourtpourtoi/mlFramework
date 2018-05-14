@@ -12,7 +12,7 @@ from Tools.utils.CutObject import Cut
 from Tools.utils.VarObject import Var
 from Tools.utils.FakeFactor import FakeFactor
 Cut.cutfile = "conf/cuts.json"
-FakeFactor.fraction_path = "conf/ff_config.json"
+FakeFactor.ff_config = "conf/ff_config.json"
 FakeFactor.fraction_path = "fractions"
 
 
