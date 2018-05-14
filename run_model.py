@@ -28,7 +28,7 @@ def main():
     print "---------------------------"
 
         
-    run(samples = "conf/scale_samples.json",
+    run(samples = "conf/global_config.json",
         channel=args.channel,
         use = args.model,
         train = args.train,
