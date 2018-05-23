@@ -123,6 +123,8 @@
         "jptDown_1",
         "jptUp_2",
         "jptDown_2",
+        "byVTightIsolationMVArun2v1DBoldDMwLT_1",
+        "byVTightIsolationMVArun2v1DBoldDMwLT_2",
         "byTightIsolationMVArun2v1DBoldDMwLT_1",
         "byTightIsolationMVArun2v1DBoldDMwLT_2",
         "byMediumIsolationMVArun2v1DBoldDMwLT_1",
@@ -148,6 +150,8 @@
         "decayMode_1",
         "decayMode_2",
         "dilepton_veto",
+        "extraelec_veto",
+        "extramuon_veto",
         "passesThirdLepVeto",
         "passesTauLepVetos",
         "trg_singleelectron",
@@ -173,84 +177,84 @@
             "select": "-OS- && -ISO- && -VETO- && -MT- && -TRIG-", 
             "name": "BASIS_ntuple_GluGluHToTauTau_M125_powheg_MCSummer16", 
             "event_weight": ["puweight","stitchedWeight","trk_sf","genweight","antilep_tauscaling","effweight"],
-            "train_weight_scale": {"mt":213.2, "et":213.8, "tt":144.8 }
+            "train_weight_scale": {"mt":212.1, "et":210.7, "tt":147.3 }
         },
         "qqH125": {
             "target":{"mt":"qqH", "et":"qqH", "tt":"qqH" },
             "select": "-OS- && -ISO- && -VETO- && -MT- && -TRIG-", 
             "name": "BASIS_ntuple_VBFHToTauTau_M125_powheg_MCSummer16", 
             "event_weight": ["puweight","stitchedWeight","trk_sf","genweight","antilep_tauscaling","effweight"],
-            "train_weight_scale": {"mt":2173.2, "et":1932.3, "tt":505.3 }
+            "train_weight_scale": {"mt":2176.8, "et":1898.4, "tt":515.1 }
         }, 
         "EWKZ": {
             "target":{"mt":"ztt", "et":"ztt", "tt":"ztt" },
             "select": "-OS- && -ISO- && -VETO- && -MT- && -TRIG-", 
             "name": "BASIS_ntuple_EWKZ_merged_MCSummer16", 
-            "event_weight": ["puweight","stitchedWeight","trk_sf","genweight","antilep_tauscaling","effweight","zPtReweightWeight"],
-            "train_weight_scale": {"mt":1.6, "et":2.3, "tt":3.4 }
+            "event_weight": ["puweight","stitchedWeight","trk_sf","genweight","antilep_tauscaling","effweight"],
+            "train_weight_scale": {"mt":1.6, "et":2.2, "tt":3.5 }
         },
         "ZTT": {
             "target":{"mt":"ztt", "et":"ztt", "tt":"ztt" },
             "select": "-OS- && -ISO- && -VETO- && -MT- && -TRIG- && -GENHAD-", 
             "name": "BASIS_ntuple_DYXJetsToLL_lowMass_merged_MCSummer16", 
             "event_weight": ["puweight","stitchedWeight","trk_sf","genweight","antilep_tauscaling","effweight","zPtReweightWeight"],
-            "train_weight_scale": {"mt":1.6, "et":2.3, "tt":3.4 }
+            "train_weight_scale": {"mt":1.6, "et":2.2, "tt":3.5 }
         },
         "ZL": {
             "target":{"mt":"zll", "et":"zll", "tt":"misc" },
             "select": "-OS- && -ISO- && -VETO- && -MT- && -TRIG- && -GENLEP-", 
             "name": "BASIS_ntuple_DYXJetsToLL_lowMass_merged_MCSummer16", 
             "event_weight": ["puweight","stitchedWeight","trk_sf","genweight","antilep_tauscaling","effweight","zPtReweightWeight"],
-            "train_weight_scale": {"mt":19.9, "et":7.0, "tt":8.3 }
+            "train_weight_scale": {"mt":23.2, "et":7.9, "tt":12.3 }
         },
         "ZJ": {
             "target":{"mt":"zll", "et":"zll", "tt":"misc" },
             "select": "-OS- && -ISO- && -VETO- && -MT- && -TRIG- && -GENJET-", 
             "name": "BASIS_ntuple_DYXJetsToLL_lowMass_merged_MCSummer16", 
             "event_weight": ["puweight","stitchedWeight","trk_sf","genweight","antilep_tauscaling","effweight","zPtReweightWeight"],
-            "train_weight_scale": {"mt":19.9, "et":7.0, "tt":8.3 }
+            "train_weight_scale": {"mt":23.2, "et":7.9, "tt":12.3 }
         },
         "TTT": {
             "target":{"mt":"tt", "et":"tt", "tt":"misc" },
             "select": "-OS- && -ISO- && -VETO- && -MT- && -TRIG- && -GENHAD- ", 
             "name": "BASIS_ntuple_TT_merged_MCSummer16", 
             "event_weight": ["puweight","stitchedWeight","trk_sf","genweight","antilep_tauscaling","effweight","topWeight_run1"],
-            "train_weight_scale": {"mt":17.9, "et":14.7, "tt":8.3 }
+            "train_weight_scale": {"mt":18.3, "et":14.7, "tt":12.3 }
         },
         "TTJ": {
             "target":{"mt":"tt", "et":"tt", "tt":"misc" },
             "select": "-OS- && -ISO- && -VETO- && -MT- && -TRIG- && (-GENLEP- || -GENJET-) ", 
             "name": "BASIS_ntuple_TT_merged_MCSummer16", 
             "event_weight": ["puweight","stitchedWeight","trk_sf","genweight","antilep_tauscaling","effweight","topWeight_run1"],
-            "train_weight_scale": {"mt":17.9, "et":14.7, "tt":8.3 }
+            "train_weight_scale": {"mt":18.3, "et":14.7, "tt":12.3 }
         },
         "VVT": {
             "target":{"mt":"misc", "et":"misc", "tt":"misc" },
             "select": "-OS- && -ISO- && -VETO- && -MT- && -TRIG- && -GENHAD- ", 
             "name": "BASIS_ntuple_VV_MCSummer16", 
             "event_weight": ["puweight","stitchedWeight","trk_sf","genweight","antilep_tauscaling","effweight"],
-            "train_weight_scale": {"mt":86.0, "et":69.4, "tt":8.3 }
+            "train_weight_scale": {"mt":69.0, "et":55.5, "tt":12.3 }
         },
         "VVJ": {
             "target":{"mt":"misc", "et":"misc", "tt":"misc" },
             "select": "-OS- && -ISO- && -VETO- && -MT- && -TRIG- && (-GENLEP- || -GENJET-)", 
             "name": "BASIS_ntuple_VV_MCSummer16", 
             "event_weight": ["puweight","stitchedWeight","trk_sf","genweight","antilep_tauscaling","effweight"],
-            "train_weight_scale": {"mt":86.0, "et":69.4, "tt":8.3 }
+            "train_weight_scale": {"mt":69.0, "et":55.5, "tt":12.3 }
         },
         "W": {
             "target":{"mt":"w", "et":"w", "tt":"misc" },
             "select": "-OS- && -ISO- && -VETO- && -MT- && -TRIG-", 
             "name": "BASIS_ntuple_WXJets_merged_MCSummer16", 
             "event_weight": ["puweight","stitchedWeight","trk_sf","genweight","antilep_tauscaling","effweight"],
-            "train_weight_scale": {"mt":8.0, "et":6.1, "tt":8.3 }
+            "train_weight_scale": {"mt":8.3, "et":6.1, "tt":12.3 }
         },
         "estimate": {
-            "target":{"mt":"qcd", "et":"qcd", "tt":"qcd" },
+            "target":{"mt":"ss", "et":"ss", "tt":"noniso" },
             "select": {
                 "mt":"-SS- && -ISO- && -VETO- && -MT- && -TRIG-",
                 "et":"-SS- && -ISO- && -VETO- && -MT- && -TRIG-",
-                "tt":"-OS- && -ANTIISO- && -VETO- && -MT- && -TRIG-"
+                "tt":"-OS- && -ANTIISO2- && -VETO- && -MT- && -TRIG-"
             }, 
             "name": {
                 "mt": "BASIS_ntuple_SingleMuon",
@@ -258,7 +262,7 @@
                 "tt": "BASIS_ntuple_Tau"
             }, 
             "event_weight": 1.0,
-            "train_weight_scale": {"mt":6.9, "et":6.2, "tt":1.7 }
+            "train_weight_scale": {"mt":7.0, "et":6.2, "tt":1.6 }
         },
         "VV_more": {
             "target":"none",
