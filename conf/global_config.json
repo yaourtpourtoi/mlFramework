@@ -157,15 +157,15 @@
         "trg_singleelectron",
         "trg_doubletau",
         "trg_singlemuon",
-	"trg_mutaucross"
+	    "trg_mutaucross"
 
 
     ],
 
     "version":{
-        "mt":"v2",
-        "et":"v2",
-        "tt":"v2"
+        "mt":"v3",
+        "et":"v3",
+        "tt":"v3"
     },
     "lumi": 35.9,
     "useSV": "SVFIT",
