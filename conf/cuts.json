@@ -2,9 +2,9 @@
 	"-SS-":"q_1 * q_2 > 0",
 	"-OS-":"q_1 * q_2 < 0",
 	"-VETO-":{
-		"mt":"!dilepton_veto  && passesThirdLepVeto && passesTauLepVetos",
-		"et":"!dilepton_veto  && passesThirdLepVeto && passesTauLepVetos",
-		"tt":"passesThirdLepVeto && passesTauLepVetos"
+		"mt":"((extramuon_veto < 0.5) && (extraelec_veto < 0.5) && (dilepton_veto<0.5) && (againstMuonTight3_2>0.5) && (againstElectronVLooseMVA6_2>0.5))",
+		"et":"((extramuon_veto < 0.5) && (extraelec_veto < 0.5) && (dilepton_veto<0.5) && (againstMuonLoose3_2>0.5) && (againstElectronTightMVA6_2>0.5))",
+		"tt":"((extramuon_veto < 0.5) && (extraelec_veto < 0.5) && (dilepton_veto<0.5) && (againstMuonLoose3_1>0.5) && (againstElectronVLooseMVA6_1>0.5) && (againstMuonLoose3_2>0.5) && (againstElectronVLooseMVA6_2>0.5))"
 	},
 	"-MT-":{
 		"mt":"mt_1 < 50",
@@ -38,7 +38,7 @@
 	},
 	"-TRIG-":{
 		"mt":"( (trg_singlemuon && pt_1 > 23 && pt_2 > 30) || (trg_mutaucross && pt_1 <= 23 && pt_2 > 30) )",
-		"et":"trg_singleelectron",
+		"et":"(trg_singleelectron && pt_1>26 && pt_2>30)",
 		"tt":"trg_doubletau"
 	},
 	"-GENLEP-":{
