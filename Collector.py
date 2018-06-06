@@ -37,7 +37,7 @@ def main():
     print "---------------------------------"
 
     read = Reader(channel=args.channel,
-                  config_file = "conf/scale_samples.json",
+                  config_file = "conf/global_config.json",
                   folds = 2)
 
     C = Collector(channel = args.channel,
