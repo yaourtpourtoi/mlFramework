@@ -12,4 +12,3 @@
 3) Add local python packages to PYTHONPATH ( best to add to ~/.profile )
 
        export PYTHONPATH=$HOME/.local/lib/python2.7/site-packages:$PYTHONPATH
-
