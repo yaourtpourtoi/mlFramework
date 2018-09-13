@@ -65,8 +65,8 @@ class Reader():
         config["target_names"] = {}
         config["variables"] = self._assertChannel( config["variables"] )
         config["version"] = self._assertChannel( config["version"] )
-        if self.channel == "mt":
-            config["variables"], self.needToAddVars = self._somethingMissing( config["variables"] )
+        # if self.channel == "mt":
+        #     config["variables"], self.needToAddVars = self._somethingMissing( config["variables"] )
 
         config["path"] = "{path}/ntuples_{version}/{channel}/ntuples_{useSV}_merged".format( **config )
 
@@ -85,7 +85,7 @@ class Reader():
             snap["train_weight_scale"] = self._assertChannel( snap["train_weight_scale"] )
             
             if sample != "data" and sample != "data_ss":
-                snap["shapes"]  = self._getShapePaths( snap["name"] )
+                snap["shapes"]  = self._getShapePaths( snap["name"], sample )
                 if type(snap["event_weight"]) is list:
                     config["addvar"] = list( set( config["addvar"] + snap["event_weight"] ) )
 
@@ -176,8 +176,10 @@ class Reader():
 
                 tmp = self._getCommonSettings(sample)
 
-                tmp["path"] = self.config["samples"][sample]["shapes"][shape] 
-                tmp["histname"   ] = sample + self.hist_names[shape]
+                tmp["path"] = self.config["samples"][sample]["shapes"][shape]
+                if not tmp["path"]: continue
+
+                tmp["histname"   ] = sample + self.hist_names[shape].format(channel = self.channel)
                 tmp["rename"      ] = {}
 
                 self.itersamples.append( tmp )
@@ -268,16 +270,19 @@ class Reader():
         else:
             return entry      
 
-    def _getShapePaths(self, sample):
+    def _getShapePaths(self, path, sample):
 
-        shapes = {"T0Up":"","T0Down":"","T1Up":"","T1Down":"","T10Up":"","T10Down":"","JECUp":sample,"JECDown":sample}
+        shapes = {"T0Up":"","T0Down":"","T1Up":"","T1Down":"","T10Up":"","T10Down":"",
+                  "ZL0Up":"","ZL0Down":"","ZL1Up":"","ZL1Down":"","ZL10Up":"","ZL10Down":"","JECUp":sample,"JECDown":sample}
 
         for shape in shapes:
-            shape_path = sample.replace(".root","_{0}.root".format(shape) )
+            if ("ZL" in shape and sample != "ZL") or ("ZL" in shape and self.channel == "tt"): continue
+            if sample in ["W","TTJ","ZJ","VVJ"] and not shape in ["JECUp","JECDown"]: continue
+            shape_path = path.replace(".root","_{0}.root".format(shape) )
             if os.path.exists( shape_path ):
                 shapes[shape] = shape_path
             else:
-                shapes[shape] = sample
+                shapes[shape] = path
 
         return shapes
 
@@ -337,11 +342,11 @@ class Reader():
         return folds
 
     def _getDF( self, sample_path, select ):
-
         branches = set( self.config["variables"] + self.config["addvar"] )
         tmp = rp.read_root( paths = sample_path,
                              where = select,
                              columns = branches)
+
         if self.needToAddVars:
             for new in self.needToAddVars:
                 tmp[new] = tmp.apply( calc(new), axis=1 )

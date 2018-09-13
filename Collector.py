@@ -90,6 +90,32 @@ class Collector():
                                 "ggH": (100,0.2, 1.0  ),
                                 "qqH": (100,0.2, 1.0  )}
 
+        self.stxs1_cuts = {
+            "ggH125":{
+                "":                 "",
+                "_0J":               "& njets == 0",
+                "_1J_PTH_0_60":      "& njets == 1 & pt_tt > 0 & pt_tt < 60",
+                "_1J_PTH_60_120":    "& njets == 1 & pt_tt > 60 & pt_tt < 120",
+                "_1J_PTH_120_200":   "& njets == 1 & pt_tt > 120 & pt_tt < 200",
+                "_1J_PTH_GT200":     "& njets == 1 & pt_tt > 200",
+                "_GE2J_PTH_0_60":    "& njets >= 2 & pt_tt > 0 & pt_tt < 60",
+                "_GE2J_PTH_60_120":  "& njets >= 2 & pt_tt > 60 & pt_tt < 120",
+                "_GE2J_PTH_120_200": "& njets >= 2 & pt_tt > 120 & pt_tt < 200",
+                "_GE2J_PTH_GT200":   "& njets >= 2 & pt_tt > 200",
+                "_VBFTOPO_JET3":     "& njets >= 2 & pt_tt < 200 & mjj > 400 & jdeta > 2.8",
+                "_VBFTOPO_JET3VETO": "& njets >= 2 & pt_tt < 200 & mjj > 400 & jdeta > 2.8"
+            },
+            "qqH125":{
+                "":"",
+                "_VBFTOPO_JET3":     "& njets >= 2 & pt_tt > 0 & pt_tt < 25 & jpt_1 > 0 & jpt_1 < 200 & mjj > 400 & jdeta > 2.8",
+                "_VBFTOPO_JET3VETO": "& njets >= 2 & pt_tt >= 25 & jpt_1 > 0 & jpt_1 < 200 & mjj > 400 & jdeta > 2.8",
+                "_VH2JET":           "& njets >= 2 & jpt_1 > 0 & jpt_1 < 200 & mjj > 60 & mjj < 120",
+                "_REST":             "& njets >= 2 & jpt_1 > 0 & jpt_1 < 200", 
+                "_PTJET1_GT200":     "& jpt_1 > 200" 
+            } 
+
+        }
+
     def __del__(self):
         if self.DCfile and not self.FileClosed:
             self.DCfile.Close()
@@ -104,26 +130,24 @@ class Collector():
     def d(self, target):
         return "_".join([self.channel, target]) 
 
-    def applySF(self, df):
-        with open("conf/scalefactors.json","r") as FSO:
+    def applySF(self,df, process):
+        with open("scalefactors.json","r") as FSO:
             sfs = json.load(FSO)
 
+        apply_sf= "event_weight"
         for sf in sfs:
-            if type(sfs[sf]) is dict:
-                apl = sfs[sf].get( self.channel, "" )
-            else:
-                apl = sfs[sf]
+            if process in sfs[sf][self.channel]["on"] or "all" in sfs[sf][self.channel]["on"]:
+                apl = sfs[sf][self.channel]["apply"] 
+                if apl: apply_sf += "*{0}".format(apl)
 
-            if not apl: continue
-
-            df.eval("event_weight = event_weight* {0}".format( apl ), inplace = True )
+        df.eval("event_weight = {0}".format( apply_sf ), inplace = True )
 
     def addPrediction(self, prediction, df, sample):
         for i in xrange( len(df) ):
 
             df[i]["pred_prob"] =  prediction[i]["predicted_prob"]
             df[i]["pred_class"] = prediction[i]["predicted_class"]
-            self.applySF(df[i])
+            self.applySF(df[i], sample)
 
             if i == 0: mode = "w"
             else: mode = "a"
@@ -210,27 +234,57 @@ class Collector():
             classes = np.unique( templ_content["pred_class"] )
             for c in classes:
 
-                binning = self.var.bins( int(c) )
-                tmpCont = templ_content.query( "pred_class == {0}".format(int(c)) )
+                if histname == "ggH125" or histname  == "qqH125":
+                    for stxs1 in self.stxs1_cuts[histname]:
+                        name = histname.replace("125",stxs1 + "125")
+                        cut = "pred_class == {0}{1}".format(int(c), self.stxs1_cuts[histname][stxs1] )
+                        self.fillHistos(templ_content, name, c, cut, add_systematics)
+                else:
+                    cut = "pred_class == {0} ".format(int(c) )
+                    self.fillHistos(templ_content, histname, c, cut, add_systematics)
 
-                tmpHist = R.TH1D(histname,histname,*self.var.bins( int(c) ) )
-                tmpHist.GetXaxis().SetTitle( self.var.name )
-                tmpHist.Sumw2()
+                # tmpCont = templ_content.query(  )
+
+                # tmpHist = R.TH1D(histname,histname,*binning )
+                # tmpHist.GetXaxis().SetTitle( self.var.name )
+                # tmpHist.Sumw2()
+                # rn.fill_hist( tmpHist, array = tmpCont[self.var.name].values,
+                #               weights = tmpCont["event_weight"].values )
+
+                # self.DCfile.cd( self.d( self.target_names[int(c)] ) )
+
+                # tmpHist.Write()
+
+                # if add_systematics:
+                #     for rw in self.systematics:
+                #         rwname = rw.replace("reweight",histname).replace("CHAN",self.channel).replace("CAT", self.target_names[int(c)] )
+                #         tmpHist = R.TH1D(rwname,rwname,*binning)
+                #         rn.fill_hist( tmpHist, array = tmpCont[self.var.name].values,
+                #                       weights = tmpCont.eval( self.systematics[rw] ).values )
+                #         tmpHist.Write()
+
+    def fillHistos(self, content, histname, cat, cut,add_systematics):
+
+        binning = self.var.bins( int(cat) )
+        tmpCont = content.query( cut )
+
+        tmpHist = R.TH1D(histname,histname,*binning )
+        tmpHist.GetXaxis().SetTitle( self.var.name )
+        tmpHist.Sumw2()
+        rn.fill_hist( tmpHist, array = tmpCont[self.var.name].values,
+                      weights = tmpCont["event_weight"].values )
+
+        self.DCfile.cd( self.d( self.target_names[int(cat)] ) )
+
+        tmpHist.Write()
+
+        if add_systematics:
+            for rw in self.systematics:
+                rwname = rw.replace("reweight",histname).replace("CHAN",self.channel).replace("CAT", self.target_names[int(cat)] )
+                tmpHist = R.TH1D(rwname,rwname,*binning)
                 rn.fill_hist( tmpHist, array = tmpCont[self.var.name].values,
-                              weights = tmpCont["event_weight"].values )
-
-                self.DCfile.cd( self.d( self.target_names[int(c)] ) )
-
+                              weights = tmpCont.eval( self.systematics[rw] ).values )
                 tmpHist.Write()
-
-                if add_systematics:
-                    for rw in self.systematics:
-                        rwname = rw.replace("reweight",histname).replace("CHAN",self.channel).replace("CAT", self.target_names[int(c)] )
-                        tmpHist = R.TH1D(rwname,rwname,*binning)
-                        rn.fill_hist( tmpHist, array = tmpCont[self.var.name].values,
-                                      weights = tmpCont.eval( self.systematics[rw] ).values )
-                        tmpHist.Write()
-
 
     def estimateQCD(self, looseMC, add_systematics = False):
 

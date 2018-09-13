@@ -7,6 +7,12 @@
  	"T1Up"    :"_CMS_scale_t_1prong1pizero_13TeVUp",
  	"T1Down"  :"_CMS_scale_t_1prong1pizero_13TeVDown",
  	"T10Up"   :"_CMS_scale_t_3prong_13TeVUp",
- 	"T10Down" :"_CMS_scale_t_3prong_13TeVDown"
+ 	"T10Down" :"_CMS_scale_t_3prong_13TeVDown",
+ 	"ZL0Up"    :"_CMS_ZLShape_{channel}_1prong_13TeVUp",
+ 	"ZL0Down"  :"_CMS_ZLShape_{channel}_1prong_13TeVDown",
+ 	"ZL1Up"    :"_CMS_ZLShape_{channel}_1prong1pizero_13TeVUp",
+ 	"ZL1Down"  :"_CMS_ZLShape_{channel}_1prong1pizero_13TeVDown",
+ 	"ZL10Up"   :"_CMS_ZLShape_{channel}_3prong_13TeVUp",
+ 	"ZL10Down" :"_CMS_ZLShape_{channel}_3prong_13TeVDown"	
 
 }
