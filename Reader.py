@@ -68,7 +68,7 @@ class Reader():
         # if self.channel == "mt":
         #     config["variables"], self.needToAddVars = self._somethingMissing( config["variables"] )
 
-        config["path"] = "{path}/ntuples_{version}/{channel}/ntuples_{useSV}_merged".format( **config )
+        config["path"] = "{path}/{version}".format( **config )
 
         for sample in config["samples"]:
             
@@ -79,10 +79,11 @@ class Reader():
             snap["target"] = self._assertChannel(snap["target"] )
             targets.append( snap["target"]  )
 
-            snap["name"]    = "{path}/{name}_{channel}_{version}.root".format(name = sample_name, **config)
+            snap["name"]    = "{path}/{channel}-{name}.root".format(name = sample_name, **config)
             snap["select"] = self._parseCut( snap["select"] )
 
             snap["train_weight_scale"] = self._assertChannel( snap["train_weight_scale"] )
+            snap["event_weight"]  = self._assertChannel( snap["event_weight"] )
             
             if sample != "data" and sample != "data_ss":
                 snap["shapes"]  = self._getShapePaths( snap["name"], sample )
@@ -210,11 +211,9 @@ class Reader():
 
     def loadForMe(self, sample_info):
 
-        print "Loading ",sample_info["histname"] , sample_info["path"].split("/")[-1],
+        print "Loading ",sample_info["histname"] , sample_info["path"].split("/")[-1]
         DF = self._getDF(sample_path = sample_info["path"], 
                           select = sample_info["select"])
-        print len(DF)
-
         DF.eval( "event_weight = " + sample_info["event_weight"], inplace = True  )
         DF["target"] = sample_info["target"]
 
@@ -304,6 +303,9 @@ class Reader():
         if type( self.config["samples"][sample]["event_weight"] ) is float:
             return str( self.config["samples"][sample]["event_weight"] )
 
+        if type( self.config["samples"][sample]["event_weight"] ) is unicode:
+            return "*".join(["1000", str( self.config["samples"][sample]["event_weight"] ), str(self.config["lumi"]) ])
+
         else:
             return 1.0
 
@@ -336,8 +338,8 @@ class Reader():
         if self.folds != 2: raise NotImplementedError("Only implemented two folds so far!!!")
         folds = []
 
-        folds.append( df.query( "fileEntry % 2 != 0 " ).reset_index(drop=True) )
-        folds.append( df.query( "fileEntry % 2 == 0 " ).reset_index(drop=True) )
+        folds.append( df.query( "entry % 2 != 0 " ).reset_index(drop=True) )
+        folds.append( df.query( "entry % 2 == 0 " ).reset_index(drop=True) )
 
         return folds
 

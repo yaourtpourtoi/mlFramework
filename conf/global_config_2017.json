@@ -1,322 +1,396 @@
 {
-    "path": "/data/higgs/data_2017/", 
-    "variables":{
-        "mt": [
-            "m_sv",
-            "m_vis",
-            "pt_vis",
-            "pt_1",
-            "pt_2",
-            "jpt_2",
-            "jm_1",
-            "jm_2",
-            "bpt_1",
-            "bpt_2",
-            "bcsv_1",
-            "bcsv_2",
-            "njets",
-            "nbtag", 
-            "mt_1",
-            "mt_2",
-            "pt_tt",
-            "mjj",
-            "dijetpt",
-            "met"
-            ],
-        "et": [
-            "m_sv",
-            "m_vis",
-            "pt_vis",
-            "pt_1",
-            "pt_2",
-            "jpt_1",
-            "jm_1",
-            "bpt_1",
-            "bpt_2",
-            "bcsv_1",
-            "bcsv_2",
-            "njets",
-            "nbtag",
-            "mt_1",
-            "mt_2",
-            "pt_tt",
-            "mjj",
-            "dijetpt",
-            "met"
-        ],
-
-
-        "tt": [
-            "m_sv",
-            "m_vis",
-            "pt_vis",
-            "pt_1",
-            "pt_2",
-            "jpt_1",
-            "jcsv_1",
-            "jm_1",
-            "jmva_1",
-            "bpt_1",
-            "bcsv_1",
-            "bcsv_2",
-            "njets",
-            "nbtag",
-            "mt_1",
-            "pt_tt",
-            "mjj",
-            "jdeta",
-            "dijetpt",
-            "met"
-            ]
-
-
-
-    },
-    "addvar": [
-        "fileEntry",
-        "entry",
-        "jdeta",
-        "jpt_1",
-        "jpt_2",
-        "jeta_1",
-        "jeta_2",
-        "jphi_1",
-        "jphi_2",
-        "jm_1",
-        "jm_2",
-        "bpt_1",
-        "bpt_2",
-        "beta_1",
-        "beta_2",
-        "bphi_1",
-        "bphi_2",
-        "bcsv_1",
-        "bcsv_2",
-        "mjjUp",
-        "mjjDown",
-        "jdetaUp",
-        "jdetaDown",
-        "njetsUp",
-        "njetsDown",
-        "jptUp_1",
-        "jptDown_1",
-        "jptUp_2",
-        "jptDown_2",
-        "byVTightIsolationMVArun2v1DBoldDMwLT_1",
-        "byVTightIsolationMVArun2v1DBoldDMwLT_2",
-        "byTightIsolationMVArun2v1DBoldDMwLT_1",
-        "byTightIsolationMVArun2v1DBoldDMwLT_2",
-        "byMediumIsolationMVArun2v1DBoldDMwLT_1",
-        "byMediumIsolationMVArun2v1DBoldDMwLT_2",
-        "byLooseIsolationMVArun2v1DBoldDMwLT_1",
-        "byLooseIsolationMVArun2v1DBoldDMwLT_2",
-        "byVLooseIsolationMVArun2v1DBoldDMwLT_1",
-        "byVLooseIsolationMVArun2v1DBoldDMwLT_2",        
-        "pt_1",
-        "pt_1",
-        "q_1",
-        "q_2",
-        "pt_sv",
-        "iso_1",
-        "iso_2",
-        "m_1",
-        "m_2",
-        "phi_1",
-        "phi_2",
-        "eta_1",
-        "eta_2",
-        "gen_match_1",
-        "gen_match_2",
-        "decayMode_1",
-        "decayMode_2",
-        "dilepton_veto",
-        "extraelec_veto",
-        "extramuon_veto",
-        "againstMuonLoose3_1",
-        "againstMuonTight3_1",
-        "againstElectronVLooseMVA6_1",
-        "againstElectronTightMVA6_1",
-        "againstMuonLoose3_2",
-        "againstMuonTight3_2",
-        "againstElectronVLooseMVA6_2",
-        "againstElectronTightMVA6_2",
-        "passesThirdLepVeto",
-        "passesTauLepVetos",
-        "trg_singleelectron",
-        "trg_doubletau",
-        "trg_singlemuon",
-	    "trg_mutaucross"
-
-
-    ],
-
-    "version":{
-        "mt":"v3",
-        "et":"v3",
-        "tt":"v3"
-    },
-    "lumi": 41860,
-    "useSV": "SVFIT",
-
-    "train_weight":"use_scale",
-    "samples":{
-        "ggH125": {
-            "target":{"mt":"ggh", "et":"ggh", "tt":"ggh" },
-            "select": "-OS- && -ISO- && -VETO- && -MT- && -TRIG-", 
-            "name": "NOMINAL_ntuple_ggH", 
-            "event_weight": ["puweight","stitchedWeight","trk_sf","genweight","antilep_tauscaling","effweight"],
-            "train_weight_scale": {"mt":212.1, "et":210.7, "tt":147.3 }
-        },
-        "qqH125": {
-            "target":{"mt":"qqh", "et":"qqh", "tt":"qqh" },
-            "select": "-OS- && -ISO- && -VETO- && -MT- && -TRIG-", 
-            "name": "NOMINAL_ntuple_VBF", 
-            "event_weight": ["puweight","stitchedWeight","trk_sf","genweight","antilep_tauscaling","effweight"],
-            "train_weight_scale": {"mt":2176.8, "et":1898.4, "tt":515.1 }
-        }, 
-        "ZTT": {
-            "target":{"mt":"ztt", "et":"ztt", "tt":"ztt" },
-            "select": "-OS- && -ISO- && -VETO- && -MT- && -TRIG- && -GENHAD-", 
-            "name": "NOMINAL_ntuple_DY", 
-            "event_weight": ["puweight","stitchedWeight","trk_sf","genweight","antilep_tauscaling","effweight","zPtReweightWeight"],
-            "train_weight_scale": {"mt":1.6, "et":2.2, "tt":3.5 }
-        },
-        "ZL": {
-            "target":{"mt":"zll", "et":"zll", "tt":"misc" },
-            "select": "-OS- && -ISO- && -VETO- && -MT- && -TRIG- && -GENLEP-", 
-            "name": "NOMINAL_ntuple_DY", 
-            "event_weight": ["puweight","stitchedWeight","trk_sf","genweight","antilep_tauscaling","effweight","zPtReweightWeight"],
-            "train_weight_scale": {"mt":23.2, "et":7.9, "tt":12.3 }
-        },
-        "ZJ": {
-            "target":{"mt":"zll", "et":"zll", "tt":"misc" },
-            "select": "-OS- && -ISO- && -VETO- && -MT- && -TRIG- && -GENJET-", 
-            "name": "NOMINAL_ntuple_DY", 
-            "event_weight": ["puweight","stitchedWeight","trk_sf","genweight","antilep_tauscaling","effweight","zPtReweightWeight"],
-            "train_weight_scale": {"mt":23.2, "et":7.9, "tt":12.3 }
-        },
-        "TTT": {
-            "target":{"mt":"tt", "et":"tt", "tt":"misc" },
-            "select": "-OS- && -ISO- && -VETO- && -MT- && -TRIG- && -GENHAD- ", 
-            "name": "NOMINAL_ntuple_TT", 
-            "event_weight": ["puweight","stitchedWeight","trk_sf","genweight","antilep_tauscaling","effweight","topWeight_run1"],
-            "train_weight_scale": {"mt":18.3, "et":14.7, "tt":12.3 }
-        },
-        "TTJ": {
-            "target":{"mt":"tt", "et":"tt", "tt":"misc" },
-            "select": "-OS- && -ISO- && -VETO- && -MT- && -TRIG- && (-GENLEP- || -GENJET-) ", 
-            "name": "NOMINAL_ntuple_TT", 
-            "event_weight": ["puweight","stitchedWeight","trk_sf","genweight","antilep_tauscaling","effweight","topWeight_run1"],
-            "train_weight_scale": {"mt":18.3, "et":14.7, "tt":12.3 }
-        },
-        "VVT": {
-            "target":{"mt":"misc", "et":"misc", "tt":"misc" },
-            "select": "-OS- && -ISO- && -VETO- && -MT- && -TRIG- && -GENHAD- ", 
-            "name": "NOMINAL_ntuple_VV", 
-            "event_weight": ["puweight","stitchedWeight","trk_sf","genweight","antilep_tauscaling","effweight"],
-            "train_weight_scale": {"mt":69.0, "et":55.5, "tt":12.3 }
-        },
-        "VVJ": {
-            "target":{"mt":"misc", "et":"misc", "tt":"misc" },
-            "select": "-OS- && -ISO- && -VETO- && -MT- && -TRIG- && (-GENLEP- || -GENJET-)", 
-            "name": "NOMINAL_ntuple_VV", 
-            "event_weight": ["puweight","stitchedWeight","trk_sf","genweight","antilep_tauscaling","effweight"],
-            "train_weight_scale": {"mt":69.0, "et":55.5, "tt":12.3 }
-        },
-        "W": {
-            "target":{"mt":"w", "et":"w", "tt":"misc" },
-            "select": "-OS- && -ISO- && -VETO- && -MT- && -TRIG-", 
-            "name": "NOMINAL_ntuple_WJets", 
-            "event_weight": ["puweight","stitchedWeight","trk_sf","genweight","antilep_tauscaling","effweight"],
-            "train_weight_scale": {"mt":8.3, "et":6.1, "tt":12.3 }
-        },
-        "estimate": {
-            "target":{"mt":"ss", "et":"ss", "tt":"noniso" },
-            "select": {
-                "mt":"-SS- && -ISO- && -VETO- && -MT- && -TRIG-",
-                "et":"-SS- && -ISO- && -VETO- && -MT- && -TRIG-",
-                "tt":"-OS- && -ANTIISO2- && -VETO- && -MT- && -TRIG-"
-            }, 
-            "name": {
-                "mt": "NOMINAL_ntuple_SingleMuon",
-                "et": "NOMINAL_ntuple_SingleElectron",
-                "tt": "NOMINAL_ntuple_Tau"
-            }, 
-            "event_weight": 1.0,
-            "train_weight_scale": {"mt":7.0, "et":6.2, "tt":1.6 }
-        },
-        "VV_more": {
-            "target":"none",
-            "select": {
-                "mt":"-VETO- && -MT- && -TRIG-",
-                "et":"-VETO- && -MT- && -TRIG-",
-                "tt":"-VETO- && -MT- && -TRIG-"
-            }, 
-            "name": "NOMINAL_ntuple_VV", 
-            "event_weight": ["puweight","stitchedWeight","trk_sf","genweight","antilep_tauscaling","effweight"],
-            "train_weight_scale": 1.0
-        },
-        "Z_more": {
-            "target":"none",
-            "select": {
-                "mt":"-VETO- && -MT- && -TRIG-",
-                "et":"-VETO- && -MT- && -TRIG-",
-                "tt":"-VETO- && -MT- && -TRIG-"
-            }, 
-            "name": "NOMINAL_ntuple_DY", 
-            "event_weight": ["puweight","stitchedWeight","trk_sf","genweight","antilep_tauscaling","effweight","zPtReweightWeight"],
-            "train_weight_scale": 1.0
-        },
-        "TT_more": {
-            "target":"none",
-            "select": {
-                "mt":"-VETO- && -MT- && -TRIG-",
-                "et":"-VETO- && -MT- && -TRIG-",
-                "tt":"-VETO- && -MT- && -TRIG-"
-            }, 
-            "name": "NOMINAL_ntuple_TT", 
-            "event_weight": ["puweight","stitchedWeight","trk_sf","genweight","antilep_tauscaling","effweight","topWeight_run1"],
-            "train_weight_scale": 1.0
-        },
-        "W_more": {
-            "target":"none",
-            "select": {
-                "mt":"-VETO- && -MT- && -TRIG-",
-                "et":"-VETO- && -MT- && -TRIG-",
-                "tt":"-VETO- && -MT- && -TRIG-"
-            }, 
-            "name": "NOMINAL_ntuple_WXJets_merged_MCSummer16", 
-            "event_weight": ["puweight","stitchedWeight","trk_sf","genweight","antilep_tauscaling","effweight"],
-            "train_weight_scale": 1.0
-        },
-        "data_more": {
-            "target":"none",
-            "select": {
-                "mt":"-VETO- && -MT- && -TRIG-",
-                "et":"-VETO- && -MT- && -TRIG-",
-                "tt":"-VETO- && -MT- && -TRIG-"
-            }, 
-            "name": {
-                "mt": "NOMINAL_ntuple_SingleMuon",
-                "et": "NOMINAL_ntuple_SingleElectron",
-                "tt": "NOMINAL_ntuple_Tau"
-
-            },
-            "event_weight": 1.0,
-            "train_weight_scale": 1.0
-        },
-
-        "data": {
-            "target":"none",
-            "select": "-OS- && -ISO- && -VETO- && -MT- && -TRIG-",
-            "event_weight": 1.0,
-            "train_weight_scale": 1.0,
-            "name": {
-                "mt": "NOMINAL_ntuple_SingleMuon",
-                "et": "NOMINAL_ntuple_SingleElectron",
-                "tt": "NOMINAL_ntuple_Tau"
-
-            }         
-        }
+  "useSV": "SVFIT", 
+  "variables": {
+    "mt": [
+      "m_sv", 
+      "m_vis", 
+      "pt_vis", 
+      "pt_1", 
+      "pt_2", 
+      "jpt_2", 
+      "jm_1", 
+      "jm_2", 
+      "bpt_1", 
+      "bpt_2", 
+      "bcsv_1", 
+      "bcsv_2", 
+      "njets", 
+      "nbtag", 
+      "mt_1", 
+      "mt_2", 
+      "pt_tt", 
+      "mjj", 
+      "dijetpt", 
+      "met"
+    ], 
+    "tt": [
+      "m_sv", 
+      "m_vis", 
+      "pt_vis", 
+      "pt_1", 
+      "pt_2", 
+      "jpt_1", 
+      "jcsv_1", 
+      "jm_1", 
+      "jmva_1", 
+      "bpt_1", 
+      "bcsv_1", 
+      "bcsv_2", 
+      "njets", 
+      "nbtag", 
+      "mt_1", 
+      "pt_tt", 
+      "mjj", 
+      "jdeta", 
+      "dijetpt", 
+      "met"
+    ], 
+    "et": [
+      "m_sv", 
+      "m_vis", 
+      "pt_vis", 
+      "pt_1", 
+      "pt_2", 
+      "jpt_1", 
+      "jm_1", 
+      "bpt_1", 
+      "bpt_2", 
+      "bcsv_1", 
+      "bcsv_2", 
+      "njets", 
+      "nbtag", 
+      "mt_1", 
+      "mt_2", 
+      "pt_tt", 
+      "mjj", 
+      "dijetpt", 
+      "met"
+    ]
+  }, 
+  "version": {
+    "mt": "v3", 
+    "tt": "v3", 
+    "et": "v3"
+  }, 
+  "samples": {
+    "ZL": {
+      "train_weight_scale": {
+        "mt": 15.3, 
+        "tt": 12.3, 
+        "et": 5.2
+      }, 
+      "event_weight": "puweight*((NUP == 0)*5.91296350328e-05 + (NUP == 1)*1.01562362959e-05 + (NUP == 2)*2.15030982864e-05 + (NUP == 3)*1.35063197418e-05 + (NUP == 4)*9.22459522375e-06)*trk_sf*reco_sf*genweight*antilep_tauscaling*idisoweight_1*singleTriggerSFLeg1", 
+      "target": {
+        "mt": "zll", 
+        "tt": "misc", 
+        "et": "zll"
+      }, 
+      "select": "-OS- && -ISO- && -VETO- && -MT- && -TRIG- && -GENLEP-", 
+      "name": "NOMINAL_ntuple_DY"
+    }, 
+    "W_more": {
+      "train_weight_scale": 1.0, 
+      "event_weight": "puweight*((NUP == 0)*0.000790555230048 + (NUP == 1)*0.000150361226486 + (NUP == 2)*0.000307137166339 + (NUP == 3)*5.55843884964e-05 + (NUP == 4)*5.2271728229e-05)*trk_sf*reco_sf*genweight*antilep_tauscaling*idisoweight_1*singleTriggerSFLeg1", 
+      "target": "none", 
+      "select": {
+        "mt": "-VETO- && -MT- && -TRIG-", 
+        "tt": "-VETO- && -MT- && -TRIG-", 
+        "et": "-VETO- && -MT- && -TRIG-"
+      }, 
+      "name": "NOMINAL_ntuple_WJets"
+    }, 
+    "Z_more": {
+      "train_weight_scale": 1.0, 
+      "event_weight": "puweight*((NUP == 0)*5.91296350328e-05 + (NUP == 1)*1.01562362959e-05 + (NUP == 2)*2.15030982864e-05 + (NUP == 3)*1.35063197418e-05 + (NUP == 4)*9.22459522375e-06)*trk_sf*reco_sf*genweight*antilep_tauscaling*idisoweight_1*singleTriggerSFLeg1", 
+      "target": "none", 
+      "select": {
+        "mt": "-VETO- && -MT- && -TRIG-", 
+        "tt": "-VETO- && -MT- && -TRIG-", 
+        "et": "-VETO- && -MT- && -TRIG-"
+      }, 
+      "name": "NOMINAL_ntuple_DY"
+    }, 
+    "ZJ": {
+      "train_weight_scale": {
+        "mt": 15.3, 
+        "tt": 12.3, 
+        "et": 5.2
+      }, 
+      "event_weight": "puweight*((NUP == 0)*5.91296350328e-05 + (NUP == 1)*1.01562362959e-05 + (NUP == 2)*2.15030982864e-05 + (NUP == 3)*1.35063197418e-05 + (NUP == 4)*9.22459522375e-06)*trk_sf*reco_sf*genweight*antilep_tauscaling*idisoweight_1*singleTriggerSFLeg1", 
+      "target": {
+        "mt": "zll", 
+        "tt": "misc", 
+        "et": "zll"
+      }, 
+      "select": "-OS- && -ISO- && -VETO- && -MT- && -TRIG- && -GENJET-", 
+      "name": "NOMINAL_ntuple_DY"
+    }, 
+    "data_more": {
+      "train_weight_scale": 1.0, 
+      "event_weight": 1.0, 
+      "target": "none", 
+      "select": {
+        "mt": "-VETO- && -MT- && -TRIG-", 
+        "tt": "-VETO- && -MT- && -TRIG-", 
+        "et": "-VETO- && -MT- && -TRIG-"
+      }, 
+      "name": {
+        "mt": "NOMINAL_ntuple_SingleMuon", 
+        "tt": "NOMINAL_ntuple_Tau", 
+        "et": "NOMINAL_ntuple_SingleElectron"
+      }
+    }, 
+    "ggH125": {
+      "train_weight_scale": {
+        "mt": 424.7, 
+        "tt": 147.3, 
+        "et": 437.7
+      }, 
+      "event_weight": "puweight*xsec*genNEventsWeight*trk_sf*reco_sf*genweight*antilep_tauscaling*idisoweight_1*singleTriggerSFLeg1", 
+      "target": {
+        "mt": "ggh", 
+        "tt": "ggh", 
+        "et": "ggh"
+      }, 
+      "select": "-OS- && -ISO- && -VETO- && -MT- && -TRIG-", 
+      "name": "NOMINAL_ntuple_ggH"
+    }, 
+    "VVT": {
+      "train_weight_scale": {
+        "mt": 59.2, 
+        "tt": 12.3, 
+        "et": 45.9
+      }, 
+      "event_weight": "puweight*xsec*genNEventsWeight*trk_sf*reco_sf*genweight*antilep_tauscaling*idisoweight_1*singleTriggerSFLeg1", 
+      "target": {
+        "mt": "misc", 
+        "tt": "misc", 
+        "et": "misc"
+      }, 
+      "select": "-OS- && -ISO- && -VETO- && -MT- && -TRIG- && -GENHAD- ", 
+      "name": "NOMINAL_ntuple_VV"
+    }, 
+    "TTT": {
+      "train_weight_scale": {
+        "mt": 11.6, 
+        "tt": 12.3, 
+        "et": 8.9
+      }, 
+      "event_weight": "puweight*xsec*genNEventsWeight*trk_sf*reco_sf*genweight*antilep_tauscaling*idisoweight_1*singleTriggerSFLeg1*topWeight_run1", 
+      "target": {
+        "mt": "tt", 
+        "tt": "misc", 
+        "et": "tt"
+      }, 
+      "select": "-OS- && -ISO- && -VETO- && -MT- && -TRIG- && -GENHAD- ", 
+      "name": "NOMINAL_ntuple_TT"
+    }, 
+    "TTJ": {
+      "train_weight_scale": {
+        "mt": 11.6, 
+        "tt": 12.3, 
+        "et": 8.9
+      }, 
+      "event_weight": "puweight*xsec*genNEventsWeight*trk_sf*reco_sf*genweight*antilep_tauscaling*idisoweight_1*singleTriggerSFLeg1*topWeight_run1", 
+      "target": {
+        "mt": "tt", 
+        "tt": "misc", 
+        "et": "tt"
+      }, 
+      "select": "-OS- && -ISO- && -VETO- && -MT- && -TRIG- && (-GENLEP- || -GENJET-) ", 
+      "name": "NOMINAL_ntuple_TT"
+    }, 
+    "VV_more": {
+      "train_weight_scale": 1.0, 
+      "event_weight": "puweight*xsec*genNEventsWeight*trk_sf*reco_sf*genweight*antilep_tauscaling*idisoweight_1*singleTriggerSFLeg1", 
+      "target": "none", 
+      "select": {
+        "mt": "-VETO- && -MT- && -TRIG-", 
+        "tt": "-VETO- && -MT- && -TRIG-", 
+        "et": "-VETO- && -MT- && -TRIG-"
+      }, 
+      "name": "NOMINAL_ntuple_VV"
+    }, 
+    "VVJ": {
+      "train_weight_scale": {
+        "mt": 59.2, 
+        "tt": 12.3, 
+        "et": 45.9
+      }, 
+      "event_weight": "puweight*xsec*genNEventsWeight*trk_sf*reco_sf*genweight*antilep_tauscaling*idisoweight_1*singleTriggerSFLeg1", 
+      "target": {
+        "mt": "misc", 
+        "tt": "misc", 
+        "et": "misc"
+      }, 
+      "select": "-OS- && -ISO- && -VETO- && -MT- && -TRIG- && (-GENLEP- || -GENJET-)", 
+      "name": "NOMINAL_ntuple_VV"
+    }, 
+    "W": {
+      "train_weight_scale": {
+        "mt": 6.3, 
+        "tt": 12.3, 
+        "et": 4.1
+      }, 
+      "event_weight": "puweight*((NUP == 0)*0.000790555230048 + (NUP == 1)*0.000150361226486 + (NUP == 2)*0.000307137166339 + (NUP == 3)*5.55843884964e-05 + (NUP == 4)*5.2271728229e-05)*trk_sf*reco_sf*genweight*antilep_tauscaling*idisoweight_1*singleTriggerSFLeg1", 
+      "target": {
+        "mt": "w", 
+        "tt": "misc", 
+        "et": "w"
+      }, 
+      "select": "-OS- && -ISO- && -VETO- && -MT- && -TRIG-", 
+      "name": "NOMINAL_ntuple_WJets"
+    }, 
+    "TT_more": {
+      "train_weight_scale": 1.0, 
+      "event_weight": "puweight*xsec*genNEventsWeight*trk_sf*reco_sf*genweight*antilep_tauscaling*idisoweight_1*singleTriggerSFLeg1*topWeight_run1", 
+      "target": "none", 
+      "select": {
+        "mt": "-VETO- && -MT- && -TRIG-", 
+        "tt": "-VETO- && -MT- && -TRIG-", 
+        "et": "-VETO- && -MT- && -TRIG-"
+      }, 
+      "name": "NOMINAL_ntuple_TT"
+    }, 
+    "ZTT": {
+      "train_weight_scale": {
+        "mt": 1.8, 
+        "tt": 3.5, 
+        "et": 3.9
+      }, 
+      "event_weight": "puweight*((NUP == 0)*5.91296350328e-05 + (NUP == 1)*1.01562362959e-05 + (NUP == 2)*2.15030982864e-05 + (NUP == 3)*1.35063197418e-05 + (NUP == 4)*9.22459522375e-06)*trk_sf*reco_sf*genweight*antilep_tauscaling*idisoweight_1*singleTriggerSFLeg1", 
+      "target": {
+        "mt": "ztt", 
+        "tt": "ztt", 
+        "et": "ztt"
+      }, 
+      "select": "-OS- && -ISO- && -VETO- && -MT- && -TRIG- && -GENHAD-", 
+      "name": "NOMINAL_ntuple_DY"
+    }, 
+    "qqH125": {
+      "train_weight_scale": {
+        "mt": 1844.9, 
+        "tt": 515.1, 
+        "et": 1507.1
+      }, 
+      "event_weight": "puweight*xsec*genNEventsWeight*trk_sf*reco_sf*genweight*antilep_tauscaling*idisoweight_1*singleTriggerSFLeg1", 
+      "target": {
+        "mt": "qqh", 
+        "tt": "qqh", 
+        "et": "qqh"
+      }, 
+      "select": "-OS- && -ISO- && -VETO- && -MT- && -TRIG-", 
+      "name": "NOMINAL_ntuple_VBF"
+    }, 
+    "data": {
+      "train_weight_scale": 1.0, 
+      "name": {
+        "mt": "NOMINAL_ntuple_SingleMuon", 
+        "tt": "NOMINAL_ntuple_Tau", 
+        "et": "NOMINAL_ntuple_SingleElectron"
+      }, 
+      "target": "none", 
+      "select": "-OS- && -ISO- && -VETO- && -MT- && -TRIG-", 
+      "event_weight": 1.0
+    }, 
+    "estimate": {
+      "train_weight_scale": {
+        "mt": 7.8, 
+        "tt": 1.6, 
+        "et": 5.9
+      }, 
+      "event_weight": 1.0, 
+      "target": {
+        "mt": "ss", 
+        "tt": "noniso", 
+        "et": "ss"
+      }, 
+      "select": {
+        "mt": "-SS- && -ISO- && -VETO- && -MT- && -TRIG-", 
+        "tt": "-OS- && -ANTIISO2- && -VETO- && -MT- && -TRIG-", 
+        "et": "-SS- && -ISO- && -VETO- && -MT- && -TRIG-"
+      }, 
+      "name": {
+        "mt": "NOMINAL_ntuple_SingleMuon", 
+        "tt": "NOMINAL_ntuple_Tau", 
+        "et": "NOMINAL_ntuple_SingleElectron"
+      }
     }
+  }, 
+  "lumi": 41.86, 
+  "path": "/data/higgs/data_2017/", 
+  "train_weight": "use_scale", 
+  "addvar": [
+    "fileEntry", 
+    "entry", 
+    "jdeta", 
+    "jpt_1", 
+    "jpt_2", 
+    "jeta_1", 
+    "jeta_2", 
+    "jphi_1", 
+    "jphi_2", 
+    "jm_1", 
+    "jm_2", 
+    "bpt_1", 
+    "bpt_2", 
+    "beta_1", 
+    "beta_2", 
+    "bphi_1", 
+    "bphi_2", 
+    "bcsv_1", 
+    "bcsv_2", 
+    "byVTightIsolationMVArun2017v2DBoldDMwLT2017_1", 
+    "byVTightIsolationMVArun2017v2DBoldDMwLT2017_2", 
+    "byTightIsolationMVArun2017v2DBoldDMwLT2017_1", 
+    "byTightIsolationMVArun2017v2DBoldDMwLT2017_2", 
+    "byMediumIsolationMVArun2017v2DBoldDMwLT2017_1", 
+    "byMediumIsolationMVArun2017v2DBoldDMwLT2017_2", 
+    "byLooseIsolationMVArun2017v2DBoldDMwLT2017_1", 
+    "byLooseIsolationMVArun2017v2DBoldDMwLT2017_2", 
+    "byVLooseIsolationMVArun2017v2DBoldDMwLT2017_1", 
+    "byVLooseIsolationMVArun2017v2DBoldDMwLT2017_2", 
+    "pt_1", 
+    "pt_1", 
+    "q_1", 
+    "q_2", 
+    "pt_sv", 
+    "iso_1", 
+    "iso_2", 
+    "m_1", 
+    "m_2", 
+    "phi_1", 
+    "phi_2", 
+    "eta_1", 
+    "eta_2", 
+    "gen_match_1", 
+    "gen_match_2", 
+    "decayMode_1", 
+    "decayMode_2", 
+    "dilepton_veto", 
+    "extraelec_veto", 
+    "extramuon_veto", 
+    "againstMuonLoose3_1", 
+    "againstMuonTight3_1", 
+    "againstElectronVLooseMVA6_1", 
+    "againstElectronTightMVA6_1", 
+    "againstMuonLoose3_2", 
+    "againstMuonTight3_2", 
+    "againstElectronVLooseMVA6_2", 
+    "againstElectronTightMVA6_2", 
+    "passesThirdLepVeto", 
+    "passesTauLepVetos", 
+    "puweight", 
+    "xsec", 
+    "genNEventsWeight", 
+    "trk_sf", 
+    "reco_sf", 
+    "genweight", 
+    "antilep_tauscaling", 
+    "idisoweight_1", 
+    "singleTriggerSFLeg1", 
+    "NUP", 
+    "topWeight_run1", 
+    "zPtReweightWeight"
+  ]
 }

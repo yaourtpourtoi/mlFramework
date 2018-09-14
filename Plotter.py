@@ -9,8 +9,8 @@ import os
 import copy
 from math import sqrt
 import sys
-from Tools.utils.VarObject import Var
-import Tools.utils.Plotting as pl
+from Tools.VarObject.VarObject import Var
+import Tools.Plotting.Plotting as pl
 
 def main():
     import argparse
@@ -134,7 +134,7 @@ class Plotter():
             pl.plot(histos = self.histos[cat],
                     signal = self.sig,
                     canvas = "semi", 
-                    descriptions = {"plottype": "ProjectWork", "xaxis":self.var.tex, "channel":self.channel,"som": "13", "lumi":"35.9"  },
+                    descriptions = {"plottype": "ProjectWork", "xaxis":self.var.tex, "channel":self.channel,"som": "13", "lumi":"41.9"  },
                     outfile = "{0}/{1}.png".format(self.plotPath,cat) )
      
     def blindBins(self, h, bins, canvas ):

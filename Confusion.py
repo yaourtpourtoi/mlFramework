@@ -71,7 +71,7 @@ def compressDict(tempdict,classes,channel):
     tmp[classes.index('{0}_misc'.format(channel))]=tempdict['VVJ']+tempdict['VVT']
     tmp[classes.index('{0}_qqH'.format(channel))]=tempdict['qqH125']
     tmp[classes.index('{0}_w'.format(channel))]=tempdict['W']
-    tmp[classes.index('{0}_qcd'.format(channel))]=tempdict['QCD']
+    tmp[classes.index('{0}_ss'.format(channel))]=tempdict['QCD']
     tmp[classes.index('{0}_ztt'.format(channel))]=tempdict['ZTT']
     tmp[classes.index('{0}_ggH'.format(channel))]=tempdict['ggH125']
 
@@ -79,7 +79,7 @@ def compressDict(tempdict,classes,channel):
 
 
 def plot_confusion(confusion, classes, filename, form="arb", markup='{:.2f}'):
-    plt.figure(figsize=(2.5 * confusion.shape[0], 2.0 * confusion.shape[1]))
+    plt.figure(figsize=(1.5 * confusion.shape[0], 1.0 * confusion.shape[1]))
     axis = plt.gca()
     for i in range(confusion.shape[0]):
         for j in range(confusion.shape[1]):

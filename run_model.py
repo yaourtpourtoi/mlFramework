@@ -28,7 +28,7 @@ def main():
     print "---------------------------"
 
         
-    run(samples = "conf/global_config.json",
+    run(samples = "conf/global_config_2017.json",
         channel=args.channel,
         use = args.model,
         train = args.train,

@@ -8,9 +8,9 @@ import json
 import root_numpy as rn
 import root_pandas as rp
 from array import array
-from Tools.utils.CutObject import Cut
-from Tools.utils.VarObject import Var
-from Tools.utils.FakeFactor import FakeFactor
+from Tools.CutObject.CutObject import Cut
+from Tools.VarObject.VarObject import Var
+from Tools.FakeFactor.FakeFactor import FakeFactor
 Cut.cutfile = "conf/cuts.json"
 FakeFactor.ff_config = "conf/ff_config.json"
 FakeFactor.fraction_path = "fractions"
@@ -131,7 +131,7 @@ class Collector():
         return "_".join([self.channel, target]) 
 
     def applySF(self,df, process):
-        with open("scalefactors.json","r") as FSO:
+        with open("conf/scalefactors.json","r") as FSO:
             sfs = json.load(FSO)
 
         apply_sf= "event_weight"
