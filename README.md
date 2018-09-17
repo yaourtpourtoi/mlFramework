@@ -13,3 +13,4 @@
 
        export PYTHONPATH=$HOME/.local/lib/python2.7/site-packages:$PYTHONPATH
 
+It is also possible to set up a CMSSW environment (>=9_4_0). There all needed packages are already included.
