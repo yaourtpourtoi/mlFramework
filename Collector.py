@@ -87,8 +87,8 @@ class Collector():
         self.var = Var( var_name )
         if rebin and var_name == "pred_prob":
             self.var.binning = {"def": (8, array("d", [0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0] ) ), 
-                                "ggH": (100,0.2, 1.0  ),
-                                "qqH": (100,0.2, 1.0  )}
+                                "ggh": (100,0.2, 1.0  ),
+                                "qqh": (100,0.2, 1.0  )}
 
         self.stxs1_cuts = {
             "ggH125":{

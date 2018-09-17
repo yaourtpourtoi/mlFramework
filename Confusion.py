@@ -69,11 +69,11 @@ def compressDict(tempdict,classes,channel):
     tmp[classes.index('{0}_zll'.format(channel))]=tempdict['ZJ']+tempdict['ZL']
     tmp[classes.index('{0}_tt'.format(channel))]=tempdict['TTJ']+tempdict['TTT']
     tmp[classes.index('{0}_misc'.format(channel))]=tempdict['VVJ']+tempdict['VVT']
-    tmp[classes.index('{0}_qqH'.format(channel))]=tempdict['qqH125']
+    tmp[classes.index('{0}_qqh'.format(channel))]=tempdict['qqH125']
     tmp[classes.index('{0}_w'.format(channel))]=tempdict['W']
     tmp[classes.index('{0}_ss'.format(channel))]=tempdict['QCD']
     tmp[classes.index('{0}_ztt'.format(channel))]=tempdict['ZTT']
-    tmp[classes.index('{0}_ggH'.format(channel))]=tempdict['ggH125']
+    tmp[classes.index('{0}_ggh'.format(channel))]=tempdict['ggH125']
 
     return tmp
 
