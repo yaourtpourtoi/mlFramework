@@ -4,12 +4,12 @@ from array import array
 import root_pandas as rp
 import root_numpy as rn
 from pandas import DataFrame,Series,concat
-from Tools.utils.CutObject import Cut
+from utils.CutObject import Cut
 import copy
 import sys
 import os
 import math
-import Tools.utils.Plotting as pl
+import utils.Plotting as pl
 R.gROOT.SetBatch(True)
 R.gStyle.SetOptStat(0)
 
