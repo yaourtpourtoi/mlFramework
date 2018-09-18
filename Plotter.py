@@ -9,8 +9,8 @@ import os
 import copy
 from math import sqrt
 import sys
-from Tools.VarObject.VarObject import Var
-import Tools.Plotting.Plotting as pl
+from utils.VarObject import Var
+import utils.Plotting as pl
 
 def main():
     import argparse

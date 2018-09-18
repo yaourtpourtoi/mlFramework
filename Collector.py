@@ -8,9 +8,9 @@ import json
 import root_numpy as rn
 import root_pandas as rp
 from array import array
-from Tools.CutObject.CutObject import Cut
-from Tools.VarObject.VarObject import Var
-from Tools.FakeFactor.FakeFactor import FakeFactor
+from utils.CutObject import Cut
+from utils.VarObject import Var
+from utils.FakeFactor import FakeFactor
 Cut.cutfile = "conf/cuts.json"
 FakeFactor.ff_config = "conf/ff_config.json"
 FakeFactor.fraction_path = "fractions"
