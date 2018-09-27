@@ -4,14 +4,16 @@ from array import array
 import root_pandas as rp
 import root_numpy as rn
 from pandas import DataFrame,Series,concat
-from utils.CutObject import Cut
+from Tools.CutObject.CutObject import Cut
 import copy
 import sys
 import os
 import math
-import utils.Plotting as pl
+import Tools.Plotting.Plotting as pl
 R.gROOT.SetBatch(True)
 R.gStyle.SetOptStat(0)
+
+Cut.cutfile = "/afs/hephy.at/work/m/mspanring/CMSSW_9_4_0/src/HephyHiggs/Tools/NtuplePlotter/cuts.json"
 
 def main():
     import argparse
@@ -21,8 +23,8 @@ def main():
     parser.add_argument('-p', dest='plot',    help='Plot fractions' , action = "store_true")
     args = parser.parse_args()
 
-    # Frac = Fractions(args.channel, ["pt_2","pred_class"], [ (8, array("d",[0,30,35,40,45,50,50,80,200] ) ) , (8, -0.5,7.5)  ] )
-    Frac = Fractions(args.channel, ["pred_prob","pred_class"], [ (30,0,1 ) , (1, -0.5,7.5)  ] )
+    # Frac = Fractions(args.channel, ["pt_2","njets"], [ (9, array("d",[20,30,35,40,45,50,80,90,100,200] ) ) , (3, array("d",[-0.5,0.5,1.5,15]) )  ] )
+    Frac = Fractions(args.channel, ["m_vis","njets"], [ (30,0,300 ) , (3, array("d",[-0.5,0.5,1.5,15]) )  ] )
     # Frac = Fractions(channel, ["pt_2","pred_class"], [ (5, array("d",[0,30,40,60,100,1000] ) ) , (8, array("d",[-0.5,0.5,1.5,2.5,3.5,4.5,5.5,6.5,7.5]) ) ] )
     # Frac = Fractions(channel, ["pt_2","pred_class"], [ (5, array("d",[0,30,40,60,100,1000] ) ) , (1, array("d",[-0.5,7.5]) ) ] )
     Frac.calcFractions()
@@ -38,31 +40,48 @@ class Fractions():
 
         self.cut = Cut( "-ANTIISO2- && -MT- && -VETO- && -OS- && -TRIG- ", channel )
 
-        self.weights = ["puweight","stitchedWeight","trk_sf","genweight","effweight","topWeight_run1","zPtReweightWeight","antilep_tauscaling"]
-        self.lumi = 35.9
+        # self.weights = ["puweight","stitchedWeight","trk_sf","genweight","effweight","topWeight_run1","zPtReweightWeight","antilep_tauscaling"]
+        self.weights = "puweight * xsec * 1000 * genNEventsWeight * trk_sf * reco_sf * genweight * antilep_tauscaling * idisoweight_1 * singleTriggerSFLeg1"
+        if channel == "tt": self.weights += "*xTriggerSFLeg1*xTriggerSFLeg2"
+        # self.lumi = 35.9
+        self.lumi = 41.860
 
         svfit = "SVFIT"
         version = "v2"
 
 
-        path = "/afs/hephy.at/work/m/mspanring/HephyHiggs/mlFramework/predictions/keras/{0}/".format( channel)
+        # path = "/afs/hephy.at/work/m/mspanring/HephyHiggs/mlFramework/predictions/keras/{0}/".format( channel)
+        path = "/data/higgs/data_2017/v3/{0}-NOMINAL_ntuple_".format( channel)
         ext = ".root"
 
+        # self.mcSamples = [
+        #     (path + "W_more"+ext,"W",""),
+        #     (path + "Z_more"+ext,"ZTT",Cut("-GENHAD-") ),
+        #     (path + "Z_more"+ext,"ZL", Cut("-GENLEP-") ),
+        #     (path + "Z_more"+ext,"ZJ", Cut("-GENJET-") ),
+        #     (path + "TT_more"+ext,"TTT",Cut("-GENHAD-") ),
+        #     (path + "TT_more"+ext,"TTJ",Cut("!-GENHAD-") ),
+        #     (path + "VV_more"+ext,"VVT",Cut("-GENHAD-") ),
+        #     (path + "VV_more"+ext,"VVJ",Cut("!-GENHAD-") ),
+        # ]
+        # self.dataSample = {
+        #     "mt":path + "data_more"+ext,
+        #     "et":path + "data_more"+ext,
+        #     "tt":path + "data_more"+ext
+        # }
+
         self.mcSamples = [
-            (path + "W_more"+ext,"W",""),
-            (path + "Z_more"+ext,"ZTT",Cut("-GENHAD-") ),
-            (path + "Z_more"+ext,"ZL", Cut("-GENLEP-") ),
-            (path + "Z_more"+ext,"ZJ", Cut("-GENJET-") ),
-            (path + "TT_more"+ext,"TTT",Cut("-GENHAD-") ),
-            (path + "TT_more"+ext,"TTJ",Cut("!-GENHAD-") ),
-            (path + "VV_more"+ext,"VVT",Cut("-GENHAD-") ),
-            (path + "VV_more"+ext,"VVJ",Cut("!-GENHAD-") ),
+            (path + "WJets.root","W",""),
+            (path + "DY.root","ZTT",Cut("-GENHAD-") ),
+            (path + "DY.root","ZL", Cut("-GENLEP-") ),
+            (path + "DY.root","ZJ", Cut("-GENJET-") ),
+            (path + "TT.root","TTT",Cut("-GENHAD-") ),
+            (path + "TT.root","TTJ",Cut("!-GENHAD-") ),
+            (path + "VV.root","VVT",Cut("-GENHAD-") ),
+            (path + "VV.root","VVJ",Cut("!-GENHAD-") ),
         ]
-        self.dataSample = {
-            "mt":path + "data_more"+ext,
-            "et":path + "data_more"+ext,
-            "tt":path + "data_more"+ext
-        } 
+        self.dataSample = path + "Data.root"
+
 
         self.composition = {
             "mt":{
@@ -80,7 +99,7 @@ class Fractions():
                 "real":["ZTT","ZL","TTT","VVT"]
             },
             "tt":{
-                "W":["W","VVJ"],
+                "W":["W","VVJ","ZJ"],
                 "TT":["TTJ"],
                 "QCD":["QCD"],
                 "DY":["ZJ"],
@@ -108,7 +127,7 @@ class Fractions():
         for sample,name,addcut in self.mcSamples:
             histos[name] = self.fillHisto( sample, self.cut + addcut, name)
 
-        histos["data"]     = self.fillHisto( self.dataSample[self.channel],self.cut, "data_obs", weight = False )
+        histos["data"]     = self.fillHisto( self.dataSample,self.cut, "data_obs", weight = False )
 
         dummy = self.cpHist( histos["data"], "dummy", ":".join( self.var ) )
         fracs = {}
@@ -163,28 +182,55 @@ class Fractions():
 
         print "written fractions to:", self.channel +"_fractions.root"
 
+    def applySF(self, df, process):
+        with open("scalefactors.json","r") as FSO:
+            sfs = json.load(FSO)
+
+        apply_sf= "eweight"
+        for sf in sfs:
+            if process in sfs[sf][self.channel]["on"] or "all" in sfs[sf][self.channel]["on"]:
+                apl = sfs[sf][self.channel]["apply"] 
+                if apl: apply_sf += "*{0}".format(apl)
+
+        df.eval("eweight = {0}".format( apply_sf ), inplace = True )
+
     def fillHisto(self, path, cut, name, weight = True):
 
-            tmp =   rp.read_root( paths = path,
-                                  where = cut.get(),
-                                  columns = self.weights + self.var + ["gen_match_1","gen_match_2","decayMode_1","decayMode_2"] 
-                                )
+        add_weights = ["puweight","xsec","genNEventsWeight","trk_sf","reco_sf","genweight","antilep_tauscaling","idisoweight_1","singleTriggerSFLeg1","xTriggerSFLeg1","xTriggerSFLeg2","zPtReweightWeight","topWeight_run1","pt_1","pt_2"]
 
-            if weight:
-                tmp.eval( "eweight = " + "*".join( self.weights ),  inplace = True )
-                tmp["eweight"] *= float(self.lumi)
-            else:        
-                tmp.eval( "eweight = 1"  , inplace = True )
+        tmpHist = R.TH2D(name,name,*( self.binning ))
 
-            tmpHist = R.TH2D(name,name,*(self.binning))
-            tmpHist.SetOption("COLZ")
-            rn.fill_hist( tmpHist, array = tmp[self.var].values,
-                                   weights = tmp["eweight"].values )
-
+        if not os.path.exists(path):
+            print "Warning", path
             return tmpHist
 
-    def readFractions(self):
-        file = R.TFile(self.channel +"_fractions.root", "read" )
+        tmp =   rp.read_root( paths = path,
+                              where = cut.get(),
+                              columns = add_weights + self.var+ ["gen_match_1","gen_match_2","decayMode_1","decayMode_2","pt_2","NUP"] 
+                            )
+
+        if weight:
+
+            weights = self.weights
+            if name in ["W"]:
+                weights = weights.replace("xsec*1000*genNEventsWeight*","((NUP == 0)*0.79056 + (NUP == 1)*0.15036 + (NUP == 2)*0.30714 + (NUP == 3)*0.05558 + (NUP == 4)*0.05227)*")
+            if name in ["ZL","ZTT","ZJ","DY"]:
+                weights = weights.replace("xsec*1000*genNEventsWeight*","zPtReweightWeight*((NUP == 0)*0.05913 + (NUP == 1)*0.01017 + (NUP == 2)*0.02150 + (NUP == 3)*0.01351 + (NUP == 4)*0.00922)*")                
+            tmp.eval( "eweight = " + weights ,  inplace = True )
+            if name in ["TTT","TTJ"]:
+                tmp.eval( "eweight = eweight*topWeight_run1",  inplace = True )
+            
+            tmp["eweight"] *= float(self.lumi)
+            self.applySF(tmp, name)
+        else:        
+            tmp.eval( "eweight = 1"  , inplace = True )
+
+        #dictionary
+        tmpHist.SetOption("COLZ")
+        rn.fill_hist( tmpHist, array = tmp[self.var].values,
+                               weights = tmp["eweight"].values )
+
+        return tmpHist
 
     def visualize(self, frac_file = ""):
 
@@ -217,7 +263,7 @@ class Fractions():
             stack.Draw("same")
             leg.Draw()
             R.gPad.RedrawAxis()
-            cv.Print(str(i) + '_fractions.png') 
+            cv.Print(str(i) +'_'+self.channel+ '_fractions.png') 
 
         file.Close()
 
@@ -226,7 +272,7 @@ class FakeFactor():
     fraction_path = "{0}/default_fractions".format( "/".join( os.path.realpath(__file__).split("/")[:-1] ) )
     ff_config = "{0}/config/default_ff_config.json".format( "/".join( os.path.realpath(__file__).split("/")[:-1] ) )
 
-    def __init__(self, variable, channel, data_file, add_systematics = False):
+    def __init__(self, channel, data_file):
 
         self.frac_file = R.TFile( "{0}/{1}_fractions.root".format(self.fraction_path, channel) ,"read" )
         self.channel = channel
@@ -245,22 +291,19 @@ class FakeFactor():
 
 
         with open(self.ff_config,"r") as FSO:
-            config = json.load(FSO)
+            self.config = json.load(FSO)
 
 
-        self.ff_obj  = R.TFile.Open( config["ff_file"][channel] )
+        self.ff_obj  = R.TFile.Open( self.config["ff_file"][channel] )
         self.ff = self.ff_obj.Get("ff_comb")
         self.ff_isopen = True
 
         self.data_file = data_file
-        self.variable = variable
 
-        self.inputs = config["inputs"][channel]
+        self.inputs = self.config["inputs"][channel]
 
-        self.uncert_naming = config["uncert_naming"]
+        self.uncert_naming = self.config["uncert_naming"]
         self.uncerts = ["jetFakes"]
-        if add_systematics:
-            self.uncerts += [ str(u) for u in config["uncerts"][channel] ]
 
 
     def __del__(self):
@@ -289,22 +332,34 @@ class FakeFactor():
         frac = { "QCD":   self.fracs["QCD"].GetBinContent(binx, biny),
                  "W":     self.fracs["W"].GetBinContent(binx, biny),
                  "TT":    self.fracs["TT"].GetBinContent(binx, biny),
-                 "DY":    self.fracs["DY"].GetBinContent(binx, biny),
+                 # "DY":    self.fracs["DY"].GetBinContent(binx, biny),
         }
 
-        inputs = []
+        input_vars = []
+        input_fracs = []
         for v in input_list["vars"]:
-            inputs.append( row[v] )
+            input_vars.append( row[v] )
         for f in input_list["frac"]:
-            inputs.append( frac[f] )
+            input_fracs.append( frac[f] )
+
+        # tf = frac["QCD"] + frac["W"] + frac["TT"]
+        # # inputs += [tf, 0. ,0.]
+        # # inputs += [0., tf, 0.]
+        # inputs += [0., 0. ,tf]
 
         ff = []
         for uncert in self.uncerts:
 
             if uncert == "jetFakes":
-                ff_value = self.ff.value( len(inputs),array('d',inputs) ) 
+                ff_value = self.ff.value( len(input_vars+input_fracs),array('d',input_vars+input_fracs) )
+            elif uncert == "jetFakes_QCD":
+                ff_value = self.ff.value( len(input_vars)+3, array('d',input_vars+[frac["QCD"],0.,0.]) )
+            elif uncert == "jetFakes_W":
+                ff_value = self.ff.value( len(input_vars)+3, array('d',input_vars+[0.,frac["W"],0.]) )
+            elif uncert == "jetFakes_TT":
+                ff_value = self.ff.value( len(input_vars)+3, array('d',input_vars+[0.,0.,frac["TT"]]) )                                
             else:
-                ff_value = self.ff.value( len(inputs),array('d',inputs), uncert )
+                ff_value = self.ff.value( len(input_vars+input_fracs),array('d',input_vars+input_fracs), uncert )
 
             if  not R.TMath.IsNaN(ff_value):
                 ff.append(ff_value)
@@ -314,26 +369,31 @@ class FakeFactor():
 
         return ff
 
-    def calc(self, binning, cut ):
+    def calc(self, variable, cut, add_systematics = True, debug = False ):
+
+        if add_systematics:
+            self.uncerts += [ str(u) for u in self.config["uncerts"][self.channel] ]
+        if debug:
+            self.uncerts += ["jetFakes_W","jetFakes_TT","jetFakes_QCD"]
 
         cut = cut.switchTo("-ANTIISO-")
         if self.channel != "tt":
             
             data_content = rp.read_root( paths = self.data_file,
                                          where = cut.get(),
-                                         columns =  self.inputs["vars"] + [self.variable] + self.frac_var  ) 
+                                         columns =  self.inputs["vars"] + variable.getBranches(for_df = True) + self.frac_var  ) 
 
         else:
 
             inputs = list( set( self.inputs["aiso1"]["vars"] + self.inputs["aiso2"]["vars"] ) )
 
             for iso in ["VTight","Tight","Loose","VLoose"]:
-                inputs.append( "by{0}IsolationMVArun2v1DBoldDMwLT_1".format(iso) )
-                inputs.append( "by{0}IsolationMVArun2v1DBoldDMwLT_2".format(iso) )
+                inputs.append( "by{0}IsolationMVArun2017v2DBoldDMwLT2017_1".format(iso) )
+                inputs.append( "by{0}IsolationMVArun2017v2DBoldDMwLT2017_2".format(iso) )
 
             data_content = rp.read_root( paths = self.data_file,
                                          where = cut.get(),
-                                         columns =inputs+ [self.variable] + self.frac_var )
+                                         columns =inputs+ variable.getBranches(for_df = True) + self.frac_var )
 
             data_content.eval(" aiso1 = {0} ".format( Cut("-ANTIISO1-","tt").getForDF() ), inplace = True  )
             data_content.eval(" aiso2 = {0} ".format( Cut("-ANTIISO2-","tt").getForDF() ), inplace = True  )
@@ -354,18 +414,24 @@ class FakeFactor():
         FFHistos = {}
         for i,uncert in enumerate(self.uncerts):
 
-            if not uncert == "jetFakes":
+            if not "jetFakes" in uncert:
                 name = self.convertSystematicName(uncert)
             else:
                 name = uncert
 
-            FFHistos[name] = R.TH1D(name,name,*(binning) )
-            rn.fill_hist( FFHistos[name], array = data_content[self.variable].values,
+            if variable.is2D():
+                FFHistos[name] = R.TH2D(name+"2D",name+"2D",*( variable.bins() ))
+            else:
+                FFHistos[name] = R.TH1D(name,name,*( variable.bins() ))
+
+            rn.fill_hist( FFHistos[name], array = data_content[variable.getBranches()].values,
                           weights = ff_weights[i].values )
+
+            FFHistos[name] = self.unroll2D(FFHistos[name])
 
         norm_factors = {}
         for name, hist in FFHistos.items():
-            if name == "jetFakes": continue
+            if "jetFakes" in name: continue
             norm_factors[name] =  FFHistos["jetFakes"].Integral() / hist.Integral()
 
             hist.Scale( norm_factors[name] )
@@ -375,6 +441,23 @@ class FakeFactor():
 
         return FFHistos
 
+    def unroll2D(self, th):
+        if type(th) is R.TH1D: return th
+
+        bins = th.GetNbinsX()*th.GetNbinsY()
+        name = th.GetName().replace("2D","")
+        unrolled = R.TH1D(name,name, *(bins,0,bins) )
+        unrolled.Sumw2(True)
+
+        for i,y in  enumerate( xrange(1,th.GetNbinsY()+1) ):
+            for x in xrange(1,th.GetNbinsX()+1):
+                offset = i*th.GetNbinsX()
+
+                unrolled.SetBinContent( x+offset, th.GetBinContent(x,y) )
+                unrolled.SetBinError( x+offset, th.GetBinError(x,y) )
+
+        return unrolled
+
     def convertSystematicName(self,name):
 
         if "ff_w_syst" in name or "ff_tt_syst" in name:
@@ -382,7 +465,6 @@ class FakeFactor():
                 uncert_name = "jetFakes_" + self.uncert_naming[name].format(channel = "")
             else:
                 uncert_name = "jetFakes_" + self.uncert_naming[name].format(channel = "_"+self.channel )
-                uncert_name = uncert_name.replace("_ff_tt","_ff_ttbar")
         else:
             uncert_name = "jetFakes_" + self.uncert_naming[name].format(channel = "_"+self.channel )
         return uncert_name
