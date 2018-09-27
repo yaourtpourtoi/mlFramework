@@ -88,47 +88,45 @@ def run(samples,channel, use, train,short, preprocess_chain = []):
         model = modelObject( filename = modelname )
 
     where = ""
-    coll = Collector( channel = channel,
-                      var_name = "pred_prob",
-                      target_names = target_names, 
-                      path = use, 
-                      recreate = True,
-                      rebin = False )
 
-    print "Predicting simulation"
-    for sample, sampleName in read.get(what = "nominal"):
-        pred =  model.predict( applyScaler(scaler, sample, variables), where )
-        coll.addPrediction(pred, sample, sampleName)
-        
-    print "Adding looser samples to predictions"
-    for sample, sampleName in read.get(what = "more"):
-        pred =  model.predict( applyScaler(scaler, sample, variables), where )
-        coll.addPrediction(pred, sample, sampleName)
-        
-    print "Predicting data"
-    for sample, sampleName in read.get(what = "data"):
-        pred =  model.predict( applyScaler(scaler, sample, variables), where )
-        coll.addPrediction(pred, sample, sampleName)
-    
+    predictions = {}
+    print "Predicting samples"
+    for sample, sampleName in read.get(what = "full", add_jec = not short):
+
+        if "data" in sampleName:
+            addPrediction( model.predict( applyScaler(scaler, sample, variables), where ), sample, sampleName )
+        elif "full" in sampleName:
+            predictions[ sampleName.split("_")[0] ] = {"sample":sample, "":model.predict( applyScaler(scaler, sample, variables), where ) }
+        else:
+            splName = sampleName.split("_")
+            predictions[splName[0]][ "_".join(splName[1:]) ] = model.predict( applyScaler(scaler, sample, variables), where )
+
+    samples = predictions.keys()
+    for sampleName in samples:
+
+        prediction = predictions.pop(sampleName,None)
+        sample = prediction.pop("sample",None)
+        nom_pred = prediction.pop("",None)
+
+        addPrediction(nom_pred, sample, sampleName, prediction)
+        prediction = None
+
     if not short:
         print "Predicting TES shapes"
         for sample, sampleName in read.get(what = "tes"):
             pred =  model.predict( applyScaler(scaler, sample, variables), where )
-            coll.addPrediction(pred, sample, sampleName)
+            addPrediction(pred, sample, sampleName)
 
-        print "Predicting JES shapes"
-        for sample, sampleName in read.get(what = "jec"):
-            pred =  model.predict( applyScaler(scaler, sample, variables), where )
-            coll.addPrediction(pred, sample, sampleName)   
+def addPrediction(prediction, df, sample, uncert = {}):
+    for i in xrange( len(df) ):
+        for c in prediction[i].columns.values.tolist():
+            df[i][c] =  prediction[i][c]
+            for jec in uncert:
+                df[i][c+jec] = uncert[jec][i][c]
 
-    coll.createDC(writeAll = True)
-
-    plot = Plotter( channel= channel,
-                    naming = read.processes,
-                    path = use )
-
-    plot.makePlots()
-
+        if i == 0: mode = "w"
+        else: mode = "a"
+        df[i].to_root("{0}/{1}.root".format("predictions", sample), key="TauCheck", mode = mode)
 
 def trainScaler(folds, variables):
     from sklearn.preprocessing import StandardScaler

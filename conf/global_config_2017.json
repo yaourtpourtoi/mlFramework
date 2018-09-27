@@ -12,22 +12,18 @@
       "jm_2", 
       "bpt_1", 
       "bpt_2", 
-      "bcsv_1", 
       "bcsv_2", 
       "njets", 
       "nbtag", 
-      "mt_1", 
-      "mt_2", 
-      "pt_tt", 
-      "mjj", 
-      "dijetpt", 
-      "met"
+      "mt_1"
     ], 
     "tt": [
       "m_sv", 
-      "m_vis", 
       "pt_vis", 
       "pt_1", 
+      "m_vis",
+      "njets",
+      "nbtag",
       "pt_2", 
       "jpt_1", 
       "jcsv_1", 
@@ -36,8 +32,6 @@
       "bpt_1", 
       "bcsv_1", 
       "bcsv_2", 
-      "njets", 
-      "nbtag", 
       "mt_1", 
       "pt_tt", 
       "mjj", 
@@ -47,7 +41,6 @@
     ], 
     "et": [
       "m_sv", 
-      "m_vis", 
       "pt_vis", 
       "pt_1", 
       "pt_2", 
@@ -56,15 +49,11 @@
       "bpt_1", 
       "bpt_2", 
       "bcsv_1", 
-      "bcsv_2", 
       "njets", 
-      "nbtag", 
       "mt_1", 
       "mt_2", 
       "pt_tt", 
-      "mjj", 
-      "dijetpt", 
-      "met"
+      "mjj"
     ]
   }, 
   "version": {
@@ -88,7 +77,7 @@
       "select": "-OS- && -ISO- && -VETO- && -MT- && -TRIG- && -GENLEP-", 
       "name": "NOMINAL_ntuple_DY"
     }, 
-    "W_more": {
+    "W_full": {
       "train_weight_scale": 1.0, 
       "event_weight": "puweight*((NUP == 0)*0.000790555230048 + (NUP == 1)*0.000150361226486 + (NUP == 2)*0.000307137166339 + (NUP == 3)*5.55843884964e-05 + (NUP == 4)*5.2271728229e-05)*trk_sf*reco_sf*genweight*antilep_tauscaling*idisoweight_1*singleTriggerSFLeg1", 
       "target": "none", 
@@ -99,7 +88,7 @@
       }, 
       "name": "NOMINAL_ntuple_WJets"
     }, 
-    "Z_more": {
+    "Z_full": {
       "train_weight_scale": 1.0, 
       "event_weight": "puweight*((NUP == 0)*5.91296350328e-05 + (NUP == 1)*1.01562362959e-05 + (NUP == 2)*2.15030982864e-05 + (NUP == 3)*1.35063197418e-05 + (NUP == 4)*9.22459522375e-06)*trk_sf*reco_sf*genweight*antilep_tauscaling*idisoweight_1*singleTriggerSFLeg1", 
       "target": "none", 
@@ -125,7 +114,7 @@
       "select": "-OS- && -ISO- && -VETO- && -MT- && -TRIG- && -GENJET-", 
       "name": "NOMINAL_ntuple_DY"
     }, 
-    "data_more": {
+    "data_full": {
       "train_weight_scale": 1.0, 
       "event_weight": 1.0, 
       "target": "none", 
@@ -135,9 +124,9 @@
         "et": "-VETO- && -MT- && -TRIG-"
       }, 
       "name": {
-        "mt": "NOMINAL_ntuple_SingleMuon", 
-        "tt": "NOMINAL_ntuple_Tau", 
-        "et": "NOMINAL_ntuple_SingleElectron"
+        "mt": "NOMINAL_ntuple_Data", 
+        "tt": "NOMINAL_ntuple_Data", 
+        "et": "NOMINAL_ntuple_Data"
       }
     }, 
     "ggH125": {
@@ -200,7 +189,7 @@
       "select": "-OS- && -ISO- && -VETO- && -MT- && -TRIG- && (-GENLEP- || -GENJET-) ", 
       "name": "NOMINAL_ntuple_TT"
     }, 
-    "VV_more": {
+    "VV_full": {
       "train_weight_scale": 1.0, 
       "event_weight": "puweight*xsec*genNEventsWeight*trk_sf*reco_sf*genweight*antilep_tauscaling*idisoweight_1*singleTriggerSFLeg1", 
       "target": "none", 
@@ -241,7 +230,7 @@
       "select": "-OS- && -ISO- && -VETO- && -MT- && -TRIG-", 
       "name": "NOMINAL_ntuple_WJets"
     }, 
-    "TT_more": {
+    "TT_full": {
       "train_weight_scale": 1.0, 
       "event_weight": "puweight*xsec*genNEventsWeight*trk_sf*reco_sf*genweight*antilep_tauscaling*idisoweight_1*singleTriggerSFLeg1*topWeight_run1", 
       "target": "none", 
@@ -285,9 +274,9 @@
     "data": {
       "train_weight_scale": 1.0, 
       "name": {
-        "mt": "NOMINAL_ntuple_SingleMuon", 
-        "tt": "NOMINAL_ntuple_Tau", 
-        "et": "NOMINAL_ntuple_SingleElectron"
+        "mt": "NOMINAL_ntuple_Data", 
+        "tt": "NOMINAL_ntuple_Data", 
+        "et": "NOMINAL_ntuple_Data"
       }, 
       "target": "none", 
       "select": "-OS- && -ISO- && -VETO- && -MT- && -TRIG-", 
@@ -311,9 +300,9 @@
         "et": "-SS- && -ISO- && -VETO- && -MT- && -TRIG-"
       }, 
       "name": {
-        "mt": "NOMINAL_ntuple_SingleMuon", 
-        "tt": "NOMINAL_ntuple_Tau", 
-        "et": "NOMINAL_ntuple_SingleElectron"
+        "mt": "NOMINAL_ntuple_Data", 
+        "tt": "NOMINAL_ntuple_Data", 
+        "et": "NOMINAL_ntuple_Data"
       }
     }
   }, 
@@ -321,17 +310,24 @@
   "path": "/data/higgs/data_2017/", 
   "train_weight": "use_scale", 
   "addvar": [
-    "fileEntry", 
-    "entry", 
+    "fileEntry",
+    "evt",
+    "entry",
+    "njets*",
+    "nbtag",
+    "met",
+    "pt_tt",
+    "mjj",
+    "m_vis",
     "jdeta", 
-    "jpt_1", 
-    "jpt_2", 
-    "jeta_1", 
-    "jeta_2", 
-    "jphi_1", 
-    "jphi_2", 
-    "jm_1", 
-    "jm_2", 
+    "jpt_1*", 
+    "jpt_2*", 
+    "jeta_1*", 
+    "jeta_2*", 
+    "jphi_1*", 
+    "jphi_2*", 
+    "jm_1*", 
+    "jm_2*", 
     "bpt_1", 
     "bpt_2", 
     "beta_1", 
@@ -390,7 +386,14 @@
     "idisoweight_1", 
     "singleTriggerSFLeg1", 
     "NUP", 
-    "topWeight_run1", 
-    "zPtReweightWeight"
+    "topWeight_run1",
+    "topWeight",
+    "zPtReweightWeight",
+    "xTriggerSFLeg1",
+    "xTriggerSFLeg2",
+    "trg_singlemuon",
+    "trg_singlemuon_lowpt",
+    "trg_singleelectron",
+    "trg_singleelectron_lowpt"
   ]
 }

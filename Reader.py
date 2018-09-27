@@ -8,7 +8,7 @@ from helper import calc
 
 def main():
 
-    SR = Reader("mt","conf/scale_samples.json",2)
+    SR = Reader("mt","conf/global_config_2017.json",2)
     with open("dump.json","w") as FSO:
         json.dump(SR.config, FSO, indent = 4, sort_keys=True )
 
@@ -66,7 +66,6 @@ class Reader():
         config["variables"] = self._assertChannel( config["variables"] )
         config["version"] = self._assertChannel( config["version"] )
         # if self.channel == "mt":
-        #     config["variables"], self.needToAddVars = self._somethingMissing( config["variables"] )
 
         config["path"] = "{path}/{version}".format( **config )
 
@@ -85,7 +84,7 @@ class Reader():
             snap["train_weight_scale"] = self._assertChannel( snap["train_weight_scale"] )
             snap["event_weight"]  = self._assertChannel( snap["event_weight"] )
             
-            if sample != "data" and sample != "data_ss":
+            if sample != "data" and sample != "estimate":
                 snap["shapes"]  = self._getShapePaths( snap["name"], sample )
                 if type(snap["event_weight"]) is list:
                     config["addvar"] = list( set( config["addvar"] + snap["event_weight"] ) )
@@ -132,35 +131,31 @@ class Reader():
 
         return self
 
-    def setLooserSamples(self):
+    def setFullSamples(self, add_jec = False):
         self.itersamples = []
         self.idx = 0
         samples = self.config["samples"].keys()
         samples.sort()
         for sample in samples:
-            if not "_more" in sample: continue
+            if "_full" in sample:
 
-            tmp = self._getCommonSettings(sample)
+                tmp = self._getCommonSettings(sample)
+                tmp["path"] = self.config["samples"][sample]["name"] 
+                tmp["histname"   ] = sample
+                tmp["rename"      ] = {}
+                self.itersamples.append( tmp )
 
-            tmp["path"] = self.config["samples"][sample]["name"] 
-            tmp["histname"   ] = sample
-            tmp["rename"      ] = {}
+                if add_jec and not "data" in sample:
+                    for shape in self.config["samples"][sample]["shapes"]:
+                        if not "Total" in shape: continue
 
-            self.itersamples.append( tmp )
+                        tmp = self._getCommonSettings(sample)
 
-        return self
+                        tmp["path"] = self.config["samples"][sample]["shapes"][shape] 
+                        tmp["histname"   ] = sample.replace("full",shape)
+                        tmp["rename"      ] = self._getRenaming( shape )
 
-    def setDataSample(self):
-        self.itersamples = []
-        self.idx = 0
-
-        tmp = self._getCommonSettings("data")
-
-        tmp["path"] = self.config["samples"]["data"]["name"] 
-        tmp["histname"   ] = "data_obs"
-        tmp["rename"      ] = {}
-
-        self.itersamples.append( tmp )
+                        self.itersamples.append( tmp )                
 
         return self
 
@@ -170,44 +165,22 @@ class Reader():
         samples = self.config["samples"].keys()
         samples.sort()
         for sample in samples:
-            if sample == "data" or sample == "estimate" or "_more" in sample: continue
+            if "data" in sample or not "_full" in sample: continue
 
             for shape in self.config["samples"][sample]["shapes"]:
-                if "JEC" in shape: continue
+                if not "TES" in shape: continue
 
                 tmp = self._getCommonSettings(sample)
 
                 tmp["path"] = self.config["samples"][sample]["shapes"][shape]
                 if not tmp["path"]: continue
 
-                tmp["histname"   ] = sample + self.hist_names[shape].format(channel = self.channel)
+                tmp["histname"   ] = sample.replace("full",shape)
                 tmp["rename"      ] = {}
 
                 self.itersamples.append( tmp )
 
         return self
-
-    def setJECSamples(self):
-        self.itersamples = []
-        self.idx = 0
-        samples = self.config["samples"].keys()
-        samples.sort()
-        for sample in samples:
-            if sample == "data" or sample == "estimate" or "_more" in sample: continue
-
-            for shape in self.config["samples"][sample]["shapes"]:
-                if not "JEC" in shape: continue
-
-                tmp = self._getCommonSettings(sample)
-
-                tmp["path"] = self.config["samples"][sample]["shapes"][shape] 
-                tmp["histname"   ] = sample + self.hist_names[shape]
-                tmp["rename"      ] = self._getRenaming( shape.replace("JEC","") )
-
-                self.itersamples.append( tmp )
-
-        return self
-
 
     def loadForMe(self, sample_info):
 
@@ -241,20 +214,10 @@ class Reader():
 
         return folds
 
-    def get(self, what):
+    def get(self, what, add_jec = False):
         if what == "nominal"  : return self.setNominalSamples()
-        if what == "more"     : return self.setLooserSamples()
-        if what == "data"     : return self.setDataSample()
+        if what == "full"     : return self.setFullSamples(add_jec)
         if what == "tes"      : return self.setTESSamples()
-        if what == "jec"      : return self.setJECSamples()
-
-    def _somethingMissing(self, variables):
-        missing = []
-        if "dijetpt"  in variables: missing.append( variables.pop( variables.index("dijetpt") ) )
-        if "dijetphi" in variables: missing.append( variables.pop( variables.index("dijetphi") ) )
-        if "pt_vis"    in variables: missing.append( variables.pop( variables.index("pt_vis") ) )
-
-        return variables, missing
 
     def _parseCut(self, cutstring):
         cutstring = self._assertChannel( cutstring )
@@ -271,13 +234,12 @@ class Reader():
 
     def _getShapePaths(self, path, sample):
 
-        shapes = {"T0Up":"","T0Down":"","T1Up":"","T1Down":"","T10Up":"","T10Down":"",
-                  "ZL0Up":"","ZL0Down":"","ZL1Up":"","ZL1Down":"","ZL10Up":"","ZL10Down":"","JECUp":sample,"JECDown":sample}
+        shapes = {"TES1p0p0Up":"","TES1p0p0Down":"","TES1p1p0Up":"","TES1p1p0Down":"","TES3p0p0Up":"","TES3p0p0Down":"","TotalUp":sample,"TotalDown":sample}
 
         for shape in shapes:
             if ("ZL" in shape and sample != "ZL") or ("ZL" in shape and self.channel == "tt"): continue
             if sample in ["W","TTJ","ZJ","VVJ"] and not shape in ["JECUp","JECDown"]: continue
-            shape_path = path.replace(".root","_{0}.root".format(shape) )
+            shape_path = path.replace("NOMINAL",shape )
             if os.path.exists( shape_path ):
                 shapes[shape] = shape_path
             else:
@@ -326,7 +288,7 @@ class Reader():
     def _getRenaming(self, corr):
 
         tmp =[]
-        for nom in ["mjj","jdeta","njets","jpt"]:
+        for nom in ["njets"]:
             if not nom == "jpt": tmp+= [(nom, nom+corr),(nom+corr, nom) ]
             else : tmp += [ (nom + "_1", nom+corr+ "_1"),(nom+corr+ "_1", nom+ "_1"),
                             (nom + "_2", nom+corr+ "_2"),(nom+corr+ "_2", nom+ "_2") ]
