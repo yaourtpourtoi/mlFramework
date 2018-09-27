@@ -37,7 +37,7 @@ def main():
     print "---------------------------------"
 
     read = Reader(channel=args.channel,
-                  config_file = "conf/global_config.json",
+                  config_file = "conf/global_config_2017.json",
                   folds = 2)
 
     C = Collector(channel = args.channel,
@@ -195,7 +195,7 @@ class Collector():
     def setRebinning(self):
         DC = R.TFile( self.filename, "READ" )
 
-        Dirs = {"ggH": DC.Get(self.channel + "_ggH"), "qqH":DC.Get(self.channel + "_qqH") }
+        Dirs = {"ggh": DC.Get(self.channel + "_ggh"), "qqh":DC.Get(self.channel + "_qqh") }
 
         sig = ["ggH125", "qqH125"]
         bkg = ["TTT","TTJ","ZTT","ZL","ZJ","VVT","VVJ","W","QCD","EWKZ"]
@@ -291,12 +291,12 @@ class Collector():
         print "Estimating Jet Fakes"
         for i,template in enumerate(looseMC):
             if not "data" in template: continue
-            FF = FakeFactor( self.var.name, self.channel, data_file = template, add_systematics = add_systematics )
+            FF = FakeFactor( self.channel, data_file = template )
 
             for c,t in self.target_names.items():
                 binning = self.var.bins( t )
                 ff_select = Cut("pred_class == {0} && -OS- && -ANTIISO- ".format( int(c) ), self.channel)
-                FFHistos = FF.calc( binning, ff_select )
+                FFHistos = FF.calc( self.var, ff_select, add_systematics )
 
                 self.DCfile.cd( self.d( t ) )
 
@@ -348,7 +348,7 @@ class Collector():
                 binning = self.var.bins( t )
 
                 tmpHists = { "-ISO-":    {"-SS-": R.TH1D("ssiso"+t,"ssiso"+t,*binning),   "-OS-": R.TH1D("osiso"+t,"osiso"+t,*binning)},
-                             "-ANTIISO-":{"-SS-": R.TH1D("ssaiso"+t,"ssaiso"+t,*binning), "-OS-": R.TH1D("osaiso"+t,"osaiso"+t,*binning)} 
+                             "-ANTIISO2-":{"-SS-": R.TH1D("ssaiso"+t,"ssaiso"+t,*binning), "-OS-": R.TH1D("osaiso"+t,"osaiso"+t,*binning)} 
                             }
 
                 for i,template in enumerate(looseMC):
@@ -374,17 +374,17 @@ class Collector():
                             else: addV = -1
                             tmpHists[iso][sign].Add(tmpHist, addV)
 
-                tmpHists["-ANTIISO-"]["-OS-"].Scale( tmpHists["-ISO-"]["-SS-"].Integral() / float(tmpHists["-ANTIISO-"]["-SS-"].Integral() ) )
-                tmpHists["-ANTIISO-"]["-OS-"].SetName("QCD")
+                tmpHists["-ANTIISO2-"]["-OS-"].Scale( tmpHists["-ISO-"]["-SS-"].Integral() / float(tmpHists["-ANTIISO2-"]["-SS-"].Integral() ) )
+                tmpHists["-ANTIISO2-"]["-OS-"].SetName("QCD")
 
                 self.DCfile.cd( self.d( t ) )
                 if add_systematics:
                     for rw in ["QCD_WSFUncert_{chan}_{cat}_13TeVUp","QCD_WSFUncert_{chan}_{cat}_13TeVDown"]:
                         rwname = rw.format( chan = self.channel, cat = t )
-                        tmp = copy.deepcopy( tmpHists["-ANTIISO-"]["-OS-"] )
+                        tmp = copy.deepcopy( tmpHists["-ANTIISO2-"]["-OS-"] )
                         tmp.SetName(rwname)
                         tmp.Write()
-                tmpHists["-ANTIISO-"]["-OS-"].Write()
+                tmpHists["-ANTIISO2-"]["-OS-"].Write()
 
 
 
