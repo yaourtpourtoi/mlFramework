@@ -1,6 +1,5 @@
 from Reader import Reader
-from Plotter import Plotter 
-from Collector import Collector
+from Tools.Datacard.produce import Datacard, makePlot
 import copy
 import pandas
 import json
@@ -8,6 +7,7 @@ import sys
 import os
 import argparse
 import cPickle
+import gc
 
 def main():
 
@@ -28,7 +28,7 @@ def main():
     print "---------------------------"
 
         
-    run(samples = "conf/global_config.json",
+    run(samples = "conf/global_config_2017.json",
         channel=args.channel,
         use = args.model,
         train = args.train,
@@ -88,47 +88,55 @@ def run(samples,channel, use, train,short, preprocess_chain = []):
         model = modelObject( filename = modelname )
 
     where = ""
-    coll = Collector( channel = channel,
-                      var_name = "pred_prob",
-                      target_names = target_names, 
-                      path = use, 
-                      recreate = True,
-                      rebin = False )
 
-    print "Predicting simulation"
-    for sample, sampleName in read.get(what = "nominal"):
-        pred =  model.predict( applyScaler(scaler, sample, variables), where )
-        coll.addPrediction(pred, sample, sampleName)
-        
-    print "Adding looser samples to predictions"
-    for sample, sampleName in read.get(what = "more"):
-        pred =  model.predict( applyScaler(scaler, sample, variables), where )
-        coll.addPrediction(pred, sample, sampleName)
-        
-    print "Predicting data"
-    for sample, sampleName in read.get(what = "data"):
-        pred =  model.predict( applyScaler(scaler, sample, variables), where )
-        coll.addPrediction(pred, sample, sampleName)
-    
+    predictions = {}
+    print "Predicting samples"
+    for sample, sampleName in read.get(what = "full", add_jec = not short):
+        if "data" in sampleName:
+            addPrediction(channel, model.predict( applyScaler(scaler, sample, variables), where ), sample, "NOMINAL_ntuple_Data" )
+        elif "full" in sampleName:
+            predictions[ "NOMINAL_ntuple_" + sampleName.split("_")[0] ] = {"sample":None, "":model.predict( applyScaler(scaler, sample, variables), where ) }
+        else:
+            splName = sampleName.split("_")
+            predictions[ "NOMINAL_ntuple_" + splName[0]][ "_".join(splName[1:]) ] = model.predict( applyScaler(scaler, sample, variables), where )
+
+        gc.collect()
+
+    samples = predictions.keys()
+    for sampleName in samples:
+
+        prediction = predictions.pop(sampleName,None)
+        sample = prediction.pop("sample",None)
+        nom_pred = prediction.pop("",None)
+
+        addPrediction(channel,nom_pred, sample, sampleName, prediction)
+        prediction = None
+
     if not short:
         print "Predicting TES shapes"
         for sample, sampleName in read.get(what = "tes"):
             pred =  model.predict( applyScaler(scaler, sample, variables), where )
-            coll.addPrediction(pred, sample, sampleName)
+            addPrediction(channel, pred, sample, sampleName)
 
-        print "Predicting JES shapes"
-        for sample, sampleName in read.get(what = "jec"):
-            pred =  model.predict( applyScaler(scaler, sample, variables), where )
-            coll.addPrediction(pred, sample, sampleName)   
 
-    coll.createDC(writeAll = True)
 
-    plot = Plotter( channel= channel,
-                    naming = read.processes,
-                    path = use )
 
-    plot.makePlots()
 
+    Datacard.use_config = "datacardConf"
+    D = Datacard(channel, "predicted_prob", False, False)
+    D.create(use)
+    makePlot(channel, "predicted_prob", use)
+
+def addPrediction(channel,prediction, df, sample, uncert = {}):
+    for i in xrange( len(df) ):
+        for c in prediction[i].columns.values.tolist():
+            df[i][c] =  prediction[i][c]
+            for jec in uncert:
+                df[i][c+jec] = uncert[jec][i][c]
+
+        if i == 0: mode = "w"
+        else: mode = "a"
+        df[i].to_root("{0}/{1}-{2}.root".format("predictions",channel, sample), key="TauCheck", mode = mode)
 
 def trainScaler(folds, variables):
     from sklearn.preprocessing import StandardScaler
