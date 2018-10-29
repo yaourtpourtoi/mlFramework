@@ -65,7 +65,8 @@ class Reader():
         config["target_names"] = {}
         config["variables"] = self._assertChannel( config["variables"] )
         config["version"] = self._assertChannel( config["version"] )
-        # if self.channel == "mt":
+        for cw in config["class_weight"]:
+            config["class_weight"][cw] = self._assertChannel( config["class_weight"][cw] )
 
         config["path"] = "{path}/{version}".format( **config )
 
@@ -81,10 +82,9 @@ class Reader():
             snap["name"]    = "{path}/{channel}-{name}.root".format(name = sample_name, **config)
             snap["select"] = self._parseCut( snap["select"] )
 
-            snap["train_weight_scale"] = self._assertChannel( snap["train_weight_scale"] )
             snap["event_weight"]  = self._assertChannel( snap["event_weight"] )
             
-            if sample != "data" and sample != "estimate":
+            if sample != "data" and sample != "estimate" and "_full" in sample:
                 snap["shapes"]  = self._getShapePaths( snap["name"], sample )
                 if type(snap["event_weight"]) is list:
                     config["addvar"] = list( set( config["addvar"] + snap["event_weight"] ) )
@@ -100,6 +100,7 @@ class Reader():
             target_map[t] = i
 
         for sample in config["samples"]:
+            config["samples"][sample]["target_name"] = config["samples"][sample]["target"]
             config["samples"][sample]["target"]  = target_map.get( config["samples"][sample]["target"], -1 )  
 
         return config
@@ -119,7 +120,7 @@ class Reader():
         samples = self.config["samples"].keys()
         samples.sort()
         for sample in samples:
-            if sample == "data" or "_more" in sample: continue
+            if sample == "data" or "_full" in sample: continue
 
             tmp = self._getCommonSettings(sample)
 
@@ -175,7 +176,7 @@ class Reader():
                 tmp["path"] = self.config["samples"][sample]["shapes"][shape]
                 if not tmp["path"]: continue
 
-                tmp["histname"   ] = sample.replace("full",shape)
+                tmp["histname"   ] =  shape +"_ntuple_" + sample.replace("_full","")
                 tmp["rename"      ] = {}
 
                 self.itersamples.append( tmp )
@@ -184,16 +185,12 @@ class Reader():
 
     def loadForMe(self, sample_info):
 
-        print "Loading ",sample_info["histname"] , sample_info["path"].split("/")[-1]
+        print "Loading ", constStrLen( sample_info["histname"] ) , sample_info["path"].split("/")[-1]
         DF = self._getDF(sample_path = sample_info["path"], 
                           select = sample_info["select"])
         DF.eval( "event_weight = " + sample_info["event_weight"], inplace = True  )
         DF["target"] = sample_info["target"]
-
-        if not self.config["train_weight"]:
-            DF["train_weight"] = 1.0
-        else:
-            DF["train_weight"] = self._getTrainWeight(DF, scale = sample_info["train_weight_scale"] )
+        DF["train_weight"] = DF["event_weight"].abs() * self.config["class_weight"].get(sample_info["target_name"], 1.0 )
 
         if sample_info["rename"]:
             DF.rename(columns = sample_info["rename"], inplace = True)
@@ -251,9 +248,9 @@ class Reader():
 
         settings = {}
         settings["event_weight"] = self._getEventWeight(sample)
-        settings["target"      ] = self.config["samples"][sample]["target"] 
+        settings["target"      ] = self.config["samples"][sample]["target"]
+        settings["target_name" ] = self.config["samples"][sample]["target_name"] 
         settings["select"      ] = self.config["samples"][sample]["select"]
-        settings["train_weight_scale"] = self.config["samples"][sample]["train_weight_scale"]
         
         return settings
 
@@ -266,21 +263,7 @@ class Reader():
             return str( self.config["samples"][sample]["event_weight"] )
 
         if type( self.config["samples"][sample]["event_weight"] ) is unicode:
-            return "*".join(["1000", str( self.config["samples"][sample]["event_weight"] ), str(self.config["lumi"]) ])
-
-        else:
-            return 1.0
-
-    def _getTrainWeight(self, DF, scale):
-        if self.config["train_weight"] == "normalize_evt":
-            evts = len(DF)
-            if evts > 0: return 10000 / float(evts)
-
-        elif self.config["train_weight"] == "normalize_xsec":
-            return DF["event_weight"].sum() 
-
-        elif self.config["train_weight"] == "use_scale":
-            return DF["event_weight"].abs() * scale
+            return "*".join([str( self.config["samples"][sample]["event_weight"] ), str(self.config["lumi"]) ])
 
         else:
             return 1.0
@@ -299,18 +282,19 @@ class Reader():
 
         if self.folds != 2: raise NotImplementedError("Only implemented two folds so far!!!")
         folds = []
-
-        folds.append( df.query( "entry % 2 != 0 " ).reset_index(drop=True) )
-        folds.append( df.query( "entry % 2 == 0 " ).reset_index(drop=True) )
-
+        folds.append( df.query( "index % 2 != 0 " ).reset_index(drop=True) )
+        folds.append( df.query( "index % 2 == 0 " ).reset_index(drop=True) )
         return folds
 
     def _getDF( self, sample_path, select ):
-        branches = set( self.config["variables"] + self.config["addvar"] )
-        tmp = rp.read_root( paths = sample_path,
-                             where = select,
-                             columns = branches)
 
+        add = "addvar"
+        if "Embedd" in sample_path:
+            add = "addvar_Embedding"
+        branches = list(set( self.config["variables"] + self.config[ add ] ))
+        tmp = rp.read_root( paths = sample_path,
+                            where = select,
+                            columns = branches)
         if self.needToAddVars:
             for new in self.needToAddVars:
                 tmp[new] = tmp.apply( calc(new), axis=1 )
@@ -319,6 +303,9 @@ class Reader():
 
         return tmp
 
+def constStrLen(string):
+
+    return string + " "*(30 - len(string) )
 
 
 if __name__ == '__main__':
