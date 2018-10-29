@@ -4,16 +4,16 @@ from array import array
 import root_pandas as rp
 import root_numpy as rn
 from pandas import DataFrame,Series,concat
-from Tools.CutObject.CutObject import Cut
+from utils.CutObject import Cut
 import copy
 import sys
 import os
 import math
-import Tools.Plotting.Plotting as pl
+import utils.Plotting as pl
 R.gROOT.SetBatch(True)
 R.gStyle.SetOptStat(0)
 
-Cut.cutfile = "/afs/hephy.at/work/m/mspanring/CMSSW_9_4_0/src/HephyHiggs/Tools/NtuplePlotter/cuts.json"
+Cut.cutfile = "utils/cuts.json"
 
 def main():
     import argparse
