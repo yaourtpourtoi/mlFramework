@@ -1,6 +1,5 @@
 from Reader import Reader
-from Plotter import Plotter 
-from Collector import Collector
+from Tools.Datacard.produce import Datacard, makePlot
 import copy
 import pandas
 import json
@@ -8,6 +7,7 @@ import sys
 import os
 import argparse
 import cPickle
+import gc
 
 def main():
 
@@ -92,14 +92,15 @@ def run(samples,channel, use, train,short, preprocess_chain = []):
     predictions = {}
     print "Predicting samples"
     for sample, sampleName in read.get(what = "full", add_jec = not short):
-
         if "data" in sampleName:
-            addPrediction( model.predict( applyScaler(scaler, sample, variables), where ), sample, sampleName )
+            addPrediction(channel, model.predict( applyScaler(scaler, sample, variables), where ), sample, "NOMINAL_ntuple_Data" )
         elif "full" in sampleName:
-            predictions[ sampleName.split("_")[0] ] = {"sample":sample, "":model.predict( applyScaler(scaler, sample, variables), where ) }
+            predictions[ "NOMINAL_ntuple_" + sampleName.split("_")[0] ] = {"sample":None, "":model.predict( applyScaler(scaler, sample, variables), where ) }
         else:
             splName = sampleName.split("_")
-            predictions[splName[0]][ "_".join(splName[1:]) ] = model.predict( applyScaler(scaler, sample, variables), where )
+            predictions[ "NOMINAL_ntuple_" + splName[0]][ "_".join(splName[1:]) ] = model.predict( applyScaler(scaler, sample, variables), where )
+
+        gc.collect()
 
     samples = predictions.keys()
     for sampleName in samples:
@@ -108,16 +109,25 @@ def run(samples,channel, use, train,short, preprocess_chain = []):
         sample = prediction.pop("sample",None)
         nom_pred = prediction.pop("",None)
 
-        addPrediction(nom_pred, sample, sampleName, prediction)
+        addPrediction(channel,nom_pred, sample, sampleName, prediction)
         prediction = None
 
     if not short:
         print "Predicting TES shapes"
         for sample, sampleName in read.get(what = "tes"):
             pred =  model.predict( applyScaler(scaler, sample, variables), where )
-            addPrediction(pred, sample, sampleName)
+            addPrediction(channel, pred, sample, sampleName)
 
-def addPrediction(prediction, df, sample, uncert = {}):
+
+
+
+
+    Datacard.use_config = "datacardConf"
+    D = Datacard(channel, "predicted_prob", False, False)
+    D.create(use)
+    makePlot(channel, "predicted_prob", use)
+
+def addPrediction(channel,prediction, df, sample, uncert = {}):
     for i in xrange( len(df) ):
         for c in prediction[i].columns.values.tolist():
             df[i][c] =  prediction[i][c]
@@ -126,7 +136,7 @@ def addPrediction(prediction, df, sample, uncert = {}):
 
         if i == 0: mode = "w"
         else: mode = "a"
-        df[i].to_root("{0}/{1}.root".format("predictions", sample), key="TauCheck", mode = mode)
+        df[i].to_root("{0}/{1}-{2}.root".format("predictions",channel, sample), key="TauCheck", mode = mode)
 
 def trainScaler(folds, variables):
     from sklearn.preprocessing import StandardScaler
