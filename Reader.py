@@ -296,6 +296,7 @@ class Reader():
     def _getFolds(self, df):
 
         if self.folds != 2: raise NotImplementedError("Only implemented two folds so far!!!")
+        df["evt"] = df["evt"].astype('int64')
         return [df.query( "evt % 2 != 0 " ).reset_index(drop=True), df.query( "evt % 2 == 0 " ).reset_index(drop=True) ]
 
     def _getDF( self, sample_path, select ):

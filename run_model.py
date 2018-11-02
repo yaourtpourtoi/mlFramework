@@ -102,7 +102,7 @@ def run(samples,channel, use, train,short, preprocess_chain = []):
 
     if not short:
         print "Predicting TES shapes"
-        for sample, sampleName in read.get(what = "tes"):
+        for sample, sampleName in read.get(what = "tes", for_prediction = True):
             sandbox(channel, model, scaler, sample, variables, sampleName  )
 
 
@@ -119,6 +119,7 @@ def sandbox(channel, model, scaler, sample, variables, outname):
     # iterate over chunks of sample and do splitting on the fly
     first = True
     for part in sample:
+        part["evt"] = part["evt"].astype('int64')
         folds = [part.query( "evt % 2 != 0 " ).reset_index(drop=True), part.query( "evt % 2 == 0 " ).reset_index(drop=True) ]
         addPrediction(channel, model.predict( applyScaler(scaler, folds, variables) ), folds, outname, new = first )
         first = False
