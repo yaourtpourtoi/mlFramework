@@ -8,8 +8,8 @@ from helper import calc
 
 def main():
 
-    SR = Reader("mt","conf/global_config_2017.json",2)
-    with open("dump.json","w") as FSO:
+    SR = Reader("mt","conf/global_config_2016.json",2)
+    with open("dump_mt.json","w") as FSO:
         json.dump(SR.config, FSO, indent = 4, sort_keys=True )
 
 class Reader():
@@ -23,9 +23,6 @@ class Reader():
         self.folds = folds
         self.processes = []
         self.needToAddVars = []
-
-        with open("conf/hist_names.json","r") as FSO:
-            self.hist_names = json.load(FSO)
 
         with open("conf/cuts.json","r") as FSO:
             cuts = json.load(FSO)
@@ -62,13 +59,13 @@ class Reader():
 
         targets = []
         config["channel"] = self.channel
+        config["path"] = config["path"].format(**config) # Can be dropped when configs are split per channel
         config["target_names"] = {}
         config["variables"] = self._assertChannel( config["variables"] )
         config["version"] = self._assertChannel( config["version"] )
         for cw in config["class_weight"]:
             config["class_weight"][cw] = self._assertChannel( config["class_weight"][cw] )
 
-        config["path"] = "{path}/{version}".format( **config )
 
         for sample in config["samples"]:
             
@@ -79,13 +76,15 @@ class Reader():
             snap["target"] = self._assertChannel(snap["target"] )
             targets.append( snap["target"]  )
 
-            snap["name"]    = "{path}/{channel}-{name}.root".format(name = sample_name, **config)
+            snap["name"]    = "{path}/{name}_{channel}.root".format(name = sample_name, **config)
             snap["select"] = self._parseCut( snap["select"] )
 
             snap["event_weight"]  = self._assertChannel( snap["event_weight"] )
             
             if sample != "data" and sample != "estimate" and "_full" in sample:
-                snap["shapes"]  = self._getShapePaths( snap["name"], sample )
+                snap["shapes"]  = self._getShapePaths( snap["name"], sample, 
+                                                       config["shape_from_file"], 
+                                                       config["shape_from_tree"] )
                 if type(snap["event_weight"]) is list:
                     config["addvar"] = list( set( config["addvar"] + snap["event_weight"] ) )
 
@@ -115,6 +114,7 @@ class Reader():
         return self.combineFolds(samples)
 
     def setNominalSamples(self):
+        self.addvar = []
         self.itersamples = []
         self.idx = 0
         samples = self.config["samples"].keys()
@@ -133,6 +133,13 @@ class Reader():
         return self
 
     def setFullSamples(self, add_jec = False):
+        self.addvar = self.config["addvar"]
+
+        # If shifts are needed add them in the tree
+        for v in self.config["variables"]:
+            if v in self.config["shifted_variables"]:
+                self.addvar.append(v+"*")
+
         self.itersamples = []
         self.idx = 0
         samples = self.config["samples"].keys()
@@ -148,7 +155,8 @@ class Reader():
 
                 if add_jec and not "data" in sample:
                     for shape in self.config["samples"][sample]["shapes"]:
-                        if not "Total" in shape: continue
+                        shapename = shape.replace("Up","").replace("Down","")
+                        if not shapename in self.config["shape_from_tree"]: continue
 
                         tmp = self._getCommonSettings(sample)
 
@@ -161,6 +169,7 @@ class Reader():
         return self
 
     def setTESSamples(self):
+        self.addvar = self.config["addvar"]
         self.itersamples = []
         self.idx = 0
         samples = self.config["samples"].keys()
@@ -169,7 +178,8 @@ class Reader():
             if "data" in sample or not "_full" in sample: continue
 
             for shape in self.config["samples"][sample]["shapes"]:
-                if not "TES" in shape: continue
+                shapename = shape.replace("Up","").replace("Down","")
+                if not shapename in self.config["shape_from_file"]: continue
 
                 tmp = self._getCommonSettings(sample)
 
@@ -192,9 +202,11 @@ class Reader():
         DF["target"] = sample_info["target"]
         DF["train_weight"] = DF["event_weight"].abs() * self.config["class_weight"].get(sample_info["target_name"], 1.0 )
 
-        if sample_info["rename"]:
-            DF.rename(columns = sample_info["rename"], inplace = True)
-
+        for new, old in sample_info["rename"]:
+            if new in DF.columns.values.tolist() and old in DF.columns.values.tolist():
+                DF[old] = DF[new]
+            else:
+                print "cant rename {0} to {1}".format(old, new)
 
 
         return self._getFolds( DF )
@@ -229,18 +241,16 @@ class Reader():
         else:
             return entry      
 
-    def _getShapePaths(self, path, sample):
+    def _getShapePaths(self, path, sample, from_file, from_tree):
 
-        shapes = {"TES1p0p0Up":"","TES1p0p0Down":"","TES1p1p0Up":"","TES1p1p0Down":"","TES3p0p0Up":"","TES3p0p0Down":"","TotalUp":sample,"TotalDown":sample}
+        shapes = {}
 
-        for shape in shapes:
-            if ("ZL" in shape and sample != "ZL") or ("ZL" in shape and self.channel == "tt"): continue
-            if sample in ["W","TTJ","ZJ","VVJ"] and not shape in ["JECUp","JECDown"]: continue
-            shape_path = path.replace("NOMINAL",shape )
-            if os.path.exists( shape_path ):
-                shapes[shape] = shape_path
-            else:
-                shapes[shape] = path
+        for shift in ["Up","Down"]:
+            for shape in from_file:
+                shapes[shape+shift] = path.replace("NOMINAL",shape+shift )
+
+            for shape in from_tree:
+                shapes[shape+shift] = path
 
         return shapes
 
@@ -271,27 +281,21 @@ class Reader():
     def _getRenaming(self, corr):
 
         tmp =[]
-        for nom in ["njets"]:
-            if not nom == "jpt": tmp+= [(nom, nom+corr),(nom+corr, nom) ]
-            else : tmp += [ (nom + "_1", nom+corr+ "_1"),(nom+corr+ "_1", nom+ "_1"),
-                            (nom + "_2", nom+corr+ "_2"),(nom+corr+ "_2", nom+ "_2") ]
-
-        return dict( tmp )
+        for nom in self.config["shifted_variables"]:
+            tmp.append( (nom+corr, nom) )
+        return tmp 
 
     def _getFolds(self, df):
 
         if self.folds != 2: raise NotImplementedError("Only implemented two folds so far!!!")
-        folds = []
-        folds.append( df.query( "index % 2 != 0 " ).reset_index(drop=True) )
-        folds.append( df.query( "index % 2 == 0 " ).reset_index(drop=True) )
-        return folds
+        return [df.query( "evt % 2 != 0 " ).reset_index(drop=True), df.query( "evt % 2 == 0 " ).reset_index(drop=True) ]
 
     def _getDF( self, sample_path, select ):
 
         add = "addvar"
         if "Embedd" in sample_path:
             add = "addvar_Embedding"
-        branches = list(set( self.config["variables"] + self.config[ add ] ))
+        branches = list(set( self.config["variables"] + self.config[ "weights" ] + ["evt"] + self.addvar ))
         tmp = rp.read_root( paths = sample_path,
                             where = select,
                             columns = branches)
@@ -300,6 +304,7 @@ class Reader():
                 tmp[new] = tmp.apply( calc(new), axis=1 )
 
         tmp.replace(-999.,-10, inplace = True)
+        tmp["evt"] = tmp["evt"].astype('int64')
 
         return tmp
 

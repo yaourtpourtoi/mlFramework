@@ -7,7 +7,8 @@ import sys
 import os
 import argparse
 import cPickle
-import gc
+import subprocess as sp
+import multiprocessing as mp
 
 def main():
 
@@ -28,7 +29,7 @@ def main():
     print "---------------------------"
 
         
-    run(samples = "conf/global_config_2017.json",
+    run(samples = "conf/global_config_2016.json",
         channel=args.channel,
         use = args.model,
         train = args.train,
@@ -78,7 +79,6 @@ def run(samples,channel, use, train,short, preprocess_chain = []):
         model.save(modelname)
 
     else:
-        
         if os.path.exists("models/StandardScaler.{0}.pkl".format(channel) ):
             print "Loading Scaler"
             with open( "models/StandardScaler.{0}.pkl".format(channel), "rb" ) as FSO:
@@ -87,36 +87,23 @@ def run(samples,channel, use, train,short, preprocess_chain = []):
         print "Loading model and predicting."
         model = modelObject( filename = modelname )
 
-    where = ""
+
 
     predictions = {}
     print "Predicting samples"
     for sample, sampleName in read.get(what = "full", add_jec = not short):
         if "data" in sampleName:
-            addPrediction(channel, model.predict( applyScaler(scaler, sample, variables), where ), sample, "NOMINAL_ntuple_Data" )
+            sandbox(channel, model, scaler, sample, variables, "NOMINAL_ntuple_Data")
         elif "full" in sampleName:
-            predictions[ "NOMINAL_ntuple_" + sampleName.split("_")[0] ] = {"sample":None, "":model.predict( applyScaler(scaler, sample, variables), where ) }
+            sandbox(channel, model, scaler, sample, variables,  "NOMINAL_ntuple_" + sampleName.split("_")[0] )
         else:
             splName = sampleName.split("_")
-            predictions[ "NOMINAL_ntuple_" + splName[0]][ "_".join(splName[1:]) ] = model.predict( applyScaler(scaler, sample, variables), where )
-
-        gc.collect()
-
-    samples = predictions.keys()
-    for sampleName in samples:
-
-        prediction = predictions.pop(sampleName,None)
-        sample = prediction.pop("sample",None)
-        nom_pred = prediction.pop("",None)
-
-        addPrediction(channel,nom_pred, sample, sampleName, prediction)
-        prediction = None
+            sandbox(channel, model, scaler, sample, variables,  "_".join(splName[1:])+"_ntuple_" + sampleName.split("_")[0] )
 
     if not short:
         print "Predicting TES shapes"
         for sample, sampleName in read.get(what = "tes"):
-            pred =  model.predict( applyScaler(scaler, sample, variables), where )
-            addPrediction(channel, pred, sample, sampleName)
+            sandbox(channel, model, scaler, sample, variables, sampleName  )
 
 
 
@@ -127,7 +114,12 @@ def run(samples,channel, use, train,short, preprocess_chain = []):
     D.create(use)
     makePlot(channel, "predicted_prob", use)
 
+def sandbox(channel, model, scaler, sample, variables, outname):
+    # need because of memory management
+    addPrediction(channel, model.predict( applyScaler(scaler, sample, variables) ), sample, outname )
+
 def addPrediction(channel,prediction, df, sample, uncert = {}):
+
     for i in xrange( len(df) ):
         for c in prediction[i].columns.values.tolist():
             df[i][c] =  prediction[i][c]
