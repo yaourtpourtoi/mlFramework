@@ -91,7 +91,7 @@ def run(samples,channel, use, train,short, preprocess_chain = []):
 
     predictions = {}
     print "Predicting samples"
-    for sample, sampleName in read.get(what = "full", add_jec = not short):
+    for sample, sampleName in read.get(what = "full", add_jec = not short, for_prediction = True):
         if "data" in sampleName:
             sandbox(channel, model, scaler, sample, variables, "NOMINAL_ntuple_Data")
         elif "full" in sampleName:
@@ -115,10 +115,15 @@ def run(samples,channel, use, train,short, preprocess_chain = []):
     makePlot(channel, "predicted_prob", use)
 
 def sandbox(channel, model, scaler, sample, variables, outname):
-    # need because of memory management
-    addPrediction(channel, model.predict( applyScaler(scaler, sample, variables) ), sample, outname )
+    # needed because of memory management
+    # iterate over chunks of sample and do splitting on the fly
+    first = True
+    for part in sample:
+        folds = [part.query( "evt % 2 != 0 " ).reset_index(drop=True), part.query( "evt % 2 == 0 " ).reset_index(drop=True) ]
+        addPrediction(channel, model.predict( applyScaler(scaler, folds, variables) ), folds, outname, new = first )
+        first = False
 
-def addPrediction(channel,prediction, df, sample, uncert = {}):
+def addPrediction(channel,prediction, df, sample, uncert = {}, new = True):
 
     for i in xrange( len(df) ):
         for c in prediction[i].columns.values.tolist():
@@ -126,7 +131,7 @@ def addPrediction(channel,prediction, df, sample, uncert = {}):
             for jec in uncert:
                 df[i][c+jec] = uncert[jec][i][c]
 
-        if i == 0: mode = "w"
+        if i == 0 and new: mode = "w"
         else: mode = "a"
         df[i].to_root("{0}/{1}-{2}.root".format("predictions",channel, sample), key="TauCheck", mode = mode)
 

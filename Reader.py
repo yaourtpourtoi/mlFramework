@@ -198,6 +198,12 @@ class Reader():
         print "Loading ", constStrLen( sample_info["histname"] ) , sample_info["path"].split("/")[-1]
         DF = self._getDF(sample_path = sample_info["path"], 
                           select = sample_info["select"])
+
+        # A bit hacky. Return  iterator when predicting to reduce memory consumption
+        # Otherweise split in folds
+        if self.for_prediction:
+            return DF
+
         DF.eval( "event_weight = " + sample_info["event_weight"], inplace = True  )
         DF["target"] = sample_info["target"]
         DF["train_weight"] = DF["event_weight"].abs() * self.config["class_weight"].get(sample_info["target_name"], 1.0 )
@@ -210,6 +216,7 @@ class Reader():
 
 
         return self._getFolds( DF )
+        
 
     def combineFolds(self, samples):
 
@@ -223,7 +230,8 @@ class Reader():
 
         return folds
 
-    def get(self, what, add_jec = False):
+    def get(self, what, add_jec = False, for_prediction = False):
+        self.for_prediction = for_prediction
         if what == "nominal"  : return self.setNominalSamples()
         if what == "full"     : return self.setFullSamples(add_jec)
         if what == "tes"      : return self.setTESSamples()
@@ -296,15 +304,20 @@ class Reader():
         if "Embedd" in sample_path:
             add = "addvar_Embedding"
         branches = list(set( self.config["variables"] + self.config[ "weights" ] + ["evt"] + self.addvar ))
+
+        # Return iterator when predicting samples
+        chunksize = None
+        if self.for_prediction:
+            chunksize = 100000
+
         tmp = rp.read_root( paths = sample_path,
                             where = select,
-                            columns = branches)
-        if self.needToAddVars:
-            for new in self.needToAddVars:
-                tmp[new] = tmp.apply( calc(new), axis=1 )
+                            columns = branches,
+                            chunksize = chunksize)
 
-        tmp.replace(-999.,-10, inplace = True)
-        tmp["evt"] = tmp["evt"].astype('int64')
+
+        # tmp.replace(-999.,-10, inplace = True)
+        # tmp["evt"] = tmp["evt"].astype('int64')
 
         return tmp
 
