@@ -1,6 +1,5 @@
 from Reader import Reader
-from Plotter import Plotter 
-from Collector import Collector
+from Tools.Datacard.produce import Datacard, makePlot
 import copy
 import pandas
 import json
@@ -8,6 +7,8 @@ import sys
 import os
 import argparse
 import cPickle
+import subprocess as sp
+import multiprocessing as mp
 
 def main():
 
@@ -28,7 +29,7 @@ def main():
     print "---------------------------"
 
         
-    run(samples = "conf/global_config.json",
+    run(samples = "conf/global_config_2016.json",
         channel=args.channel,
         use = args.model,
         train = args.train,
@@ -78,7 +79,6 @@ def run(samples,channel, use, train,short, preprocess_chain = []):
         model.save(modelname)
 
     else:
-        
         if os.path.exists("models/StandardScaler.{0}.pkl".format(channel) ):
             print "Loading Scaler"
             with open( "models/StandardScaler.{0}.pkl".format(channel), "rb" ) as FSO:
@@ -87,48 +87,54 @@ def run(samples,channel, use, train,short, preprocess_chain = []):
         print "Loading model and predicting."
         model = modelObject( filename = modelname )
 
-    where = ""
-    coll = Collector( channel = channel,
-                      var_name = "pred_prob",
-                      target_names = target_names, 
-                      path = use, 
-                      recreate = True,
-                      rebin = False )
 
-    print "Predicting simulation"
-    for sample, sampleName in read.get(what = "nominal"):
-        pred =  model.predict( applyScaler(scaler, sample, variables), where )
-        coll.addPrediction(pred, sample, sampleName)
-        
-    print "Adding looser samples to predictions"
-    for sample, sampleName in read.get(what = "more"):
-        pred =  model.predict( applyScaler(scaler, sample, variables), where )
-        coll.addPrediction(pred, sample, sampleName)
-        
-    print "Predicting data"
-    for sample, sampleName in read.get(what = "data"):
-        pred =  model.predict( applyScaler(scaler, sample, variables), where )
-        coll.addPrediction(pred, sample, sampleName)
-    
+
+    predictions = {}
+    print "Predicting samples"
+    for sample, sampleName in read.get(what = "full", add_jec = not short, for_prediction = True):
+        if "data" in sampleName:
+            sandbox(channel, model, scaler, sample, variables, "NOMINAL_ntuple_Data")
+        elif "full" in sampleName:
+            sandbox(channel, model, scaler, sample, variables,  "NOMINAL_ntuple_" + sampleName.split("_")[0] )
+        else:
+            splName = sampleName.split("_")
+            sandbox(channel, model, scaler, sample, variables,  "_".join(splName[1:])+"_ntuple_" + sampleName.split("_")[0] )
+
     if not short:
         print "Predicting TES shapes"
-        for sample, sampleName in read.get(what = "tes"):
-            pred =  model.predict( applyScaler(scaler, sample, variables), where )
-            coll.addPrediction(pred, sample, sampleName)
+        for sample, sampleName in read.get(what = "tes", for_prediction = True):
+            sandbox(channel, model, scaler, sample, variables, sampleName  )
 
-        print "Predicting JES shapes"
-        for sample, sampleName in read.get(what = "jec"):
-            pred =  model.predict( applyScaler(scaler, sample, variables), where )
-            coll.addPrediction(pred, sample, sampleName)   
 
-    coll.createDC(writeAll = True)
 
-    plot = Plotter( channel= channel,
-                    naming = read.processes,
-                    path = use )
 
-    plot.makePlots()
 
+    Datacard.use_config = "datacardConf"
+    D = Datacard(channel, "predicted_prob", False, False)
+    D.create(use)
+    makePlot(channel, "predicted_prob", use)
+
+def sandbox(channel, model, scaler, sample, variables, outname):
+    # needed because of memory management
+    # iterate over chunks of sample and do splitting on the fly
+    first = True
+    for part in sample:
+        part["evt"] = part["evt"].astype('int64')
+        folds = [part.query( "evt % 2 != 0 " ).reset_index(drop=True), part.query( "evt % 2 == 0 " ).reset_index(drop=True) ]
+        addPrediction(channel, model.predict( applyScaler(scaler, folds, variables) ), folds, outname, new = first )
+        first = False
+
+def addPrediction(channel,prediction, df, sample, uncert = {}, new = True):
+
+    for i in xrange( len(df) ):
+        for c in prediction[i].columns.values.tolist():
+            df[i][c] =  prediction[i][c]
+            for jec in uncert:
+                df[i][c+jec] = uncert[jec][i][c]
+
+        if i == 0 and new: mode = "w"
+        else: mode = "a"
+        df[i].to_root("{0}/{1}-{2}.root".format("predictions",channel, sample), key="TauCheck", mode = mode)
 
 def trainScaler(folds, variables):
     from sklearn.preprocessing import StandardScaler

@@ -1,12 +1,13 @@
 {
 	"TauIdSF":{
-		"mt":"( 0.95*(gen_match_2 == 5) + (gen_match_2 != 5)  )",
-		"et":"( 0.95*(gen_match_2 == 5) + (gen_match_2 != 5)  )",
-		"tt":"( ( 0.95*(gen_match_1 == 5) + (gen_match_1 != 5)  ) * ( 0.95*(gen_match_2 == 5) + (gen_match_2 != 5)  ) )"
-	},
-	"LepFake":{
-		"mt":" ( (gen_match_2 >= 5) + (gen_match_2 < 5)*(((decayMode_2 == 0)*0.75) + ((decayMode_2 == 1 | decayMode_2 == 2)*1.0) + ((decayMode_2 == 10)*1.0)) )",
-		"et":" ( (gen_match_2 >= 5) + (gen_match_2 < 5)*(((decayMode_2 == 0)*0.98) + ((decayMode_2 == 1 | decayMode_2 == 2)*1.2) + ((decayMode_2 == 10)*1.0)) )",
-		"tt":""
+		"mt":{
+			"on":["all"], "apply":"( 0.89*(gen_match_2 == 5) + (gen_match_2 != 5)  )"
+		},
+		"et":{
+			"on":["all"], "apply":"( 0.89*(gen_match_2 == 5) + (gen_match_2 != 5)  )"
+		},
+		"tt":{
+			"on":["all"], "apply":"( ( 0.86*(gen_match_1 == 5) + (gen_match_1 != 5)  ) * ( 0.86*(gen_match_2 == 5) + (gen_match_2 != 5)  ) )"
+		}
 	}
 }
