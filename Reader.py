@@ -313,7 +313,7 @@ class Reader():
     def _getFolds(self, df):
 
         if self.folds != 2: raise NotImplementedError("Only implemented two folds so far!!!")
-        return [df.query( "abs(evt) % 2 != 0 " ).reset_index(drop=True), df.query( "abs(evt) % 2 == 0 " ).reset_index(drop=True) ]
+        return [df.query( "abs(evt % 2) != 0 " ).reset_index(drop=True), df.query( "abs(evt % 2) == 0 " ).reset_index(drop=True) ]
 
     def _getDF( self, sample_path, select ):
 
