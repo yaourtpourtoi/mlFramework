@@ -14,10 +14,10 @@ def main():
 
 class Reader():
 
-    def __init__(self, channel,config_file, folds):
+    def __init__(self, channel,config_file, folds, era = ''):
         self.itersamples = []
         self.idx = 0
-
+        self.era = era
         self.channel = channel
         self.trainReweighting = ""
         self.folds = folds
