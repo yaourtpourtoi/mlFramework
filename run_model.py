@@ -1,5 +1,4 @@
 from Reader import Reader
-from Tools.Datacard.produce import Datacard, makePlot
 import copy
 import pandas
 import json
@@ -17,6 +16,9 @@ def main():
     parser.add_argument('-m', dest='model',   help='ML model to use' ,choices = ['keras','xgb'],  default = 'keras')
     parser.add_argument('-t', dest='train',   help='Train new model' , action='store_true')
     parser.add_argument('-s', dest='short',   help='Do !!NOT!! predict shapes' , action='store_true')
+    parser.add_argument('-d', dest='datacard',  help='Only produce Datacard' , action='store_true')
+    parser.add_argument('-e', dest='era',  help='Era' , default = "2016")
+    parser.add_argument('--add_nominal', dest='add_nom',  help='Add nominal samples to prediction', action='store_true' )    
     args = parser.parse_args()
 
     print "---------------------------"
@@ -29,14 +31,17 @@ def main():
     print "---------------------------"
 
         
-    run(samples = "conf/global_config_2016.json",
+    run(samples = "conf/global_config_{0}_{1}.json".format(args.channel,args.era),
         channel=args.channel,
+        era = args.era,
         use = args.model,
         train = args.train,
-        short = args.short
+        short = args.short,
+        datacard = args.datacard,
+        add_nominal = args.add_nom
           )
 
-def run(samples,channel, use, train,short, preprocess_chain = []):
+def run(samples,channel, era, use, train,short, datacard = False, add_nominal=False ):
 
     if use == "xgb":
         from XGBModel import XGBObject as modelObject
@@ -49,7 +54,8 @@ def run(samples,channel, use, train,short, preprocess_chain = []):
 
     read = Reader(channel = channel,
                   config_file = samples,
-                  folds=2)
+                  folds=2,
+                  era = era)
 
     target_names = read.config["target_names"]
     variables = read.config["variables"]
@@ -78,7 +84,7 @@ def run(samples,channel, use, train,short, preprocess_chain = []):
         model.train( trainSet )
         model.save(modelname)
 
-    else:
+    elif not datacard:
         if os.path.exists("models/StandardScaler.{0}.pkl".format(channel) ):
             print "Loading Scaler"
             with open( "models/StandardScaler.{0}.pkl".format(channel), "rb" ) as FSO:
@@ -87,6 +93,7 @@ def run(samples,channel, use, train,short, preprocess_chain = []):
         print "Loading model and predicting."
         model = modelObject( filename = modelname )
 
+    if not datacard:
 
         predictions = {}
         print "Predicting samples"
@@ -112,6 +119,14 @@ def run(samples,channel, use, train,short, preprocess_chain = []):
 
 
 
+    if "hephy.at" in os.environ["HOME"]:
+        from Tools.Datacard.produce import Datacard, makePlot
+        from Tools.CutObject.CutObject import Cut        
+        Cut.cutfile = "conf/cuts.json"
+        Datacard.use_config = "datacardConf"
+        D = Datacard(channel, "predicted_prob", "2016", not short, False)
+        D.create(use)
+        makePlot(channel, "predicted_prob", use)
 
 def sandbox(channel, model, scaler, sample, variables, outname, config = None, modify = None):
     # needed because of memory management
