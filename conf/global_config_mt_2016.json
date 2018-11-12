@@ -1,0 +1,234 @@
+{
+    "path": "/afs/hephy.at/data/higgs01/data_2016/ntuples_v5/{channel}/ntuples_SVFIT_merged/", 
+    "variables":{
+        "mt": [
+            "m_sv",
+            "m_vis",
+            "pt_vis",
+            "pt_1",
+            "pt_2",
+            "jpt_2",
+            "jm_1",
+            "jm_2",
+            "bpt_1",
+            "bpt_2",
+            "bcsv_1",
+            "bcsv_2",
+            "njets",
+            "nbtag", 
+            "mt_1",
+            "mt_2",
+            "pt_tt",
+            "mjj",
+            "dijetpt",
+            "met"
+            ]
+    },
+    "shifted_variables": ["njets","jpt_1","jpt_2","jeta_1","jet_2","jphi_1","jphi_2","jcsv_1","jdeta","mjj","dijetpt","htxs_reco_ggf","htxs_reco_vbf"],
+    "addvar": [
+        "evt",
+        "by*IsolationMVArun2v1DBoldDMwLT*",       
+        "pt_1",
+        "q_1",
+        "q_2",
+        "iso_1",
+        "iso_2",
+        "phi_1",
+        "phi_2",
+        "eta_1",
+        "eta_2",
+        "mt_1",
+        "njets",
+        "decayMode_1",
+        "decayMode_2",
+        "dilepton_veto",
+        "extraelec_veto",
+        "extramuon_veto",
+        "againstMuon*",
+        "againstElectron*",
+        "flagMETFilter",
+        "trg*",
+        "*Weight*",
+        "*weight*",
+        "htxs*"
+    ],
+
+    "version":{
+        "mt":"v5"
+    },
+    "lumi": 35.87,
+      "class_weight":{
+        "ggh":     {"mt":218.7 },
+        "qqh":     {"mt":2231.9},
+        "ztt":     {"mt":1.6},
+        "zll":     {"mt":20.6},
+        "w":       {"mt":8.1},
+        "tt":      {"mt":18.5},
+        "ss":      {"mt":6.9},
+        "misc":    {"mt":69.8}
+      },
+
+    "target_values":{
+        "ggh":    0,
+        "qqh":    1,
+        "ztt":    2,
+        "zll":    3,
+        "w":      4,
+        "tt":     5,
+        "ss":     6,
+        "misc":   7
+    },
+
+    "weights":["*weight*","gen_match*","top*","zPtReweightWeight"],
+    "shape_from_file":["T0","T1","T10" ],
+    "shape_from_tree":["CMS_scale_j_eta0to5_13Tev","CMS_scale_j_eta0to3_13TeV","CMS_scale_j_eta3to5_13TeV","CMS_scale_j_RelativeBal_13TeV"],
+
+    "samples":{
+        "ggH125": {
+            "target":{"mt":"ggh"},
+            "select": "-OS- && -ISO- && -VETO- && -MT- && -TRIG-", 
+            "name": "NOMINAL_ntuple_ggH", 
+            "event_weight": "( 1000 * weight * ggh_NNLO_weight * ( 0.95*(gen_match_2 == 5) + 1*(gen_match_2 !=5) ) )"
+        },
+        "qqH125": {
+            "target":{"mt":"qqh"},
+            "select": "-OS- && -ISO- && -VETO- && -MT- && -TRIG-", 
+            "name": "NOMINAL_ntuple_VBF", 
+            "event_weight": "( 1000 * weight * ( 0.95*(gen_match_2 == 5) + 1*(gen_match_2 !=5) ) )"
+        }, 
+        "ZTT": {
+            "target":{"mt":"ztt"},
+            "select": "-OS- && -ISO- && -VETO- && -MT- && -TRIG- && -GENTAU-", 
+            "name": "NOMINAL_ntuple_DYXJetsToLL_lowMass_merged_MCSummer16", 
+            "event_weight": "weight*( 0.95*(gen_match_2 == 5) + 1*(gen_match_2 !=5) )*zPtReweightWeight"
+        },
+        "ZL": {
+            "target":{"mt":"zll"},
+            "select": "-OS- && -ISO- && -VETO- && -MT- && -TRIG- &&  ((-GENJET- || -GENTAU-) < 0.5)", 
+            "name": "NOMINAL_ntuple_DYXJetsToLL_lowMass_merged_MCSummer16", 
+            "event_weight": "weight*( 0.95*(gen_match_2 == 5) + 1*(gen_match_2 !=5) )*zPtReweightWeight"
+        },
+        "ZJ": {
+            "target":{"mt":"zll"},
+            "select": "-OS- && -ISO- && -VETO- && -MT- && -TRIG- && -GENJET-", 
+            "name": "NOMINAL_ntuple_DYXJetsToLL_lowMass_merged_MCSummer16", 
+            "event_weight": "weight*( 0.95*(gen_match_2 == 5) + 1*(gen_match_2 !=5) )*zPtReweightWeight"
+        },
+        "TTT": {
+            "target":{"mt":"tt"},
+            "select": "-OS- && -ISO- && -VETO- && -MT- && -TRIG- && -GENTAU- ", 
+            "name": "NOMINAL_ntuple_TT_merged_MCSummer16", 
+            "event_weight": "weight*( 0.95*(gen_match_2 == 5) + 1*(gen_match_2 !=5) )*topWeight_run1"
+        },
+        "TTL": {
+            "target":{"mt":"tt"},
+            "select": "-OS- && -ISO- && -VETO- && -MT- && -TRIG- && ((-GENJET- || -GENTAU-) < 0.5)", 
+            "name": "NOMINAL_ntuple_TT_merged_MCSummer16", 
+            "event_weight": "weight*( 0.95*(gen_match_2 == 5) + 1*(gen_match_2 !=5) )*topWeight_run1"
+        },        
+        "TTJ": {
+            "target":{"mt":"tt"},
+            "select": "-OS- && -ISO- && -VETO- && -MT- && -TRIG- && -GENJET- ", 
+            "name": "NOMINAL_ntuple_TT_merged_MCSummer16", 
+            "event_weight": "weight*( 0.95*(gen_match_2 == 5) + 1*(gen_match_2 !=5) )*topWeight_run1"
+        },
+        "VVT": {
+            "target":{"mt":"misc"},
+            "select": "-OS- && -ISO- && -VETO- && -MT- && -TRIG- && -GENTAU- ", 
+            "name": "NOMINAL_ntuple_VV_MCSummer16", 
+            "event_weight": "weight*( 0.95*(gen_match_2 == 5) + 1*(gen_match_2 !=5) )"
+        },
+        "VVL": {
+            "target":{"mt":"misc"},
+            "select": "-OS- && -ISO- && -VETO- && -MT- && -TRIG- && ((-GENJET- || -GENTAU-) < 0.5)", 
+            "name": "NOMINAL_ntuple_VV_MCSummer16", 
+            "event_weight": "weight*( 0.95*(gen_match_2 == 5) + 1*(gen_match_2 !=5) )"
+        },        
+        "VVJ": {
+            "target":{"mt":"misc"},
+            "select": "-OS- && -ISO- && -VETO- && -MT- && -TRIG- && -GENJET-", 
+            "name": "NOMINAL_ntuple_VV_MCSummer16", 
+            "event_weight": "weight*( 0.95*(gen_match_2 == 5) + 1*(gen_match_2 !=5) )"
+        },
+        "W": {
+            "target":{"mt":"w"},
+            "select": "-OS- && -ISO- && -VETO- && -MT- && -TRIG-", 
+            "name": "NOMINAL_ntuple_WXJets_merged_MCSummer16", 
+            "event_weight": "weight*( 0.95*(gen_match_2 == 5) + 1*(gen_match_2 !=5) )"
+        },
+        "estimate": {
+            "target":{"mt":"ss"},
+            "select": {
+                "mt":"-SS- && -ISO- && -VETO- && -MT- && -TRIG-"
+            }, 
+            "name": "NOMINAL_ntuple_Data",
+            "event_weight": 1.0
+        },
+        "VV_full": {
+            "target":"none",
+            "select": {
+                "mt":"-VETO- && -MT- && -TRIG-"
+            }, 
+            "name": "NOMINAL_ntuple_VV_MCSummer16", 
+            "event_weight": 1.0
+        },
+        "DY_full": {
+            "target":"none",
+            "select": {
+                "mt":"-VETO- && -MT- && -TRIG- & -ISO-"
+            }, 
+            "name": "NOMINAL_ntuple_DYXJetsToLL_lowMass_merged_MCSummer16", 
+            "event_weight": 1.0
+        },
+        "EMB_full": {
+            "target":"none",
+            "select": {
+                "mt":"-VETO- && -MT- && -TRIG- & -ISO-"
+            }, 
+            "name": "NOMINAL_ntuple_EMB", 
+            "event_weight": 1.0
+        },        
+        "TT_full": {
+            "target":"none",
+            "select": {
+                "mt":"-VETO- && -MT- && -TRIG-"
+            }, 
+            "name": "NOMINAL_ntuple_TT_merged_MCSummer16", 
+            "event_weight": 1.0
+        },
+        "W_full": {
+            "target":"none",
+            "select": {
+                "mt":"-VETO- && -MT- && -TRIG-"
+            }, 
+            "name": "NOMINAL_ntuple_WXJets_merged_MCSummer16", 
+            "event_weight": 1.0
+        },
+        "data_full": {
+            "target":"none",
+            "select": {
+                "mt":"-VETO- && -MT- && -TRIG-"
+            }, 
+            "name": "NOMINAL_ntuple_Data",
+            "event_weight": 1.0
+        },
+        "ggH125_full": {
+            "target":"none",
+            "select": "-VETO- && -MT- && -TRIG-", 
+            "name": "NOMINAL_ntuple_ggH", 
+            "event_weight": 1.0
+        },
+        "qqH125_full": {
+            "target":"none",
+            "select": "-VETO- && -MT- && -TRIG-", 
+            "name": "NOMINAL_ntuple_VBF", 
+            "event_weight": 1.0
+        },         
+        "data": {
+            "target":"none",
+            "select": "-OS- && -ISO- && -VETO- && -MT- && -TRIG-",
+            "event_weight": 1.0,
+            "name": "NOMINAL_ntuple_Data"         
+        }
+    }
+}

@@ -96,7 +96,7 @@ class KerasObject():
         model_impl = getattr(keras_models, self.params["name"])
         model = model_impl(len(self.variables), N_classes)
         model.summary()
-        model.fit(
+        history = model.fit(
             train[self.variables].values,
             y_train,
             sample_weight=train["train_weight"].values,
@@ -104,8 +104,22 @@ class KerasObject():
             # validation_data=(test[self.variables].values, y_test, test["train_weight"].values),
             batch_size=self.params["batch_size"],
             epochs=self.params["epochs"],
-            shuffle=False,
+            shuffle=True,
             callbacks=[EarlyStopping(patience=self.params["early_stopping"]), ModelCheckpoint( best + ".model", save_best_only=True, verbose = 1) ])
+
+        import matplotlib as mpl
+        mpl.use('Agg')
+        import matplotlib.pyplot as plt
+
+        print "plotting training"
+        epochs = xrange(1, len(history.history["loss"]) + 1)
+        plt.plot(epochs, history.history["loss"], lw=3, label="Training loss")
+        plt.plot(epochs, history.history["val_loss"], lw=3, label="Validation loss")
+        plt.xlabel("Epoch")
+        plt.ylabel("Loss")
+        plt.legend()
+        plt.savefig("plots/fold_{0}_loss.png".format(best), bbox_inches="tight")
+
 
         print "Reloading best model"
         model = lm(best + ".model")
@@ -120,11 +134,11 @@ class KerasObject():
             samples = deque(samples)
 
         for i in xrange( len(samples) ):
-            test = samples[0]
-            if where: test  = test.query( where ).reset_index(drop=True)
-
-            predictions.append( self.testSingle( test, i ) )
+            predictions.append( self.testSingle( samples[0], i ) )
             samples.rotate(-1)
+
+        samples[0].drop(samples[0].index, inplace = True)
+        samples[1].drop(samples[1].index, inplace = True)
 
         return predictions
 

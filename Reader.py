@@ -14,10 +14,10 @@ def main():
 
 class Reader():
 
-    def __init__(self, channel,config_file, folds):
+    def __init__(self, channel,config_file, folds, era = ''):
         self.itersamples = []
         self.idx = 0
-
+        self.era = era
         self.channel = channel
         self.trainReweighting = ""
         self.folds = folds
@@ -40,7 +40,7 @@ class Reader():
         try:
             sample = self.itersamples[ self.idx ]
             self.idx += 1
-            return self.loadForMe( sample ), sample["histname"]
+            return self.loadForMe( sample ), sample
         except IndexError as e:
             raise StopIteration
 
@@ -100,12 +100,19 @@ class Reader():
 
         for sample in config["samples"]:
             config["samples"][sample]["target_name"] = config["samples"][sample]["target"]
-            config["samples"][sample]["target"]  = target_map.get( config["samples"][sample]["target"], -1 )  
+
+            if "target_values" in config:
+                config["samples"][sample]["target"]  = int(config["target_values"].get( config["samples"][sample]["target"], -1 ))
+            else:
+                config["samples"][sample]["target"]  = target_map.get( config["samples"][sample]["target"], -1 )  
+
+            config["target_names"][ config["samples"][sample]["target"] ] = config["samples"][sample]["target_name"]
 
         return config
 
 
     def getSamplesForTraining(self):
+        self.for_prediction = False
         self.setNominalSamples()
         samples = []
         for sample,histname in self:
@@ -155,9 +162,10 @@ class Reader():
 
                 if add_jec and not "data" in sample:
                     for shape in self.config["samples"][sample]["shapes"]:
+
                         shapename = shape.replace("Up","").replace("Down","")
                         if not shapename in self.config["shape_from_tree"]: continue
-
+                        if "EMB" in sample: continue
                         tmp = self._getCommonSettings(sample)
 
                         tmp["path"] = self.config["samples"][sample]["shapes"][shape] 
@@ -195,28 +203,37 @@ class Reader():
 
     def loadForMe(self, sample_info):
 
+        if not os.path.exists( sample_info["path"] ):
+            print "Warning ", constStrLen( sample_info["histname"] ) , sample_info["path"].split("/")[-1]
+            return []
+            
         print "Loading ", constStrLen( sample_info["histname"] ) , sample_info["path"].split("/")[-1]
         DF = self._getDF(sample_path = sample_info["path"], 
                           select = sample_info["select"])
 
         # A bit hacky. Return  iterator when predicting to reduce memory consumption
         # Otherweise split in folds
+
         if self.for_prediction:
             return DF
 
+        self.modifyDF(DF, sample_info)
+
+        return self._getFolds( DF[ self.config["variables"] + ["target","train_weight","evt","event_weight"] ] )
+
+    def modifyDF(self, DF, sample_info):
+
+        DF["evt"] = DF["evt"].astype('int64')
         DF.eval( "event_weight = " + sample_info["event_weight"], inplace = True  )
         DF["target"] = sample_info["target"]
         DF["train_weight"] = DF["event_weight"].abs() * self.config["class_weight"].get(sample_info["target_name"], 1.0 )
+        DF.replace(-999.,-10, inplace = True)
 
         for new, old in sample_info["rename"]:
             if new in DF.columns.values.tolist() and old in DF.columns.values.tolist():
                 DF[old] = DF[new]
-            else:
-                print "cant rename {0} to {1}".format(old, new)
-
-
-        return self._getFolds( DF )
-        
+            # else:
+            #     print "cant rename {0} to {1}".format(old, new)  
 
     def combineFolds(self, samples):
 
@@ -296,20 +313,24 @@ class Reader():
     def _getFolds(self, df):
 
         if self.folds != 2: raise NotImplementedError("Only implemented two folds so far!!!")
-        df["evt"] = df["evt"].astype('int64')
-        return [df.query( "evt % 2 != 0 " ).reset_index(drop=True), df.query( "evt % 2 == 0 " ).reset_index(drop=True) ]
+        return [df.query( "abs(evt % 2) != 0 " ).reset_index(drop=True), df.query( "abs(evt % 2) == 0 " ).reset_index(drop=True) ]
 
     def _getDF( self, sample_path, select ):
 
         add = "addvar"
         if "Embedd" in sample_path:
             add = "addvar_Embedding"
-        branches = list(set( self.config["variables"] + self.config[ "weights" ] + ["evt"] + self.addvar ))
 
+        snowflakes = ["evt"]
+        if self.era == "2016" and "ggH" in sample_path:
+            snowflakes.append("THU*")
+
+        branches = list(set( self.config["variables"] + self.config[ "weights" ] + snowflakes + self.addvar ))
+        
         # Return iterator when predicting samples
         chunksize = None
         if self.for_prediction:
-            chunksize = 100000
+            chunksize = 500000
 
         tmp = rp.read_root( paths = sample_path,
                             where = select,
@@ -324,7 +345,7 @@ class Reader():
 
 def constStrLen(string):
 
-    return string + " "*(30 - len(string) )
+    return string + " "*(40 - len(string) )
 
 
 if __name__ == '__main__':
