@@ -175,3 +175,22 @@ def smhtt_dropout_selu(num_inputs, num_outputs):
     model.compile(loss="categorical_crossentropy", optimizer=Adam(lr=1e-4), metrics=['categorical_accuracy'])
     return model
 
+def smhtt_em(num_inputs, num_outputs):
+    model = Sequential()
+    model.add(
+        Dense(
+            300, kernel_initializer="glorot_normal", activation="relu",
+            kernel_regularizer=l2(1e-4),input_dim=num_inputs) )
+    model.add(
+        Dense(
+            300, kernel_initializer="glorot_normal", activation="relu",
+            kernel_regularizer=l2(1e-4),input_dim=num_inputs) )
+    model.add(
+        Dense(
+            300, kernel_initializer="glorot_normal", activation="relu",
+            kernel_regularizer=l2(1e-4),input_dim=num_inputs) )
+    model.add(
+        Dense(
+            num_outputs, kernel_initializer="glorot_normal", activation="softmax"))
+    model.compile(loss="mean_squared_error", optimizer=Nadam(), metrics=[])
+    return model
