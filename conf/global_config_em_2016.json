@@ -1,5 +1,5 @@
  {
-    "path": "/nfs/dust/cms/user/mameyer/SM_HiggsTauTau/HTauTau_emu/Inputs/NTuples_2016/",
+    "path": "/nfs/dust/cms/user/tlenz/13TeV/2017/SM_HTauTau/HTauTau_emu/Inputs/NTuples_2016_NewSysNaming/",
     "variables":{
         "em": [
             "m_sv",
@@ -63,16 +63,16 @@
     "version":{
         "em":"v1"
     },
-    "lumi": 35.9,
+    "lumi": 1.0,
     "class_weight":{
-        "ss":        {"em": 11.2},
+        "ss":        {"em": 10.4},
         "tt":        {"em": 3.3},
-        "misc":      {"em": 49.4},
-        "qqh":       {"em": 4026.2},
+        "misc":      {"em": 49.7},
+        "qqh":       {"em": 4055.5},
         "ztt":       {"em": 1.9},
-        "ggh":       {"em": 399.9},
-        "diboson":   {"em": 24.9},
-        "singletop": {"em": 36.7}
+        "ggh":       {"em": 402.8},
+        "diboson":   {"em": 25.1},
+        "singletop": {"em": 37.0}
      },
 
     "weights":["puweight*","xsec_lumi_weight*","effweight*","mcweight*","zptmassweight*","topptweight*", "qcd_correction*"],
@@ -104,7 +104,7 @@
             "name":         "NOMINAL_ntuple_DYJets",
             "event_weight": ["puweight", "xsec_lumi_weight", "effweight", "mcweight", "zptmassweight"]
         },
-        "EWKZ_ZTT": {
+        "EWKZ": {
             "target":       {"em":"ztt" },
             "select":       "-OS- && -ISO- && -VETO- && -TRIG- && -ZTT- && -DZETA- &&  -MT-",
             "name":         "NOMINAL_ntuple_EWKZ",
@@ -148,49 +148,49 @@
         },
         "ZTT_full": {
             "target":        "none",
-            "select":        "-ANTIISO- && -VETO- && -TRIG- && -ZTT- && -DZETA- &&  -MT-",
+            "select":        "-VETO- && -TRIG- && -ZTT- && -DZETA- &&  -MT-",
             "name":          "NOMINAL_ntuple_DYJets",
             "event_weight":  ["puweight", "xsec_lumi_weight", "effweight",  "zptmassweight", "mcweight" ,"qcd_correction"]
         },
         "ZL_full": {
             "target":        "none",
-            "select":        "-ANTIISO- && -VETO- && -TRIG- && -ZLL- && -DZETA- &&  -MT-",
+            "select":        "-VETO- && -TRIG- && -ZLL- && -DZETA- &&  -MT-",
             "name":          "NOMINAL_ntuple_DYJets",
             "event_weight":  ["puweight", "xsec_lumi_weight", "effweight",  "zptmassweight", "mcweight" ,"qcd_correction"]
         },
         "TT_full": {
             "target":        "none",
-            "select":        "-ANTIISO- && -VETO- && -TRIG-&& -DZETA- &&  -MT-",
+            "select":        "-VETO- && -TRIG-&& -DZETA- &&  -MT-",
             "name":          "NOMINAL_ntuple_TTbar",
             "event_weight":  ["puweight", "xsec_lumi_weight", "effweight","topptweight", "mcweight", "qcd_correction"]
         },
         "Diboson_full": {
             "target":        "none",
-            "select":        "-ANTIISO- && -VETO- && -TRIG- && -DZETA- &&  -MT-",
+            "select":        "-VETO- && -TRIG- && -DZETA- &&  -MT-",
             "name":          "NOMINAL_ntuple_Diboson",
             "event_weight":  ["puweight" ,"xsec_lumi_weight" ,"effweight", "mcweight","qcd_correction"]
         },
         "W_full": {
             "target":        "none",
-            "select":        "-ANTIISO- && -VETO- && -TRIG- && -DZETA- &&  -MT-",
+            "select":        "-VETO- && -TRIG- && -DZETA- &&  -MT-",
             "name":          "NOMINAL_ntuple_WJets",
             "event_weight":  ["puweight" ,"xsec_lumi_weight" ,"effweight", "mcweight","qcd_correction"]
         },
         "SingleTop_full": {
             "target":        "none",
-            "select":        "-ANTIISO- && -VETO- && -TRIG- && -DZETA- &&  -MT-",
+            "select":        "-VETO- && -TRIG- && -DZETA- &&  -MT-",
             "name":          "NOMINAL_ntuple_SingleTop",
             "event_weight":  ["puweight" ,"xsec_lumi_weight" ,"effweight", "mcweight","qcd_correction"]
         },
-        "EWKZ_ZTT_full": {
+        "EWKZ_full": {
             "target":        "none",
-            "select":        "-ANTIISO- && -VETO- && -TRIG- && -ZTT- && -DZETA- &&  -MT-",
+            "select":        "-VETO- && -TRIG- && -ZTT- && -DZETA- &&  -MT-",
             "name":          "NOMINAL_ntuple_EWKZ",
             "event_weight":  ["puweight" ,"xsec_lumi_weight" ,"effweight", "mcweight","qcd_correction"]
          },
         "data_full": {
             "target":        "none",
-            "select":        "-ANTIISO- && -VETO- && -TRIG-&& -DZETA- && -MT-",
+            "select":        "-VETO- && -TRIG-&& -DZETA- && -MT-",
             "event_weight":  ["qcd_correction"],
             "name":          {"em": "NOMINAL_ntuple_MuonEG"}
         }
