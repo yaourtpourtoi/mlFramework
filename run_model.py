@@ -8,6 +8,7 @@ import argparse
 import cPickle
 import subprocess as sp
 import multiprocessing as mp
+import keras
 
 def main():
 
@@ -23,7 +24,7 @@ def main():
 
     print "---------------------------"
     print "Running over {0} samples".format(args.channel)
-    print "Using {0}".format(args.model)
+    print "Using {0}".format(args.model), keras.__version__
     if args.train:
         print "Training new model"
     if args.short:
@@ -138,7 +139,7 @@ def sandbox(channel, model, scaler, sample, variables, outname, config = None, m
             modify(part, config)
 
         part["THU"] = 1 # Add dummy
-        folds = [part.query( "evt % 2 != 0 " ).reset_index(drop=True), part.query( "evt % 2 == 0 " ).reset_index(drop=True) ]
+        folds = [part.query( "abs(evt % 2) != 0 " ).reset_index(drop=True), part.query( "abs(evt % 2) == 0 " ).reset_index(drop=True) ]
         addPrediction(channel, model.predict( applyScaler(scaler, folds, variables) ), folds, outname, new = first )
         
         folds[0].drop(folds[0].index, inplace=True)
