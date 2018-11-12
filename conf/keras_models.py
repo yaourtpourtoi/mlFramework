@@ -148,7 +148,7 @@ def smhtt_dropout_tanh(num_inputs, num_outputs):
         if i == 0:
             model.add(Dense(nodes, kernel_regularizer=l2(1e-5), input_dim=num_inputs))
         else:
-            model.add(Dense(nodes))
+            model.add(Dense(nodes, kernel_regularizer=l2(1e-5)))
         model.add(Activation("tanh"))
         model.add(Dropout(0.3))
 
@@ -165,13 +165,13 @@ def smhtt_dropout_selu(num_inputs, num_outputs):
         if i == 0:
             model.add(Dense(nodes, kernel_regularizer=l2(1e-5), input_dim=num_inputs))
         else:
-            model.add(Dense(nodes))
+            model.add(Dense(nodes, kernel_regularizer=l2(1e-5)))
         model.add(Activation("selu"))
         model.add(Dropout(0.3))
 
     model.add(Dense(num_outputs, kernel_regularizer=l2(1e-5)))
     model.add(Activation("softmax"))
 
-    model.compile(loss="kullback_leibler_divergence", optimizer=Adam(lr=1e-4), metrics=['categorical_accuracy'])
+    model.compile(loss="categorical_crossentropy", optimizer=Adam(lr=1e-4), metrics=['categorical_accuracy'])
     return model
 
