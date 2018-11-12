@@ -3,13 +3,11 @@ import json
 
 def main():
 
-    samples = "conf/global_config_2017.json"
-    with open(samples,"r") as FSO:
-        config = json.load(FSO)
+    samples = "conf/global_config_{0}_2016.json"
 
     train_weights = {}
-    for channel in ["et","mt","tt"]:
-        train_weights[channel] = getWeights(samples, channel)
+    for channel in ["mt","et","tt"]:
+        train_weights[channel] = getWeights(samples.format(channel), channel)
 
     class_weights = {}
     for cl in ["ztt", "zll", "misc", "tt", "w", "ss", "noniso", "ggh", "qqh"]:
@@ -44,8 +42,9 @@ def getWeights(samples, channel):
     for sample, sampleName in read.get(what = "nominal"):
         target =  read.config["target_names"][ sample[0]["target"].iloc[0] ]
 
-        numbers[ sampleName ] = {"total": len(sample[0]) + len(sample[1]) }
-        numbers[ sampleName ]["evt"] = sample[0]["event_weight"].sum() + sample[1]["event_weight"].sum()
+
+        numbers[ sampleName["histname"] ] = {"total": len(sample[0]) + len(sample[1]) }
+        numbers[ sampleName["histname"] ]["evt"] = sample[0]["event_weight"].sum() + sample[1]["event_weight"].sum()
 
 
         if numbers.get(target, None) == None:
