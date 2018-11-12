@@ -120,11 +120,11 @@ class KerasObject():
             samples = deque(samples)
 
         for i in xrange( len(samples) ):
-            test = samples[0]
-            if where: test  = test.query( where ).reset_index(drop=True)
-
-            predictions.append( self.testSingle( test, i ) )
+            predictions.append( self.testSingle( samples[0], i ) )
             samples.rotate(-1)
+
+        samples[0].drop(samples[0].index, inplace = True)
+        samples[1].drop(samples[1].index, inplace = True)
 
         return predictions
 
