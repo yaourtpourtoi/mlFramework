@@ -13,7 +13,7 @@ import keras
 def main():
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('-c', dest='channel', help='Decay channel' ,choices = ['mt','et','tt'], default = 'mt')
+    parser.add_argument('-c', dest='channel', help='Decay channel' ,choices = ['mt','et','tt','em'], default = 'mt')
     parser.add_argument('-m', dest='model',   help='ML model to use' ,choices = ['keras','xgb'],  default = 'keras')
     parser.add_argument('-t', dest='train',   help='Train new model' , action='store_true')
     parser.add_argument('-s', dest='short',   help='Do !!NOT!! predict shapes' , action='store_true')
