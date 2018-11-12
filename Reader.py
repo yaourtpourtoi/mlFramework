@@ -100,7 +100,13 @@ class Reader():
 
         for sample in config["samples"]:
             config["samples"][sample]["target_name"] = config["samples"][sample]["target"]
-            config["samples"][sample]["target"]  = target_map.get( config["samples"][sample]["target"], -1 )  
+
+            if "target_values" in config:
+                config["samples"][sample]["target"]  = int(config["target_values"].get( config["samples"][sample]["target"], -1 ))
+            else:
+                config["samples"][sample]["target"]  = target_map.get( config["samples"][sample]["target"], -1 )  
+
+            config["target_names"][ config["samples"][sample]["target"] ] = config["samples"][sample]["target_name"]
 
         return config
 
@@ -307,16 +313,20 @@ class Reader():
     def _getFolds(self, df):
 
         if self.folds != 2: raise NotImplementedError("Only implemented two folds so far!!!")
-        df["evt"] = df["evt"].astype('int64')
-        return [df.query( "evt % 2 != 0 " ).reset_index(drop=True), df.query( "evt % 2 == 0 " ).reset_index(drop=True) ]
+        return [df.query( "abs(evt) % 2 != 0 " ).reset_index(drop=True), df.query( "abs(evt) % 2 == 0 " ).reset_index(drop=True) ]
 
     def _getDF( self, sample_path, select ):
 
         add = "addvar"
         if "Embedd" in sample_path:
             add = "addvar_Embedding"
-        branches = list(set( self.config["variables"] + self.config[ "weights" ] + ["evt"] + self.addvar ))
 
+        snowflakes = ["evt"]
+        if self.era == "2016" and "ggH" in sample_path:
+            snowflakes.append("THU*")
+
+        branches = list(set( self.config["variables"] + self.config[ "weights" ] + snowflakes + self.addvar ))
+        
         # Return iterator when predicting samples
         chunksize = None
         if self.for_prediction:
