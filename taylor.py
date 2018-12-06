@@ -8,6 +8,9 @@ import pickle
 import numpy as np
 import os
 import sys
+from glob import glob
+import cPickle
+import copy
 
 import matplotlib as mpl
 mpl.use('Agg')
@@ -18,9 +21,9 @@ from matplotlib import cm
 from keras.models import load_model
 import tensorflow as tf
 
-from tensorflow_derivative.inputs import Inputs
-from tensorflow_derivative.outputs import Outputs
-from tensorflow_derivative.derivatives import Derivatives
+from tensorflow_derivative.tensorflow_derivative.inputs import Inputs
+from tensorflow_derivative.tensorflow_derivative.outputs import Outputs
+from tensorflow_derivative.tensorflow_derivative.derivatives import Derivatives
 from Reader import Reader
 
 
