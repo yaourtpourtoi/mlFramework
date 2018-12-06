@@ -24,7 +24,7 @@ class Reader():
         self.processes = []
         self.needToAddVars = []
 
-        with open("conf/cuts.json","r") as FSO:
+        with open("conf/cuts_{0}.json".format(era),"r") as FSO:
             cuts = json.load(FSO)
             for c in cuts:
                 cuts[c] = self._assertChannel( cuts[c] )
@@ -75,8 +75,11 @@ class Reader():
             sample_name = self._assertChannel( snap["name"] )
             snap["target"] = self._assertChannel(snap["target"] )
             targets.append( snap["target"]  )
+            if self.era == "2016":
+                snap["name"]    = "{path}/{name}_{channel}.root".format(name = sample_name, **config)
+            else:
+                snap["name"]    = "{path}/{channel}-{name}.root".format(name = sample_name, **config)
 
-            snap["name"]    = "{path}/{name}_{channel}.root".format(name = sample_name, **config)
             snap["select"] = self._parseCut( snap["select"] )
 
             snap["event_weight"]  = self._assertChannel( snap["event_weight"] )
@@ -143,8 +146,8 @@ class Reader():
         self.addvar = self.config["addvar"]
 
         # If shifts are needed add them in the tree
-        for v in self.config["variables"]:
-            if v in self.config["shifted_variables"]:
+        for v in self.config["shifted_variables"]:
+            # if v in self.config["shifted_variables"]:
                 self.addvar.append(v+"*")
 
         self.itersamples = []
@@ -204,10 +207,10 @@ class Reader():
     def loadForMe(self, sample_info):
 
         if not os.path.exists( sample_info["path"] ):
-            print "Warning ", constStrLen( sample_info["histname"] ) , sample_info["path"].split("/")[-1]
+            print "\033[1;31mWarning:\033[0m ", constStrLen( sample_info["histname"] ) , sample_info["path"].split("/")[-1]
             return []
             
-        print "Loading ", constStrLen( sample_info["histname"] ) , sample_info["path"].split("/")[-1]
+        print "\033[1;32mLoading:\033[0m ", constStrLen( sample_info["histname"] ) , sample_info["path"].split("/")[-1]
         DF = self._getDF(sample_path = sample_info["path"], 
                           select = sample_info["select"])
 
@@ -232,8 +235,20 @@ class Reader():
         for new, old in sample_info["rename"]:
             if new in DF.columns.values.tolist() and old in DF.columns.values.tolist():
                 DF[old] = DF[new]
-            # else:
-            #     print "cant rename {0} to {1}".format(old, new)  
+            else:
+                print "cant rename {0} to {1}".format(old, new)
+
+        if self.era == "2016":
+            DF.replace({"jdeta":-10.},-1., inplace = True)
+            DF.replace({"mjj":-10.},-11., inplace = True)
+            DF.replace({"dijetpt":-10.},-11., inplace = True)
+
+        if self.era == "2017":
+            DF.replace({"jdeta":-1.},-10., inplace = True)
+            DF.replace({"mjj":-11.},-10., inplace = True)
+            DF.replace({"dijetpt":-11.},-10., inplace = True)
+
+        DF.eval("dijetpt = dijetpt*(mjj > 0) -10 * (mjj < 0)", inplace = True)
 
     def combineFolds(self, samples):
 
@@ -326,11 +341,13 @@ class Reader():
             snowflakes.append("THU*")
 
         branches = list(set( self.config["variables"] + self.config[ "weights" ] + snowflakes + self.addvar ))
+        if "EMB" in sample_path and "sf*" in branches:
+            branches.remove("sf*")
         
         # Return iterator when predicting samples
         chunksize = None
         if self.for_prediction:
-            chunksize = 500000
+            chunksize = 100000
 
         tmp = rp.read_root( paths = sample_path,
                             where = select,
