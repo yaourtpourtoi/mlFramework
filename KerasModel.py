@@ -69,19 +69,23 @@ class KerasObject():
             samples = deque(samples)
 
         for i in xrange( len(samples) ):
-            test = samples[0]
-            train = [ samples[1] ]
-
-            for j in xrange(2, len(samples) ):
-                train.append( samples[j] )
-            
-            train = concat(train , ignore_index=True).reset_index(drop=True)
+            test =  samples[0]
+            train = samples[1]
 
             self.models.append( self.trainSingle( train, test ) )
             samples.rotate(-1)
 
         print "Finished training!"
 
+    def getTensorflowModels(self, variables, fold):
+
+        try:
+            model_tensorflow = getattr(keras_models, self.params["name"]+"_tensorflow")
+        except:
+            print "Failed to load models"
+            raise Exception
+
+        return model_tensorflow( variables, self.models[fold] )
 
     def trainSingle(self, train, test):
 
@@ -132,6 +136,7 @@ class KerasObject():
         predictions = []
         if type(samples) is list:
             samples = deque(samples)
+            samples.rotate(-1)  # make sure to predict test set
 
         for i in xrange( len(samples) ):
             predictions.append( self.testSingle( samples[0], i ) )
@@ -148,5 +153,6 @@ class KerasObject():
         prediction = DataFrame( self.models[fold].predict(test[self.variables].values) )
 
         return DataFrame(dtype = float, data = {"predicted_class":prediction.idxmax(axis=1).values,
-                                 "predicted_prob": prediction.max(axis=1).values } )
+                                                "predicted_prob": prediction.max(axis=1).values,
+                                                "event_weight":   test["event_weight"].values } )
 

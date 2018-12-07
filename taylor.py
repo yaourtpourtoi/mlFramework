@@ -55,16 +55,21 @@ def run(samples,channel, era ):
                   era = era)
 
     target_names = read.config["target_names"]
-    variables = read.config["variables"]
+    target_values = read.config["target_values"]
+
+    outputs = [ i for k,i in target_names.items() ]
+    outputs.remove("none")
+
+    inputs = Inputs(read.config["variables"])
     models_folder = era + "/models"
 
     modelname = "{0}/{1}.{2}".format(models_folder,channel,use)
 
 
-
     if os.path.exists("{0}/StandardScaler.{1}.pkl".format(models_folder,channel) ):
         print "Loading Scaler"
         scaler = []
+        #KIT uses 2 scalers. 
         if glob("{0}/{1}_*_keras_preprocessing.pickle".format(models_folder,channel)) :
             with open( "{0}/{1}_fold0_keras_preprocessing.pickle".format(models_folder,channel), "rb" ) as FSO:
                 scaler.append( cPickle.load( FSO ) )
@@ -77,12 +82,88 @@ def run(samples,channel, era ):
                 scaler = [tmp,tmp]
 
     model = modelObject( filename = modelname )
+    model_tensorflow = model.getTensorflowModels( inputs.placeholders, 0 )
+    outputs = Outputs(model_tensorflow, outputs )
+
+
+    # print "Loading Training set"
+    # response =  model.predict(  applyScaler( scaler, read.getSamplesForTraining(), inputs.names ) )
+
+    sess = tf.Session()
+    sess.run(tf.global_variables_initializer())
+
+    # Get operations for first-order derivatives
+    deriv_ops = getOperations(inputs, outputs)
 
     print "Loading Training set"
-    response =  model.predict(  applyScaler( scaler, read.getSamplesForTraining(), variables ) )
-    print response
+    values_preprocessed = applyScaler( scaler, read.getSamplesForTraining(), inputs.names )
+
+    mean_abs_deriv = {}
+    for class_ in outputs.names:
+
+        class_preprocessed = values_preprocessed[0].query("target == {0}".format(target_values[class_]) )
+
+        deriv_class = []
+
+        for _, row in class_preprocessed[inputs.names].iterrows():
+            values = np.array(row.values).reshape(1, len(inputs.names))
+            deriv_values = sess.run(
+                deriv_ops[class_],
+                feed_dict={
+                    inputs.placeholders: values
+                })
+            deriv_class.append( np.squeeze(deriv_values) )
 
 
+        print class_, len(deriv_class), len(class_preprocessed["event_weight"].values)
+
+        mean_abs_deriv[class_] = np.average( np.abs(deriv_class), weights=class_preprocessed["event_weight"].values, axis=0)
+
+    plot(mean_abs_deriv, inputs, outputs)
+
+
+def plot(derivatives, inputs,outputs, normalize = False):
+    matrix = np.vstack([derivatives[class_] for class_ in outputs.names])
+    if normalize:
+        for i_class, class_ in enumerate(outputs.names):
+            matrix[i_class, :] = matrix[i_class, :] / np.sum(
+                matrix[i_class, :])
+
+    # Plotting
+    plt.figure(0, figsize=(len(inputs.names), len(outputs.names)))
+    axis = plt.gca()
+    for i in range(matrix.shape[0]):
+        for j in range(matrix.shape[1]):
+            axis.text(
+                j + 0.5,
+                i + 0.5,
+                '{:.2f}'.format(matrix[i, j]),
+                ha='center',
+                va='center')
+    q = plt.pcolormesh(matrix, cmap='Wistia')
+    #cbar = plt.colorbar(q)
+    #cbar.set_label("mean(abs(Taylor coefficients))", rotation=270, labelpad=20)
+    plt.xticks(
+        np.array(range(len(inputs.names))) + 0.5, inputs.names, rotation='vertical')
+    plt.yticks(
+        np.array(range(len(outputs.names))) + 0.5, outputs.names, rotation='horizontal')
+    plt.xlim(0, len(inputs.names ))
+    plt.ylim(0, len(outputs.names ))
+    output_path = os.path.join("2016/plots",
+                               "fold0_keras_taylor_1D")
+    plt.savefig(output_path+".png", bbox_inches='tight')
+    plt.savefig(output_path+".pdf", bbox_inches='tight')
+
+def getOperations(inputs, outputs):
+    # Get operations for first-order derivatives
+    deriv_ops = {}
+    derivatives = Derivatives(inputs, outputs)
+    for class_ in outputs.names:
+        deriv_ops[class_] = []
+        for variable in inputs.names:
+            deriv_ops[class_].append(derivatives.get(class_, [variable]))
+
+    return deriv_ops
 def applyScaler(scaler, folds, variables):
     if not scaler: return folds
     newFolds = copy.deepcopy(folds)
