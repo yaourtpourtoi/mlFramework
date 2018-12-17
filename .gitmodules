@@ -1,3 +1,0 @@
-[submodule "tensorflow_derivative"]
-	path = tensorflow_derivative
-	url = git@github.com:stwunsch/tensorflow_derivative.git
