@@ -1,5 +1,5 @@
 {
-    "path": "/afs/hephy.at/data/higgs01/data_2016/ntuples_v5/{channel}/ntuples_SVFIT_merged/", 
+    "path": "/afs/hephy.at/data/higgs01/data_2016/ntuples_v6/{channel}/ntuples_SVFIT_merged/", 
     "variables":{
         "et": [
             "pt_2",
@@ -77,7 +77,7 @@
     },
 
     "weights":["*weight*","gen_match*","top*","zPtReweightWeight"],
-    "shape_from_file":["T0","T1","T10","ZL0","ZL1","btagEff","btagMistag","metJetEn","metUnclusteredEn","jecUncRelativeBal","jecUncEta0to3","jecUncEta0to5","jecUncEta3to5"],
+    "shape_from_file":["T0","T1","T10","ZL0","ZL1","btagEff","btagMistag","metJetEn","metUnclusteredEn","jecUncRelativeBal","jecUncEta0to3","jecUncEta0to5","jecUncEta3to5","metRecoilResponse","metRecoilResolution"],
     "shape_from_tree":["CMS_scale_j_eta0to5_13Tev","CMS_scale_j_eta0to3_13TeV","CMS_scale_j_eta3to5_13TeV","CMS_scale_j_RelativeBal_13TeV"],
 
     "samples":{
@@ -220,7 +220,19 @@
             "select": "-VETO- && -MT- && -TRIG-", 
             "name": "NOMINAL_ntuple_VBF", 
             "event_weight": 1.0
-        },         
+        },
+        "WH125_full": {
+            "target":"none",
+            "select": "-VETO- && -MT- && -TRIG-", 
+            "name": "NOMINAL_ntuple_WH", 
+            "event_weight": 1.0
+        }, 
+        "ZH125_full": {
+            "target":"none",
+            "select": "-VETO- && -MT- && -TRIG-", 
+            "name": "NOMINAL_ntuple_ZH", 
+            "event_weight": 1.0
+        }, 
         "data": {
             "target":"none",
             "select": "-OS- && -ISO- && -VETO- && -MT- && -TRIG-",
