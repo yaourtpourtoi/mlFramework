@@ -205,7 +205,6 @@ class Reader():
         return self
 
     def loadForMe(self, sample_info):
-
         if not os.path.exists( sample_info["path"] ):
             print "\033[1;31mWarning:\033[0m ", constStrLen( sample_info["histname"] ) , sample_info["path"].split("/")[-1]
             return []
@@ -235,8 +234,8 @@ class Reader():
         for new, old in sample_info["rename"]:
             if new in DF.columns.values.tolist() and old in DF.columns.values.tolist():
                 DF[old] = DF[new]
-            else:
-                print "cant rename {0} to {1}".format(old, new)
+            # else:
+            #     print "cant rename {0} to {1}".format(old, new)
 
         if self.era == "2016":
             DF.replace({"jdeta":-10.},-1., inplace = True)
@@ -337,8 +336,9 @@ class Reader():
             add = "addvar_Embedding"
 
         snowflakes = ["evt"]
-        if self.era == "2016" and "ggH" in sample_path:
+        if "ggH" in sample_path:
             snowflakes.append("THU*")
+            snowflakes.append("*NNLO*")
 
         branches = list(set( self.config["variables"] + self.config[ "weights" ] + snowflakes + self.addvar ))
         if "EMB" in sample_path and "sf*" in branches:
