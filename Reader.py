@@ -75,10 +75,8 @@ class Reader():
             sample_name = self._assertChannel( snap["name"] )
             snap["target"] = self._assertChannel(snap["target"] )
             targets.append( snap["target"]  )
-            if self.era == "2016":
-                snap["name"]    = "{path}/{name}_{channel}.root".format(name = sample_name, **config)
-            else:
-                snap["name"]    = "{path}/{channel}-{name}.root".format(name = sample_name, **config)
+            
+            snap["name"]    = "{path}/{channel}-{name}.root".format(name = sample_name, **config)
 
             snap["select"] = self._parseCut( snap["select"] )
 
@@ -242,12 +240,12 @@ class Reader():
             DF.replace({"mjj":-10.},-11., inplace = True)
             DF.replace({"dijetpt":-10.},-11., inplace = True)
 
+
         if self.era == "2017":
             DF.replace({"jdeta":-1.},-10., inplace = True)
             DF.replace({"mjj":-11.},-10., inplace = True)
             DF.replace({"dijetpt":-11.},-10., inplace = True)
 
-        DF.eval("dijetpt = dijetpt*(mjj > 0) -10 * (mjj < 0)", inplace = True)
 
     def combineFolds(self, samples):
 
