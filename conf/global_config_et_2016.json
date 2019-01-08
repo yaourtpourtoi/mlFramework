@@ -96,61 +96,61 @@
         "ZTT": {
             "target":{"mt":"ztt", "et":"ztt"},
             "select": "-OS- && -ISO- && -VETO- && -MT- && -TRIG- && -GENTAU-", 
-            "name": "NOMINAL_ntuple_DYXJetsToLL_lowMass_merged_MCSummer16", 
+            "name": "NOMINAL_ntuple_DY", 
             "event_weight": "weight*( 0.95*(gen_match_2 == 5) + 1.*(gen_match_2 !=5) )*zPtReweightWeight"
         },
         "ZL": {
             "target":{"mt":"zll", "et":"zll"},
             "select": "-OS- && -ISO- && -VETO- && -MT- && -TRIG- &&  ((-GENJET- || -GENTAU-) < 0.5)", 
-            "name": "NOMINAL_ntuple_DYXJetsToLL_lowMass_merged_MCSummer16", 
+            "name": "NOMINAL_ntuple_DY", 
             "event_weight": "weight*( 0.95*(gen_match_2 == 5) + 1.*(gen_match_2 !=5) )*zPtReweightWeight"
         },
         "ZJ": {
             "target":{"mt":"zll", "et":"zll"},
             "select": "-OS- && -ISO- && -VETO- && -MT- && -TRIG- && -GENJET-", 
-            "name": "NOMINAL_ntuple_DYXJetsToLL_lowMass_merged_MCSummer16", 
+            "name": "NOMINAL_ntuple_DY", 
             "event_weight": "weight*( 0.95*(gen_match_2 == 5) + 1.*(gen_match_2 !=5) )*zPtReweightWeight"
         },
         "TTT": {
             "target":{"mt":"tt", "et":"tt"},
             "select": "-OS- && -ISO- && -VETO- && -MT- && -TRIG- && -GENTAU- ", 
-            "name": "NOMINAL_ntuple_TT_merged_MCSummer16", 
+            "name": "NOMINAL_ntuple_TT", 
             "event_weight": "weight*( 0.95*(gen_match_2 == 5) + 1.*(gen_match_2 !=5) )*topWeight_run1"
         },
         "TTL": {
             "target":{"mt":"tt", "et":"tt"},
             "select": "-OS- && -ISO- && -VETO- && -MT- && -TRIG- && ((-GENJET- || -GENTAU-) < 0.5)", 
-            "name": "NOMINAL_ntuple_TT_merged_MCSummer16", 
+            "name": "NOMINAL_ntuple_TT", 
             "event_weight": "weight*( 0.95*(gen_match_2 == 5) + 1.*(gen_match_2 !=5) )*topWeight_run1"
         },        
         "TTJ": {
             "target":{"mt":"tt", "et":"tt"},
             "select": "-OS- && -ISO- && -VETO- && -MT- && -TRIG- && -GENJET- ", 
-            "name": "NOMINAL_ntuple_TT_merged_MCSummer16", 
+            "name": "NOMINAL_ntuple_TT", 
             "event_weight": "weight*( 0.95*(gen_match_2 == 5) + 1.*(gen_match_2 !=5) )*topWeight_run1"
         },
         "VVT": {
             "target":{"mt":"misc", "et":"misc"},
             "select": "-OS- && -ISO- && -VETO- && -MT- && -TRIG- && -GENTAU- ", 
-            "name": "NOMINAL_ntuple_VV_MCSummer16", 
+            "name": "NOMINAL_ntuple_VV", 
             "event_weight": "weight*( 0.95*(gen_match_2 == 5) + 1.*(gen_match_2 !=5) )"
         },
         "VVL": {
             "target":{"mt":"misc", "et":"misc"},
             "select": "-OS- && -ISO- && -VETO- && -MT- && -TRIG- && ((-GENJET- || -GENTAU-) < 0.5)", 
-            "name": "NOMINAL_ntuple_VV_MCSummer16", 
+            "name": "NOMINAL_ntuple_VV", 
             "event_weight": "weight*( 0.95*(gen_match_2 == 5) + 1.*(gen_match_2 !=5) )"
         },        
         "VVJ": {
             "target":{"mt":"misc", "et":"misc"},
             "select": "-OS- && -ISO- && -VETO- && -MT- && -TRIG- && -GENJET-", 
-            "name": "NOMINAL_ntuple_VV_MCSummer16", 
+            "name": "NOMINAL_ntuple_VV", 
             "event_weight": "weight*( 0.95*(gen_match_2 == 5) + 1.*(gen_match_2 !=5) )"
         },
         "W": {
             "target":{"mt":"w", "et":"w"},
             "select": "-OS- && -ISO- && -VETO- && -MT- && -TRIG-", 
-            "name": "NOMINAL_ntuple_WXJets_merged_MCSummer16", 
+            "name": "NOMINAL_ntuple_WJets", 
             "event_weight": "weight*( 0.95*(gen_match_2 == 5) + 1.*(gen_match_2 !=5) )"
         },
         "estimate": {
@@ -166,7 +166,7 @@
             "select": {
                 "et":"-VETO- && -MT- && -TRIG-"
             }, 
-            "name": "NOMINAL_ntuple_VV_MCSummer16", 
+            "name": "NOMINAL_ntuple_VV", 
             "event_weight": 1.0
         },
         "DY_full": {
@@ -174,7 +174,7 @@
             "select": {
                 "et":"-VETO- && -MT- && -TRIG- "
             }, 
-            "name": "NOMINAL_ntuple_DYXJetsToLL_lowMass_merged_MCSummer16", 
+            "name": "NOMINAL_ntuple_DY", 
             "event_weight": 1.0
         },
         "EMB_full": {
@@ -190,7 +190,7 @@
             "select": {
                 "et":"-VETO- && -MT- && -TRIG-"
             }, 
-            "name": "NOMINAL_ntuple_TT_merged_MCSummer16", 
+            "name": "NOMINAL_ntuple_TT", 
             "event_weight": 1.0
         },
         "W_full": {
@@ -198,7 +198,7 @@
             "select": {
                 "et":"-VETO- && -MT- && -TRIG-"
             }, 
-            "name": "NOMINAL_ntuple_WXJets_merged_MCSummer16", 
+            "name": "NOMINAL_ntuple_WJets", 
             "event_weight": 1.0
         },
         "data_full": {
