@@ -3,30 +3,42 @@ import ROOT as R
 import root_numpy as rn
 import copy
 import os
+from math import sqrt
 from array import array
 R.gROOT.SetBatch(True)
 R.gStyle.SetOptStat(0)
+R.TGaxis.SetExponentOffset(-0.05, 0.01, "y")
 
 def main():
 
-    histos = { "DY":R.TH1D("a","a",100,0,10),
-               "QCD":R.TH1D("b","b",100,0,10),
-               "data":R.TH1D("data","data",100,0,10), }
+
+    file = R.TFile("/afs/hephy.at/work/m/mspanring/CMSSW_9_4_0/src/HephyHiggs/Tools/Datacard/htt_mt.inputs-sm-13TeV-eta_1.root")
+
+    histos = {}
+    for h in ["W","VVT","VVJ","TTT","TTJ","ZTT","ZL","ZJ","QCD","data_obs"]:
+    # for h in ["VVT","TTT","ZTT","ZL","jetFakes_W","jetFakes_TT","jetFakes_QCD","data_obs"]:
+    # for h in ["VVT","TTT","ZTT","ZL","jetFakes","data_obs"]:
+        if h == "data_obs":
+            histos["data"] = copy.deepcopy( file.Get("mt_inclusive/"+h) )
+        else:
+            histos[h] = copy.deepcopy( file.Get("mt_inclusive/"+h) ) 
+
+    # histos = { "DY":R.TH1D("a","a",100,0,10),
+    #            "QCD":R.TH1D("b","b",100,0,10),
+    #            "data":R.TH1D("data","data",100,0,10), }
 
 
 
 
-    for i in xrange(1,100):
-        histos["DY"].SetBinContent(i,i*0.1)
-        histos["QCD"].SetBinContent(i,i*10)
-        histos["data"].SetBinContent(i,i*0.1 + i*10)
+    # for i in xrange(1,100):
+    #     histos["DY"].SetBinContent(i,i*0.1)
+    #     histos["QCD"].SetBinContent(i,i*10)
+    #     histos["data"].SetBinContent(i,i*0.1 + i*10)
 
 
-    plot(histos,"log")
+    plot(histos,canvas = "linear")
 
 def plot( histos, signal=[], canvas = "semi", outfile = "", descriptions = {} ):
-
-
 
     data = histos.pop("data",None)
     signal_hists = []
@@ -42,6 +54,7 @@ def plot( histos, signal=[], canvas = "semi", outfile = "", descriptions = {} ):
     what = [ y[1] for y in yields ]
 
     cumul = copy.deepcopy(  histos[ what[0] ] )
+    cumul.SetFillColorAlpha(33,0.6);
     applyHistStyle( histos[ what[0] ] , what[0] )
 
     stack = R.THStack("stack", "")
@@ -56,7 +69,17 @@ def plot( histos, signal=[], canvas = "semi", outfile = "", descriptions = {} ):
         data = copy.deepcopy( cumul )
 
     ratio = copy.deepcopy( data )
-    ratio.Divide( cumul )
+    tmp = copy.deepcopy( cumul )
+    for i in xrange( tmp.GetNbinsX() + 1 ):
+        tmp.SetBinError(i,0.0)    
+    ratio.Divide( tmp )
+
+    ratio_error = copy.deepcopy( cumul )
+    for i in xrange( ratio_error.GetNbinsX() + 1 ):
+        ratio_error.SetBinError(i,0.0)
+    ratio_error.Divide(cumul)
+    ratio_error.SetFillColorAlpha(33,0.7)
+
 
     if signal:
         signal_ratio = copy.deepcopy( cumul )
@@ -114,10 +137,10 @@ def plot( histos, signal=[], canvas = "semi", outfile = "", descriptions = {} ):
     channel = R.TLatex( 0.60, 0.932, ch )
 
     lumi = descriptions.get( "lumi", "xx.y" )
-    som = descriptions.get( "SoM", "13" )
+    som = descriptions.get( "CoM", "13" )
     l = lumi + r" fb^{-1}"
     r = " ({0} TeV)".format(som)
-    righttop = R.TLatex( 0.635, 0.932, l+r)
+    righttop = R.TLatex( 0.655, 0.932, l+r)
 
 
 
@@ -155,12 +178,14 @@ def plot( histos, signal=[], canvas = "semi", outfile = "", descriptions = {} ):
         cv.cd(1)
         dummy_up.Draw()
         stack.Draw("same hist")
+        cumul.Draw("same e2")
         data.Draw("same e1")
         leg.Draw()
         R.gPad.RedrawAxis()
         cv.cd(2)
         dummy_down.Draw()
         stack.Draw("same hist")
+        cumul.Draw("same e2")
         data.Draw("same e1")
         for s in signal_hists:
             s.Draw("same hist")
@@ -170,9 +195,11 @@ def plot( histos, signal=[], canvas = "semi", outfile = "", descriptions = {} ):
         R.gPad.RedrawAxis()
         cv.cd(3)
         dummy_ratio.Draw()
+        ratio_error.Draw("same e2")
         ratio.Draw("same e1")
         if signal:
             signal_ratio.Draw("same hist")
+        R.gPad.RedrawAxis()
 
     if canvas == "linear" or canvas == "log":
 
@@ -186,14 +213,18 @@ def plot( histos, signal=[], canvas = "semi", outfile = "", descriptions = {} ):
         if canvas == "log": R.gPad.SetLogy()
 
         dummy_up.Draw()
-        stack.Draw("same hist")
+        stack.Draw("same hist ")
+        cumul.Draw("same e2")
         data.Draw("same e1")
         leg.Draw()
+        R.gPad.RedrawAxis()
         cv.cd(2)
         dummy_ratio.Draw()
+        ratio_error.Draw("same e2")
         ratio.Draw("same e1")
         if signal:
             signal_ratio.Draw("same hist")
+        R.gPad.RedrawAxis()
     
     if not outfile:
         outfile = "{0}_canvas.png".format(canvas)
@@ -203,7 +234,7 @@ def plot( histos, signal=[], canvas = "semi", outfile = "", descriptions = {} ):
     cms2.Draw()
     channel.Draw()
     righttop.Draw()
-
+    cv.SetName(outfile.replace(".root",""))
     cv.SaveAs( "/".join([os.getcwd(),outfile]) )
 
 
@@ -213,7 +244,7 @@ def plot( histos, signal=[], canvas = "semi", outfile = "", descriptions = {} ):
 
 def createRatioSemiLogCanvas(name):
 
-    cv = R.TCanvas(name, name, 10, 10, 700, 600)
+    cv = R.TCanvas(name, name, 10, 10, 800, 600)
 
     # this is the tricky part...
     # Divide with correct margins
@@ -255,7 +286,7 @@ def createRatioSemiLogCanvas(name):
 
 def createRatioCanvas(name):
 
-    cv = R.TCanvas(name, name, 10, 10, 700, 600)
+    cv = R.TCanvas(name, name, 10, 10, 800, 600)
 
     # this is the tricky part...
     # Divide with correct margins
@@ -306,17 +337,20 @@ def applySignalHistStyle(hist, name, width = 1):
 
 
 def getFancyName(name):
-    if name == "ZL":         return r"Z (l#rightarrow#tau)"
-    if name == "ZJ":         return r"Z (jet#rightarrow#tau)"
-    if name == "ZTT":        return r"Z #rightarrow #tau#tau"
-    if name == "TTT":        return r"t#bar{t} (#tau#rightarrow#tau)"
-    if name == "TTJ":        return r"t#bar{t} (jet#rightarrow#tau)"
-    if name == "VVT":        return r"VV (#tau#rightarrow#tau)"
-    if name == "VVJ":        return r"VV (jet#rightarrow#tau)"
-    if name == "W":          return r"W + jet"
-    if name == "QCD":        return r"MultiJet"
-    if name == "jetFakes":   return r"jet #rightarrow #tau_{h}"
-    if name == "EWKZ":       return r"EWKZ"
+    if name == "ZL":                return r"Z (l#rightarrow#tau)"
+    if name == "ZJ":                return r"Z (jet#rightarrow#tau)"
+    if name == "ZTT":               return r"Z #rightarrow #tau#tau"
+    if name == "TTT":               return r"t#bar{t} (#tau#rightarrow#tau)"
+    if name == "TTJ":               return r"t#bar{t} (jet#rightarrow#tau)"
+    if name == "VVT":               return r"VV (#tau#rightarrow#tau)"
+    if name == "VVJ":               return r"VV (jet#rightarrow#tau)"
+    if name == "W":                 return r"W + jet"
+    if name == "QCD":               return r"MultiJet"
+    if name == "jetFakes":          return r"jet #rightarrow #tau_{h}"
+    if name == "jetFakes_W":        return r"W + jet ( F_{F} )"
+    if name == "jetFakes_TT":       return r"t#bar{t} ( F_{F} )"
+    if name == "jetFakes_QCD":      return r"MultiJet ( F_{F} )"    
+    if name == "EWKZ":              return r"EWKZ"
     if name in ["qqH","qqH125"]:    return "VBF"
     if name in ["ggH","ggH125"]:    return "ggF"
 
@@ -326,19 +360,19 @@ def getFancyName(name):
 
 def getColor(name):
 
-    if name in ["TT","TTT","TTJ"]:  return R.TColor.GetColor(155,152,204)
-    if name in ["sig"]:             return R.kRed
-    if name in ["bkg"]:             return R.kBlue
-    if name in ["qqH","qqH125"]:    return R.TColor.GetColor(0,100,0)
-    if name in ["ggH","ggH125"]:    return R.TColor.GetColor(0,0,100)
-    if name in ["W"]:               return R.TColor.GetColor(222,90,106)
-    if name in ["VV","VVJ","VVT"]:  return R.TColor.GetColor(175,35,80)
-    if name in ["ZL","ZJ","ZLJ"]:   return R.TColor.GetColor(100,192,232)
-    if name in ["EWKZ"]:            return R.TColor.GetColor(8,247,183)
-    if name in ["QCD","WSS"]:       return R.TColor.GetColor(250,202,255)
-    if name in ["ZTT","DY","real"]: return R.TColor.GetColor(248,206,104)
-    if name in ["jetFakes"]:        return R.TColor.GetColor(192,232,100)
-    if name in ["data"]:            return R.TColor.GetColor(0,0,0)
+    if name in ["TT","TTT","TTJ","jetFakes_TT"]:    return R.TColor.GetColor(155,152,204)
+    if name in ["sig"]:                             return R.kRed
+    if name in ["bkg"]:                             return R.kBlue
+    if name in ["qqH","qqH125"]:                    return R.TColor.GetColor(0,100,0)
+    if name in ["ggH","ggH125"]:                    return R.TColor.GetColor(0,0,100)
+    if name in ["W","jetFakes_W"]:                  return R.TColor.GetColor(222,90,106)
+    if name in ["VV","VVJ","VVT"]:                  return R.TColor.GetColor(175,35,80)
+    if name in ["ZL","ZJ","ZLJ"]:                   return R.TColor.GetColor(100,192,232)
+    if name in ["EWKZ"]:                            return R.TColor.GetColor(8,247,183)
+    if name in ["QCD","WSS","jetFakes_QCD"]:        return R.TColor.GetColor(250,202,255)
+    if name in ["ZTT","DY","real"]:                 return R.TColor.GetColor(248,206,104)
+    if name in ["jetFakes"]:                        return R.TColor.GetColor(192,232,100)
+    if name in ["data"]:                            return R.TColor.GetColor(0,0,0)
     else: return R.kYellow
 
 if __name__ == '__main__':

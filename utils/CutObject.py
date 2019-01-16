@@ -11,7 +11,6 @@ def main():
     # print C.original
     # C = C+A
     print C.original
-    new = C.remove("-ISO-")
     print new.original
     print C.get()
 
@@ -19,10 +18,11 @@ class Cut():
 
     cutfile = "{0}/config/default_cuts.json".format( "/".join( os.path.realpath(__file__).split("/")[:-1] ) )
 
-    def __init__(self, cutstring, channel=""):
+    def __init__(self, cutstring, channel="", jec_shift = ""):
 
         self.original = cutstring
         self.channel = channel
+        self.jec_shift = jec_shift
         # self.cutfile = "conf/cuts.json"
 
         with open(self.cutfile,"r") as FSO:
@@ -38,11 +38,40 @@ class Cut():
             "-ANTIISO-": "-ISO-"
         }
 
+        self.jec_quantities = [
+            "met",
+            "metphi",
+            "met_ex",
+            "met_ey",
+            "m_sv",
+            "pt_ttjj",
+            "m_ttjj",
+            # "mt_1",
+            "mt_2",
+            "mt_tot",
+            "pt_sum",
+            "njets",
+            "njetspt20",
+            "njetingap",
+            "njetingap20",
+            "mjj",
+            "jdeta",
+            "dijetpt",
+            "dijetphi",
+            "jdphi",
+            "jpt_1",
+            "jpt_2",
+            "jeta_1",
+            "jeta_2",
+            "jphi_1",
+            "jphi_2",
+        ]
+
     def __add__(self, new):
 
         if type(new) == str: return Cut(self.original, self.channel)
 
-        return Cut( " && ".join([self.original, new.original])  , self.channel)
+        return Cut( " & ".join([self.original, new.original])  , self.channel)
 
     def flatten(self,obj):
 
@@ -69,6 +98,10 @@ class Cut():
 
             cutstring = cutstring.replace( alias, self.cut_alias[alias])
 
+        for jq in self.jec_quantities:
+            if jq in cutstring:
+                cutstring = cutstring.replace( jq, jq+self.jec_shift )
+
         return cutstring
 
     def getForDF(self):
@@ -77,7 +110,7 @@ class Cut():
 
         return cutstring.replace("&&","&")
 
-    def switchTo(self,what):
+    def switchCutTo(self,what):
 
         isos = ["-ISO-","-ANTIISO-","-ANTIISO1-","-ANTIISO2-"]
         cutstring = self.original
@@ -88,49 +121,6 @@ class Cut():
                 if cutstring.find(i) != -1:
                     return Cut(cutstring.replace(i, what), self.channel)
 
-    def remove(self, what):
-        isos = ["-ISO-","-ANTIISO-","-ANTIISO1-","-ANTIISO2-"]
-
-        parts = self.original.split(" && ")
-        cutstring = []
-
-        for p in parts:
-
-            if not what in p: cutstring.append(p)
-
-        cutstring = " && ".join( cutstring )
-
-        return Cut(cutstring, self.channel)
-
-    def invert(self,what):
-
-        cutstring = self.original
-        if not type(what) == list:
-            what = [what]
-
-        for elem in what:
-            if elem in cutstring:
-                cutstring = cutstring.replace( elem, self.InvertD[elem]  )
-
-        return Cut(cutstring, self.channel)
-
-
-    def getInvert(self, what = [] ):
-        assert self.channel
-
-        cutstring = self.original
-        if not type(what) == list:
-            what = [what]
-
-        for elem in what:
-            if elem in cutstring:
-                cutstring = cutstring.replace( elem, self.InvertD[elem]  )
-
-        for alias in self.cut_alias:
-
-            cutstring = cutstring.replace( alias, self.cut_alias[alias])
-
-        return cutstring
 
 
 if __name__ == '__main__':

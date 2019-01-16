@@ -17,15 +17,16 @@ def main():
 
     parser = argparse.ArgumentParser()
     parser.add_argument('-c', dest='channel', help='Decay channel' ,choices = ['mt','et','tt'], default = 'mt')
+    parser.add_argument('--asimov', dest='asimov', action="store_true")
     args = parser.parse_args()
 
-    p = Plotter(channel = args.channel, path = "keras")
+    p = Plotter(channel = args.channel, path = "keras", asimov = args.asimov)
     p.makePlots()
     # p.combineImages()
 
 class Plotter():
 
-    def __init__(self, channel, naming = [], path = ""):
+    def __init__(self, channel, naming = [], path = "", asimov = False):
         if path:
             self.filename = "/".join([path, "htt_{0}.inputs-sm-13TeV-ML.root".format(channel) ])
         else:
@@ -33,6 +34,7 @@ class Plotter():
         self.channel = channel
         self.var = None
         self.images = []
+        self.asimov = asimov
         self.tiles = []
         self.sig = ["ggH125","qqH125"]
         self.bkg = ["TT","TTT","TTJ","VV","VVT","VVJ","QCD","ZTT","ZL","ZJ","W"]
@@ -130,11 +132,11 @@ class Plotter():
     def makePlots(self):
 
         for cat in self.histos.keys():
-
+            if self.asimov: self.histos[cat].pop("data",None)
             pl.plot(histos = self.histos[cat],
                     signal = self.sig,
                     canvas = "semi", 
-                    descriptions = {"plottype": "ProjectWork", "xaxis":self.var.tex, "channel":self.channel,"som": "13", "lumi":"35.9"  },
+                    descriptions = {"plottype": "ProjectWork", "xaxis":self.var.tex, "channel":self.channel,"som": "13", "lumi":"41.9"  },
                     outfile = "{0}/{1}.png".format(self.plotPath,cat) )
      
     def blindBins(self, h, bins, canvas ):

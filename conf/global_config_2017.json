@@ -1,322 +1,330 @@
 {
-    "path": "/data/higgs/data_2017/", 
-    "variables":{
-        "mt": [
-            "m_sv",
-            "m_vis",
-            "pt_vis",
-            "pt_1",
-            "pt_2",
-            "jpt_2",
-            "jm_1",
-            "jm_2",
-            "bpt_1",
-            "bpt_2",
-            "bcsv_1",
-            "bcsv_2",
-            "njets",
-            "nbtag", 
-            "mt_1",
-            "mt_2",
-            "pt_tt",
-            "mjj",
-            "dijetpt",
-            "met"
-            ],
-        "et": [
-            "m_sv",
-            "m_vis",
-            "pt_vis",
-            "pt_1",
-            "pt_2",
-            "jpt_1",
-            "jm_1",
-            "bpt_1",
-            "bpt_2",
-            "bcsv_1",
-            "bcsv_2",
-            "njets",
-            "nbtag",
-            "mt_1",
-            "mt_2",
-            "pt_tt",
-            "mjj",
-            "dijetpt",
-            "met"
-        ],
-
-
-        "tt": [
-            "m_sv",
-            "m_vis",
-            "pt_vis",
-            "pt_1",
-            "pt_2",
-            "jpt_1",
-            "jcsv_1",
-            "jm_1",
-            "jmva_1",
-            "bpt_1",
-            "bcsv_1",
-            "bcsv_2",
-            "njets",
-            "nbtag",
-            "mt_1",
-            "pt_tt",
-            "mjj",
-            "jdeta",
-            "dijetpt",
-            "met"
-            ]
-
-
-
+  "useSV": "SVFIT", 
+  "variables": {
+    "mt": [
+      "m_vis", 
+      "pt_vis", 
+      "pt_1", 
+      "pt_2", 
+      "jpt_2", 
+      "jm_1", 
+      "jm_2", 
+      "bpt_1", 
+      "bpt_2", 
+      "bcsv_2", 
+      "njets", 
+      "nbtag", 
+      "mt_1"
+    ], 
+    "tt": [
+      "m_sv", 
+      "pt_vis", 
+      "pt_1", 
+      "m_vis",
+      "njets",
+      "nbtag",
+      "pt_2", 
+      "jpt_1", 
+      "jcsv_1", 
+      "jm_1", 
+      "jmva_1", 
+      "bpt_1", 
+      "bcsv_1", 
+      "bcsv_2", 
+      "mt_1", 
+      "pt_tt", 
+      "mjj", 
+      "jdeta", 
+      "dijetpt", 
+      "met"
+    ], 
+    "et": [
+      "m_sv", 
+      "pt_vis", 
+      "pt_1", 
+      "pt_2", 
+      "jpt_1", 
+      "jm_1", 
+      "bpt_1", 
+      "bpt_2", 
+      "bcsv_1", 
+      "njets", 
+      "mt_1", 
+      "mt_2", 
+      "pt_tt", 
+      "mjj"
+    ]
+  }, 
+  "version": {
+    "mt": "v4", 
+    "tt": "v4", 
+    "et": "v4"
+  },
+  "class_weight":
+  {
+    "ss":      {"mt":7.6, "et":6.1, "tt":0 },
+    "zll":     {"mt":15.5, "et":5.2, "tt":0 },
+    "tt":      {"mt":12.9, "et":9.1, "tt":0 },
+    "misc":    {"mt":66.0, "et":46.5, "tt":26.8 },
+    "qqh":     {"mt":1191.0, "et":1001.8, "tt":462.3 },
+    "noniso":  {"mt":0, "et":0, "tt":1.3 },
+    "w":       {"mt":6.2, "et":4.1, "tt":0 },
+    "ztt":     {"mt":1.8, "et":3.8, "tt":6.3 },
+    "ggh":     {"mt":179.0, "et":293.6, "tt":266.8 }
+  },
+  "samples": {
+    "ZTT": {
+      "event_weight":{
+        "mt":"puweight*trk_sf*reco_sf*genweight*antilep_tauscaling*idisoweight_1*singleTriggerSFLeg1*zPtReweightWeight*((NUP == 0)*0.05913 + (NUP == 1)*0.01017 + (NUP == 2)*0.02150 + (NUP == 3)*0.01351 + (NUP == 4)*0.00922)",
+        "et":"puweight*trk_sf*reco_sf*genweight*antilep_tauscaling*idisoweight_1*singleTriggerSFLeg1*zPtReweightWeight*((NUP == 0)*0.05913 + (NUP == 1)*0.01017 + (NUP == 2)*0.02150 + (NUP == 3)*0.01351 + (NUP == 4)*0.00922)",
+        "tt":"puweight*trk_sf*reco_sf*genweight*antilep_tauscaling*idisoweight_1*xTriggerSFLeg1*xTriggerSFLeg2*zPtReweightWeight*((NUP == 0)*0.05913 + (NUP == 1)*0.01017 + (NUP == 2)*0.02150 + (NUP == 3)*0.01351 + (NUP == 4)*0.00922)"
+      },
+      "target": { "mt": "ztt",  "tt": "ztt",  "et": "ztt" }, 
+      "select": "-OS- && -ISO- && -VETO- && -MT- && -TRIG- && -GENHAD-", 
+      "name": "NOMINAL_ntuple_DY"
+    },     
+    "ZL": {
+      "event_weight":{
+        "mt":"puweight*trk_sf*reco_sf*genweight*antilep_tauscaling*idisoweight_1*singleTriggerSFLeg1*zPtReweightWeight*((NUP == 0)*0.05913 + (NUP == 1)*0.01017 + (NUP == 2)*0.02150 + (NUP == 3)*0.01351 + (NUP == 4)*0.00922)",
+        "et":"puweight*trk_sf*reco_sf*genweight*antilep_tauscaling*idisoweight_1*singleTriggerSFLeg1*zPtReweightWeight*((NUP == 0)*0.05913 + (NUP == 1)*0.01017 + (NUP == 2)*0.02150 + (NUP == 3)*0.01351 + (NUP == 4)*0.00922)",
+        "tt":"puweight*trk_sf*reco_sf*genweight*antilep_tauscaling*idisoweight_1*xTriggerSFLeg1*xTriggerSFLeg2*zPtReweightWeight*((NUP == 0)*0.05913 + (NUP == 1)*0.01017 + (NUP == 2)*0.02150 + (NUP == 3)*0.01351 + (NUP == 4)*0.00922)"
+      },
+      "target": { "mt": "zll",  "tt": "misc",  "et": "zll" }, 
+      "select": "-OS- && -ISO- && -VETO- && -MT- && -TRIG- && -GENLEP-", 
+      "name": "NOMINAL_ntuple_DY"
+    }, 
+    "ZJ": {
+      "event_weight":{
+        "mt":"puweight*trk_sf*reco_sf*genweight*antilep_tauscaling*idisoweight_1*singleTriggerSFLeg1*zPtReweightWeight*((NUP == 0)*0.05913 + (NUP == 1)*0.01017 + (NUP == 2)*0.02150 + (NUP == 3)*0.01351 + (NUP == 4)*0.00922)",
+        "et":"puweight*trk_sf*reco_sf*genweight*antilep_tauscaling*idisoweight_1*singleTriggerSFLeg1*zPtReweightWeight*((NUP == 0)*0.05913 + (NUP == 1)*0.01017 + (NUP == 2)*0.02150 + (NUP == 3)*0.01351 + (NUP == 4)*0.00922)",
+        "tt":"puweight*trk_sf*reco_sf*genweight*antilep_tauscaling*idisoweight_1*xTriggerSFLeg1*xTriggerSFLeg2*zPtReweightWeight*((NUP == 0)*0.05913 + (NUP == 1)*0.01017 + (NUP == 2)*0.02150 + (NUP == 3)*0.01351 + (NUP == 4)*0.00922)"
+      },
+      "target": { "mt": "zll",  "tt": "misc",  "et": "zll" }, 
+      "select": "-OS- && -ISO- && -VETO- && -MT- && -TRIG- && -GENJET-", 
+      "name": "NOMINAL_ntuple_DY"
+    }, 
+    "DY_full": {
+      "event_weight":{
+        "mt":"puweight*trk_sf*reco_sf*genweight*antilep_tauscaling*idisoweight_1*singleTriggerSFLeg1*zPtReweightWeight*((NUP == 0)*0.05913 + (NUP == 1)*0.01017 + (NUP == 2)*0.02150 + (NUP == 3)*0.01351 + (NUP == 4)*0.00922)",
+        "et":"puweight*trk_sf*reco_sf*genweight*antilep_tauscaling*idisoweight_1*singleTriggerSFLeg1*zPtReweightWeight*((NUP == 0)*0.05913 + (NUP == 1)*0.01017 + (NUP == 2)*0.02150 + (NUP == 3)*0.01351 + (NUP == 4)*0.00922)",
+        "tt":"puweight*trk_sf*reco_sf*genweight*antilep_tauscaling*idisoweight_1*xTriggerSFLeg1*xTriggerSFLeg2*zPtReweightWeight*((NUP == 0)*0.05913 + (NUP == 1)*0.01017 + (NUP == 2)*0.02150 + (NUP == 3)*0.01351 + (NUP == 4)*0.00922)"
+      },
+      "target": "none", 
+      "select": "-VETO- && -MT- && -TRIG-", 
+      "name": "NOMINAL_ntuple_DY"
     },
-    "addvar": [
-        "fileEntry",
-        "entry",
-        "jdeta",
-        "jpt_1",
-        "jpt_2",
-        "jeta_1",
-        "jeta_2",
-        "jphi_1",
-        "jphi_2",
-        "jm_1",
-        "jm_2",
-        "bpt_1",
-        "bpt_2",
-        "beta_1",
-        "beta_2",
-        "bphi_1",
-        "bphi_2",
-        "bcsv_1",
-        "bcsv_2",
-        "mjjUp",
-        "mjjDown",
-        "jdetaUp",
-        "jdetaDown",
-        "njetsUp",
-        "njetsDown",
-        "jptUp_1",
-        "jptDown_1",
-        "jptUp_2",
-        "jptDown_2",
-        "byVTightIsolationMVArun2v1DBoldDMwLT_1",
-        "byVTightIsolationMVArun2v1DBoldDMwLT_2",
-        "byTightIsolationMVArun2v1DBoldDMwLT_1",
-        "byTightIsolationMVArun2v1DBoldDMwLT_2",
-        "byMediumIsolationMVArun2v1DBoldDMwLT_1",
-        "byMediumIsolationMVArun2v1DBoldDMwLT_2",
-        "byLooseIsolationMVArun2v1DBoldDMwLT_1",
-        "byLooseIsolationMVArun2v1DBoldDMwLT_2",
-        "byVLooseIsolationMVArun2v1DBoldDMwLT_1",
-        "byVLooseIsolationMVArun2v1DBoldDMwLT_2",        
-        "pt_1",
-        "pt_1",
-        "q_1",
-        "q_2",
-        "pt_sv",
-        "iso_1",
-        "iso_2",
-        "m_1",
-        "m_2",
-        "phi_1",
-        "phi_2",
-        "eta_1",
-        "eta_2",
-        "gen_match_1",
-        "gen_match_2",
-        "decayMode_1",
-        "decayMode_2",
-        "dilepton_veto",
-        "extraelec_veto",
-        "extramuon_veto",
-        "againstMuonLoose3_1",
-        "againstMuonTight3_1",
-        "againstElectronVLooseMVA6_1",
-        "againstElectronTightMVA6_1",
-        "againstMuonLoose3_2",
-        "againstMuonTight3_2",
-        "againstElectronVLooseMVA6_2",
-        "againstElectronTightMVA6_2",
-        "passesThirdLepVeto",
-        "passesTauLepVetos",
-        "trg_singleelectron",
-        "trg_doubletau",
-        "trg_singlemuon",
-	    "trg_mutaucross"
-
-
-    ],
-
-    "version":{
-        "mt":"v3",
-        "et":"v3",
-        "tt":"v3"
+    "EMB_full": {
+      "event_weight":{
+        "mt":"(generatorWeight)",
+        "et":"(generatorWeight)",
+        "tt":"(generatorWeight)"
+      },
+      "target": "none", 
+      "select": "-VETO- && -MT- & pt_1 > 25", 
+      "name": "NOMINAL_ntuple_Embedded"
     },
-    "lumi": 41860,
-    "useSV": "SVFIT",
+    "TTT": {
+      "event_weight":{
+        "mt":"puweight*xsec*1000*genNEventsWeight*trk_sf*reco_sf*genweight*antilep_tauscaling*idisoweight_1*singleTriggerSFLeg1*topWeight_run1",
+        "et":"puweight*xsec*1000*genNEventsWeight*trk_sf*reco_sf*genweight*antilep_tauscaling*idisoweight_1*singleTriggerSFLeg1*topWeight_run1",
+        "tt":"puweight*xsec*1000*genNEventsWeight*trk_sf*reco_sf*genweight*antilep_tauscaling*idisoweight_1*xTriggerSFLeg1*xTriggerSFLeg2*topWeight_run1"
+      },
+      "target": { "mt": "tt",  "tt": "misc",  "et": "tt" }, 
+      "select": "-OS- && -ISO- && -VETO- && -MT- && -TRIG- && -GENHAD- ", 
+      "name": "NOMINAL_ntuple_TT"
+    }, 
+    "TTJ": {
+      "event_weight":{
+        "mt":"puweight*xsec*1000*genNEventsWeight*trk_sf*reco_sf*genweight*antilep_tauscaling*idisoweight_1*singleTriggerSFLeg1*topWeight_run1",
+        "et":"puweight*xsec*1000*genNEventsWeight*trk_sf*reco_sf*genweight*antilep_tauscaling*idisoweight_1*singleTriggerSFLeg1*topWeight_run1",
+        "tt":"puweight*xsec*1000*genNEventsWeight*trk_sf*reco_sf*genweight*antilep_tauscaling*idisoweight_1*xTriggerSFLeg1*xTriggerSFLeg2*topWeight_run1"
+      },
+      "target": { "mt": "tt",  "tt": "misc",  "et": "tt" }, 
+      "select": "-OS- && -ISO- && -VETO- && -MT- && -TRIG- && (-GENLEP- || -GENJET-) ", 
+      "name": "NOMINAL_ntuple_TT"
+    },
+    "TT_full": {
+      "event_weight":{
+        "mt":"puweight*xsec*1000*genNEventsWeight*trk_sf*reco_sf*genweight*antilep_tauscaling*idisoweight_1*singleTriggerSFLeg1*topWeight_run1",
+        "et":"puweight*xsec*1000*genNEventsWeight*trk_sf*reco_sf*genweight*antilep_tauscaling*idisoweight_1*singleTriggerSFLeg1*topWeight_run1",
+        "tt":"puweight*xsec*1000*genNEventsWeight*trk_sf*reco_sf*genweight*antilep_tauscaling*idisoweight_1*xTriggerSFLeg1*xTriggerSFLeg2*topWeight_run1"
+      },
+      "target": "none", 
+      "select": "-VETO- && -MT- && -TRIG-",
+      "name": "NOMINAL_ntuple_TT"
+    },
 
-    "train_weight":"use_scale",
-    "samples":{
-        "ggH125": {
-            "target":{"mt":"ggh", "et":"ggh", "tt":"ggh" },
-            "select": "-OS- && -ISO- && -VETO- && -MT- && -TRIG-", 
-            "name": "NOMINAL_ntuple_ggH", 
-            "event_weight": ["puweight","stitchedWeight","trk_sf","genweight","antilep_tauscaling","effweight"],
-            "train_weight_scale": {"mt":212.1, "et":210.7, "tt":147.3 }
-        },
-        "qqH125": {
-            "target":{"mt":"qqh", "et":"qqh", "tt":"qqh" },
-            "select": "-OS- && -ISO- && -VETO- && -MT- && -TRIG-", 
-            "name": "NOMINAL_ntuple_VBF", 
-            "event_weight": ["puweight","stitchedWeight","trk_sf","genweight","antilep_tauscaling","effweight"],
-            "train_weight_scale": {"mt":2176.8, "et":1898.4, "tt":515.1 }
-        }, 
-        "ZTT": {
-            "target":{"mt":"ztt", "et":"ztt", "tt":"ztt" },
-            "select": "-OS- && -ISO- && -VETO- && -MT- && -TRIG- && -GENHAD-", 
-            "name": "NOMINAL_ntuple_DY", 
-            "event_weight": ["puweight","stitchedWeight","trk_sf","genweight","antilep_tauscaling","effweight","zPtReweightWeight"],
-            "train_weight_scale": {"mt":1.6, "et":2.2, "tt":3.5 }
-        },
-        "ZL": {
-            "target":{"mt":"zll", "et":"zll", "tt":"misc" },
-            "select": "-OS- && -ISO- && -VETO- && -MT- && -TRIG- && -GENLEP-", 
-            "name": "NOMINAL_ntuple_DY", 
-            "event_weight": ["puweight","stitchedWeight","trk_sf","genweight","antilep_tauscaling","effweight","zPtReweightWeight"],
-            "train_weight_scale": {"mt":23.2, "et":7.9, "tt":12.3 }
-        },
-        "ZJ": {
-            "target":{"mt":"zll", "et":"zll", "tt":"misc" },
-            "select": "-OS- && -ISO- && -VETO- && -MT- && -TRIG- && -GENJET-", 
-            "name": "NOMINAL_ntuple_DY", 
-            "event_weight": ["puweight","stitchedWeight","trk_sf","genweight","antilep_tauscaling","effweight","zPtReweightWeight"],
-            "train_weight_scale": {"mt":23.2, "et":7.9, "tt":12.3 }
-        },
-        "TTT": {
-            "target":{"mt":"tt", "et":"tt", "tt":"misc" },
-            "select": "-OS- && -ISO- && -VETO- && -MT- && -TRIG- && -GENHAD- ", 
-            "name": "NOMINAL_ntuple_TT", 
-            "event_weight": ["puweight","stitchedWeight","trk_sf","genweight","antilep_tauscaling","effweight","topWeight_run1"],
-            "train_weight_scale": {"mt":18.3, "et":14.7, "tt":12.3 }
-        },
-        "TTJ": {
-            "target":{"mt":"tt", "et":"tt", "tt":"misc" },
-            "select": "-OS- && -ISO- && -VETO- && -MT- && -TRIG- && (-GENLEP- || -GENJET-) ", 
-            "name": "NOMINAL_ntuple_TT", 
-            "event_weight": ["puweight","stitchedWeight","trk_sf","genweight","antilep_tauscaling","effweight","topWeight_run1"],
-            "train_weight_scale": {"mt":18.3, "et":14.7, "tt":12.3 }
-        },
-        "VVT": {
-            "target":{"mt":"misc", "et":"misc", "tt":"misc" },
-            "select": "-OS- && -ISO- && -VETO- && -MT- && -TRIG- && -GENHAD- ", 
-            "name": "NOMINAL_ntuple_VV", 
-            "event_weight": ["puweight","stitchedWeight","trk_sf","genweight","antilep_tauscaling","effweight"],
-            "train_weight_scale": {"mt":69.0, "et":55.5, "tt":12.3 }
-        },
-        "VVJ": {
-            "target":{"mt":"misc", "et":"misc", "tt":"misc" },
-            "select": "-OS- && -ISO- && -VETO- && -MT- && -TRIG- && (-GENLEP- || -GENJET-)", 
-            "name": "NOMINAL_ntuple_VV", 
-            "event_weight": ["puweight","stitchedWeight","trk_sf","genweight","antilep_tauscaling","effweight"],
-            "train_weight_scale": {"mt":69.0, "et":55.5, "tt":12.3 }
-        },
-        "W": {
-            "target":{"mt":"w", "et":"w", "tt":"misc" },
-            "select": "-OS- && -ISO- && -VETO- && -MT- && -TRIG-", 
-            "name": "NOMINAL_ntuple_WJets", 
-            "event_weight": ["puweight","stitchedWeight","trk_sf","genweight","antilep_tauscaling","effweight"],
-            "train_weight_scale": {"mt":8.3, "et":6.1, "tt":12.3 }
-        },
-        "estimate": {
-            "target":{"mt":"ss", "et":"ss", "tt":"noniso" },
-            "select": {
-                "mt":"-SS- && -ISO- && -VETO- && -MT- && -TRIG-",
-                "et":"-SS- && -ISO- && -VETO- && -MT- && -TRIG-",
-                "tt":"-OS- && -ANTIISO2- && -VETO- && -MT- && -TRIG-"
-            }, 
-            "name": {
-                "mt": "NOMINAL_ntuple_SingleMuon",
-                "et": "NOMINAL_ntuple_SingleElectron",
-                "tt": "NOMINAL_ntuple_Tau"
-            }, 
-            "event_weight": 1.0,
-            "train_weight_scale": {"mt":7.0, "et":6.2, "tt":1.6 }
-        },
-        "VV_more": {
-            "target":"none",
-            "select": {
-                "mt":"-VETO- && -MT- && -TRIG-",
-                "et":"-VETO- && -MT- && -TRIG-",
-                "tt":"-VETO- && -MT- && -TRIG-"
-            }, 
-            "name": "NOMINAL_ntuple_VV", 
-            "event_weight": ["puweight","stitchedWeight","trk_sf","genweight","antilep_tauscaling","effweight"],
-            "train_weight_scale": 1.0
-        },
-        "Z_more": {
-            "target":"none",
-            "select": {
-                "mt":"-VETO- && -MT- && -TRIG-",
-                "et":"-VETO- && -MT- && -TRIG-",
-                "tt":"-VETO- && -MT- && -TRIG-"
-            }, 
-            "name": "NOMINAL_ntuple_DY", 
-            "event_weight": ["puweight","stitchedWeight","trk_sf","genweight","antilep_tauscaling","effweight","zPtReweightWeight"],
-            "train_weight_scale": 1.0
-        },
-        "TT_more": {
-            "target":"none",
-            "select": {
-                "mt":"-VETO- && -MT- && -TRIG-",
-                "et":"-VETO- && -MT- && -TRIG-",
-                "tt":"-VETO- && -MT- && -TRIG-"
-            }, 
-            "name": "NOMINAL_ntuple_TT", 
-            "event_weight": ["puweight","stitchedWeight","trk_sf","genweight","antilep_tauscaling","effweight","topWeight_run1"],
-            "train_weight_scale": 1.0
-        },
-        "W_more": {
-            "target":"none",
-            "select": {
-                "mt":"-VETO- && -MT- && -TRIG-",
-                "et":"-VETO- && -MT- && -TRIG-",
-                "tt":"-VETO- && -MT- && -TRIG-"
-            }, 
-            "name": "NOMINAL_ntuple_WXJets_merged_MCSummer16", 
-            "event_weight": ["puweight","stitchedWeight","trk_sf","genweight","antilep_tauscaling","effweight"],
-            "train_weight_scale": 1.0
-        },
-        "data_more": {
-            "target":"none",
-            "select": {
-                "mt":"-VETO- && -MT- && -TRIG-",
-                "et":"-VETO- && -MT- && -TRIG-",
-                "tt":"-VETO- && -MT- && -TRIG-"
-            }, 
-            "name": {
-                "mt": "NOMINAL_ntuple_SingleMuon",
-                "et": "NOMINAL_ntuple_SingleElectron",
-                "tt": "NOMINAL_ntuple_Tau"
+    "VVT": {
+      "event_weight":{
+        "mt":"puweight*xsec*1000*genNEventsWeight*trk_sf*reco_sf*genweight*antilep_tauscaling*idisoweight_1*singleTriggerSFLeg1*topWeight_run1",
+        "et":"puweight*xsec*1000*genNEventsWeight*trk_sf*reco_sf*genweight*antilep_tauscaling*idisoweight_1*singleTriggerSFLeg1*topWeight_run1",
+        "tt":"puweight*xsec*1000*genNEventsWeight*trk_sf*reco_sf*genweight*antilep_tauscaling*idisoweight_1*xTriggerSFLeg1*xTriggerSFLeg2*topWeight_run1"
+      }, 
+      "target": { "mt": "misc",  "tt": "misc",  "et": "misc" }, 
+      "select": "-OS- && -ISO- && -VETO- && -MT- && -TRIG- && -GENHAD- ", 
+      "name": "NOMINAL_ntuple_VV"
+    }, 
+    "VVJ": {
+      "event_weight":{
+        "mt":"puweight*xsec*1000*genNEventsWeight*trk_sf*reco_sf*genweight*antilep_tauscaling*idisoweight_1*singleTriggerSFLeg1*topWeight_run1",
+        "et":"puweight*xsec*1000*genNEventsWeight*trk_sf*reco_sf*genweight*antilep_tauscaling*idisoweight_1*singleTriggerSFLeg1*topWeight_run1",
+        "tt":"puweight*xsec*1000*genNEventsWeight*trk_sf*reco_sf*genweight*antilep_tauscaling*idisoweight_1*xTriggerSFLeg1*xTriggerSFLeg2*topWeight_run1"
+      }, 
+      "target": { "mt": "misc",  "tt": "misc",  "et": "misc" }, 
+      "select": "-OS- && -ISO- && -VETO- && -MT- && -TRIG- && (-GENLEP- || -GENJET-)", 
+      "name": "NOMINAL_ntuple_VV"
+    },
+    "VV_full": {
+      "event_weight":{
+        "mt":"puweight*xsec*1000*genNEventsWeight*trk_sf*reco_sf*genweight*antilep_tauscaling*idisoweight_1*singleTriggerSFLeg1*topWeight_run1",
+        "et":"puweight*xsec*1000*genNEventsWeight*trk_sf*reco_sf*genweight*antilep_tauscaling*idisoweight_1*singleTriggerSFLeg1*topWeight_run1",
+        "tt":"puweight*xsec*1000*genNEventsWeight*trk_sf*reco_sf*genweight*antilep_tauscaling*idisoweight_1*xTriggerSFLeg1*xTriggerSFLeg2*topWeight_run1"
+      }, 
+      "target": "none", 
+      "select": "-VETO- && -MT- && -TRIG-",
+      "name": "NOMINAL_ntuple_VV"
+    },
 
-            },
-            "event_weight": 1.0,
-            "train_weight_scale": 1.0
-        },
+    "W": {
+      "event_weight":{
+        "mt":"puweight*trk_sf*reco_sf*genweight*antilep_tauscaling*idisoweight_1*singleTriggerSFLeg1*((NUP == 0)*0.79056 + (NUP == 1)*0.15036 + (NUP == 2)*0.30714 + (NUP == 3)*0.05558 + (NUP == 4)*0.05227)",
+        "et":"puweight*trk_sf*reco_sf*genweight*antilep_tauscaling*idisoweight_1*singleTriggerSFLeg1*((NUP == 0)*0.79056 + (NUP == 1)*0.15036 + (NUP == 2)*0.30714 + (NUP == 3)*0.05558 + (NUP == 4)*0.05227)",
+        "tt":"puweight*trk_sf*reco_sf*genweight*antilep_tauscaling*idisoweight_1*xTriggerSFLeg1*xTriggerSFLeg2*((NUP == 0)*0.79056 + (NUP == 1)*0.15036 + (NUP == 2)*0.30714 + (NUP == 3)*0.05558 + (NUP == 4)*0.05227)"
+      },
+      "target": { "mt": "w",  "tt": "misc",  "et": "w" }, 
+      "select": "-OS- && -ISO- && -VETO- && -MT- && -TRIG-", 
+      "name": "NOMINAL_ntuple_WJets"
+    },
+    "WJets_full": {
+      "event_weight":{
+        "mt":"puweight*trk_sf*reco_sf*genweight*antilep_tauscaling*idisoweight_1*singleTriggerSFLeg1*((NUP == 0)*0.79056 + (NUP == 1)*0.15036 + (NUP == 2)*0.30714 + (NUP == 3)*0.05558 + (NUP == 4)*0.05227)",
+        "et":"puweight*trk_sf*reco_sf*genweight*antilep_tauscaling*idisoweight_1*singleTriggerSFLeg1*((NUP == 0)*0.79056 + (NUP == 1)*0.15036 + (NUP == 2)*0.30714 + (NUP == 3)*0.05558 + (NUP == 4)*0.05227)",
+        "tt":"puweight*trk_sf*reco_sf*genweight*antilep_tauscaling*idisoweight_1*xTriggerSFLeg1*xTriggerSFLeg2*((NUP == 0)*0.79056 + (NUP == 1)*0.15036 + (NUP == 2)*0.30714 + (NUP == 3)*0.05558 + (NUP == 4)*0.05227)"
+      },
+      "target": "none", 
+      "select": "-VETO- && -MT- && -TRIG-",
+      "name": "NOMINAL_ntuple_WJets"
+    },
 
-        "data": {
-            "target":"none",
-            "select": "-OS- && -ISO- && -VETO- && -MT- && -TRIG-",
-            "event_weight": 1.0,
-            "train_weight_scale": 1.0,
-            "name": {
-                "mt": "NOMINAL_ntuple_SingleMuon",
-                "et": "NOMINAL_ntuple_SingleElectron",
-                "tt": "NOMINAL_ntuple_Tau"
-
-            }         
-        }
+    "ggH125": {
+      "event_weight":{
+        "mt":"puweight*xsec*1000*genNEventsWeight*trk_sf*reco_sf*genweight*antilep_tauscaling*idisoweight_1*singleTriggerSFLeg1*topWeight_run1",
+        "et":"puweight*xsec*1000*genNEventsWeight*trk_sf*reco_sf*genweight*antilep_tauscaling*idisoweight_1*singleTriggerSFLeg1*topWeight_run1",
+        "tt":"puweight*xsec*1000*genNEventsWeight*trk_sf*reco_sf*genweight*antilep_tauscaling*idisoweight_1*xTriggerSFLeg1*xTriggerSFLeg2*topWeight_run1"
+      },
+      "target": { "mt": "ggh",  "tt": "ggh",  "et": "ggh" }, 
+      "select": "-VETO- && -MT- && -TRIG-", 
+      "name": "NOMINAL_ntuple_ggH"
+    },
+    "ggH_full": {
+      "event_weight":{
+        "mt":"puweight*xsec*1000*genNEventsWeight*trk_sf*reco_sf*genweight*antilep_tauscaling*idisoweight_1*singleTriggerSFLeg1*topWeight_run1",
+        "et":"puweight*xsec*1000*genNEventsWeight*trk_sf*reco_sf*genweight*antilep_tauscaling*idisoweight_1*singleTriggerSFLeg1*topWeight_run1",
+        "tt":"puweight*xsec*1000*genNEventsWeight*trk_sf*reco_sf*genweight*antilep_tauscaling*idisoweight_1*xTriggerSFLeg1*xTriggerSFLeg2*topWeight_run1"
+      },
+      "target": "none", 
+      "select": "-VETO- && -MT- && -TRIG-", 
+      "name": "NOMINAL_ntuple_ggH"
+    },
+    "qqH125": {
+      "event_weight":{
+        "mt":"puweight*xsec*1000*genNEventsWeight*trk_sf*reco_sf*genweight*antilep_tauscaling*idisoweight_1*singleTriggerSFLeg1*topWeight_run1",
+        "et":"puweight*xsec*1000*genNEventsWeight*trk_sf*reco_sf*genweight*antilep_tauscaling*idisoweight_1*singleTriggerSFLeg1*topWeight_run1",
+        "tt":"puweight*xsec*1000*genNEventsWeight*trk_sf*reco_sf*genweight*antilep_tauscaling*idisoweight_1*xTriggerSFLeg1*xTriggerSFLeg2*topWeight_run1"
+      },
+      "target": { "mt": "qqh",  "tt": "qqh",  "et": "qqh" },
+      "select": "-VETO- && -MT- && -TRIG-", 
+      "name": "NOMINAL_ntuple_VBF"
+    }, 
+    "VBF_full": {
+      "event_weight":{
+        "mt":"puweight*xsec*1000*genNEventsWeight*trk_sf*reco_sf*genweight*antilep_tauscaling*idisoweight_1*singleTriggerSFLeg1*topWeight_run1",
+        "et":"puweight*xsec*1000*genNEventsWeight*trk_sf*reco_sf*genweight*antilep_tauscaling*idisoweight_1*singleTriggerSFLeg1*topWeight_run1",
+        "tt":"puweight*xsec*1000*genNEventsWeight*trk_sf*reco_sf*genweight*antilep_tauscaling*idisoweight_1*xTriggerSFLeg1*xTriggerSFLeg2*topWeight_run1"
+      },
+      "target": "none", 
+      "select": "-VETO- && -MT- && -TRIG-", 
+      "name": "NOMINAL_ntuple_VBF"
+    }, 
+    "data": {
+      "name": "NOMINAL_ntuple_Data",
+      "target": "none", 
+      "select": "-OS- && -ISO- && -VETO- && -MT- && -TRIG-", 
+      "event_weight": 1.0
+    },
+    "data_full": {
+      "event_weight": 1.0, 
+      "target": "none", 
+      "select": "-VETO- && -MT- && -TRIG-", 
+      "name":  "NOMINAL_ntuple_Data"
+    },
+    "estimate": {
+      "event_weight": 1.0, 
+      "target": { "mt": "ss",  "tt": "noniso",  "et": "ss" }, 
+      "select": {
+        "mt": "-SS- && -ISO- && -VETO- && -MT- && -TRIG-", 
+        "tt": "-OS- && -ANTIISO2- && -VETO- && -MT- && -TRIG-", 
+        "et": "-SS- && -ISO- && -VETO- && -MT- && -TRIG-"
+      }, 
+      "name": "NOMINAL_ntuple_Data"
     }
+  }, 
+  "lumi": 41.86, 
+  "path": "/afs/hephy.at/data/higgs01/", 
+  "addvar": [
+    "fileEntry",
+    "evt",
+    "njets*",
+    "nbtag",
+    "met",
+    "pt_tt",
+    "pt_ttjj*",
+    "mjj",
+    "m_vis",
+    "jdeta", 
+    "pt_1",
+    "pt_2",
+    "eta_1",
+    "eta_2",
+    "phi_1",
+    "phi_2",
+    "jpt*", 
+    "jeta*", 
+    "jphi*",
+    "bpt*", 
+    "beta*", 
+    "bphi*", 
+    "jm*", 
+    "bcsv_2", 
+    "q_1",
+    "q_2", 
+    "iso_1",
+    "iso_2", 
+    "gen_match*", 
+    "decayMode*", 
+    "by*IsolationMVA*", 
+    "*veto*",
+    "*Veto*",
+    "againstMuon*", 
+    "againstElectron*", 
+    "xsec", 
+    "trk*", 
+    "reco*", 
+    "antilep_tauscaling", 
+    "NUP", 
+    "*weight*",
+    "*Weight*",
+    "*trig*",
+    "*Trigger*",
+    "trg_*"
+  ],
+  "addvar_Embedding": [
+    "embeddedDecayModeWeight*",
+    "muonEffTrgWeight",
+    "generatorWeight",
+    "gen_match*",
+    "triggerWeight*",
+    "isoWeight*",
+    "trg_*"
+  ]
 }
