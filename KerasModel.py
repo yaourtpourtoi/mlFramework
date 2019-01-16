@@ -118,6 +118,8 @@ class KerasObject():
         plt.xlabel("Epoch")
         plt.ylabel("Loss")
         plt.legend()
+        if not os.path.exists("plots"):
+            os.mkdir("plots")
         plt.savefig("plots/fold_{0}_loss.png".format(best), bbox_inches="tight")
 
 

@@ -1,5 +1,6 @@
 {
     "path": "/afs/hephy.at/data/higgs01/data_2016/ntuples_v6/{channel}/ntuples_SVFIT_merged/", 
+    "outpath": "/afs/hephy.at/data/mspanring01/",
     "variables":{
         "et": [
             "pt_2",

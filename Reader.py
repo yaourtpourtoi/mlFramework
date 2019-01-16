@@ -60,6 +60,7 @@ class Reader():
         targets = []
         config["channel"] = self.channel
         config["path"] = config["path"].format(**config) # Can be dropped when configs are split per channel
+        config["outpath"] = config["outpath"].format(**config)
         config["target_names"] = {}
         config["variables"] = self._assertChannel( config["variables"] )
         config["version"] = self._assertChannel( config["version"] )

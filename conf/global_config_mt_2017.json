@@ -1,5 +1,6 @@
 {
     "path": "/afs/hephy.at/data/higgs01/v9/", 
+    "outpath": "/afs/hephy.at/data/mspanring01/",
     "variables":{
         "mt": [
             "pt_2",
