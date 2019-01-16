@@ -115,29 +115,28 @@ def run(samples,channel, era, use, train,short, datacard = False, add_nominal=Fa
 
     if not datacard:
 
-        # Change here path to where you want to write your predictions
-        outpath = "/afs/hephy.at/data/mspanring01/predictions_" + era
+        outpath = read.config["outpath"] + "/predictions_" + era
         predictions = {}
         print "Predicting samples"
         if add_nominal:
             print "Predicting Nominal"
             for sample, sampleConfig in read.get(what = "nominal", for_prediction = True):
-                sandbox(channel, model, scaler, sample, variables, "nom_" + sampleConfig["histname"] ,sampleConfig, read.modifyDF, outpath )   
+                sandbox(channel, model, scaler, sample, variables, "nom_" + sampleConfig["histname"], outpath ,sampleConfig, read.modifyDF )
 
 
         for sample, sampleConfig in read.get(what = "full", add_jec = not short, for_prediction = True):
             if "data" in sampleConfig["histname"]:
-                sandbox(channel, model, scaler, sample, variables, "NOMINAL_ntuple_Data",sampleConfig, read.modifyDF, outpath)
+                sandbox(channel, model, scaler, sample, variables, "NOMINAL_ntuple_Data", outpath, sampleConfig, read.modifyDF)
             elif "full" in sampleConfig["histname"]:
-                sandbox(channel, model, scaler, sample, variables,  "NOMINAL_ntuple_" + sampleConfig["histname"].split("_")[0], sampleConfig, read.modifyDF, outpath )
+                sandbox(channel, model, scaler, sample, variables,  "NOMINAL_ntuple_" + sampleConfig["histname"].split("_")[0], outpath, sampleConfig, read.modifyDF )
             else:
                 splName = sampleConfig["histname"].split("_")
-                sandbox(channel, model, scaler, sample, variables,  "_".join(splName[1:])+"_ntuple_" + sampleConfig["histname"].split("_")[0], sampleConfig, read.modifyDF, outpath )
+                sandbox(channel, model, scaler, sample, variables,  "_".join(splName[1:])+"_ntuple_" + sampleConfig["histname"].split("_")[0], outpath, sampleConfig, read.modifyDF )
 
         if not short:
             print "Predicting shapes"
             for sample, sampleConfig in read.get(what = "tes", for_prediction = True):
-                sandbox(channel, model, scaler, sample, variables, sampleConfig["histname"] ,sampleConfig, read.modifyDF, outpath )
+                sandbox(channel, model, scaler, sample, variables, sampleConfig["histname"], outpath ,sampleConfig, read.modifyDF )
 
 
 
@@ -160,7 +159,7 @@ def run(samples,channel, era, use, train,short, datacard = False, add_nominal=Fa
         D.create(era+"/"+use)
         makePlot(channel, "ML", era+"/"+use, era, era+"/plots")
 
-def sandbox(channel, model, scaler, sample, variables, outname, config = None, modify = None, outpath = "predictions"):
+def sandbox(channel, model, scaler, sample, variables, outname, outpath, config = None, modify = None):
     # needed because of memory management
     # iterate over chunks of sample and do splitting on the fly
     first = True
@@ -172,7 +171,7 @@ def sandbox(channel, model, scaler, sample, variables, outname, config = None, m
         part["THU"] = 1 # Add dummy
         # Carefull!! Check if splitting is done the same for training. This is the KIT splitting
         folds = [part.query( "abs(evt % 2) != 0 " ).reset_index(drop=True), part.query( "abs(evt % 2) == 0 " ).reset_index(drop=True) ]
-        addPrediction(channel, model.predict( applyScaler(scaler, folds, variables) ), folds, outname, new = first, outpath = outpath )
+        addPrediction(channel, model.predict( applyScaler(scaler, folds, variables) ), folds, outname, outpath, new = first )
         
         folds[0].drop(folds[0].index, inplace=True)
         folds[1].drop(folds[1].index, inplace=True)
@@ -181,7 +180,10 @@ def sandbox(channel, model, scaler, sample, variables, outname, config = None, m
         first = False
     del sample
 
-def addPrediction(channel,prediction, df, sample, new = True, outpath = "predictions"):
+def addPrediction(channel,prediction, df, sample, outpath, new = True):
+
+    if not os.path.exists(outpath):
+        os.mkdir(outpath)
 
     for i in xrange( len(df) ):
         for c in prediction[i].columns.values.tolist():
