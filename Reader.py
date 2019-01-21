@@ -167,7 +167,7 @@ class Reader():
 
                         shapename = shape.replace("Up","").replace("Down","")
                         if not shapename in self.config["shape_from_tree"]: continue
-                        if "EMB" in sample: continue
+                        if "EMB" in sample and "em" in self.channel and not "escale" in shapename : continue
                         tmp = self._getCommonSettings(sample)
 
                         tmp["path"] = self.config["samples"][sample]["shapes"][shape] 
