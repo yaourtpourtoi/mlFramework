@@ -1,5 +1,5 @@
 {
-    "path": "/afs/hephy.at/data/higgs01/v9/", 
+    "path": "/afs/hephy.at/data/higgs01/v10/", 
     "outpath": "/afs/hephy.at/data/mspanring01/",
     "variables":{
         "tt": [
@@ -213,19 +213,19 @@
         "qqH125_full": {
             "target":"none",
             "select": "-VETO- && -MT- && -TRIG-", 
-            "name": "NOMINAL_ntuple_VBF", 
+            "name": "NOMINAL_ntuple_qqh", 
             "event_weight": 1.0
         },
         "WH125_full": {
             "target":"none",
             "select": "-VETO- && -MT- && -TRIG-", 
-            "name": "NOMINAL_ntuple_WH", 
+            "name": "NOMINAL_ntuple_WH125", 
             "event_weight": 1.0
         },  
         "ZH125_full": {
             "target":"none",
             "select": "-VETO- && -MT- && -TRIG-", 
-            "name": "NOMINAL_ntuple_ZH", 
+            "name": "NOMINAL_ntuple_ZH125", 
             "event_weight": 1.0
         },  
         "data": {
