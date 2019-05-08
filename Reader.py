@@ -167,7 +167,7 @@ class Reader():
 
                         shapename = shape.replace("Up","").replace("Down","")
                         if not shapename in self.config["shape_from_tree"]: continue
-                        if "EMB" in sample: continue
+                        if "EMB" in sample and ("em" not in self.channel or ("em" in self.channel and not "escale" in shapename)) :  continue
                         tmp = self._getCommonSettings(sample)
 
                         tmp["path"] = self.config["samples"][sample]["shapes"][shape] 
@@ -241,11 +241,23 @@ class Reader():
             DF.replace({"mjj":-10.},-11., inplace = True)
             DF.replace({"dijetpt":-10.},-11., inplace = True)
 
+            DF.eval("jdeta =   (njets < 2) *-1  + (njets > 1 )*jdeta ", inplace=True)
+            DF.eval("mjj =     (njets < 2) *-11 + (njets > 1 )*mjj ", inplace=True)
+            DF.eval("dijetpt = (njets < 2) *-11 + (njets > 1 )*dijetpt ", inplace=True)
+            DF.eval("jpt_1 =   (njets == 0)*-10 + (njets > 0 )*jpt_1 ", inplace=True)
+            DF.eval("jpt_2 =   (njets < 2 )*-10 + (njets > 1 )*jpt_2 ", inplace=True)
+
 
         if self.era == "2017":
             DF.replace({"jdeta":-1.},-10., inplace = True)
             DF.replace({"mjj":-11.},-10., inplace = True)
             DF.replace({"dijetpt":-11.},-10., inplace = True)
+
+            DF.eval("jdeta =   (njets < 2) *-10 + (njets > 1 )*jdeta ", inplace=True)
+            DF.eval("mjj =     (njets < 2) *-10 + (njets > 1 )*mjj ", inplace=True)
+            DF.eval("dijetpt = (njets < 2) *-10 + (njets > 1 )*dijetpt ", inplace=True)
+            DF.eval("jpt_1 =   (njets == 0)*-10 + (njets > 0 )*jpt_1 ", inplace=True)
+            DF.eval("jpt_2 =   (njets < 2 )*-10 + (njets > 1 )*jpt_2 ", inplace=True)            
 
 
     def combineFolds(self, samples):

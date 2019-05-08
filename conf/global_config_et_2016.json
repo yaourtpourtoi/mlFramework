@@ -78,7 +78,7 @@
     },
 
     "weights":["*weight*","gen_match*","top*","zPtReweightWeight"],
-    "shape_from_file":["T0","T1","T10","ZL0","ZL1","btagEff","btagMistag","metJetEn","metUnclusteredEn","jecUncRelativeBal","jecUncEta0to3","jecUncEta0to5","jecUncEta3to5","metRecoilResponse","metRecoilResolution"],
+    "shape_from_file":["T0","T1","T10","ZL0","ZL1","EES","btagEff","btagMistag","metJetEn","metUnclusteredEn","jecUncRelativeBal","jecUncEta0to3","jecUncEta0to5","jecUncEta3to5","metRecoilResponse","metRecoilResolution"],
     "shape_from_tree":["CMS_scale_j_eta0to5_13Tev","CMS_scale_j_eta0to3_13TeV","CMS_scale_j_eta3to5_13TeV","CMS_scale_j_RelativeBal_13TeV"],
 
     "samples":{
