@@ -20,31 +20,31 @@
 		"em":"mt_1 >= 0"
 	},
 	"-ISO-":{
-		"mt":" iso_1 < 0.15",
-		"et":"byTightIsolationMVArun2017v2DBoldDMwLT2017_2  & iso_1 < 0.15",
-		"tt":"(byTightIsolationMVArun2017v2DBoldDMwLT2017_1 > 0.5 )  & (byTightIsolationMVArun2017v2DBoldDMwLT2017_2 > 0.5 )",
+		"mt":"mva17_1 > 0.5 & iso_1 < 0.15",
+		"et":"mva17_1  & iso_1 < 0.15",
+		"tt":"(byTightIsolationMVArun2017v2DBoldDMwLT2017_1 > 0.5 )  & (mva17_1 > 0.5 )",
 		"em":"iso_2 < 0.2 & iso_1 < 0.15"
 	},
 	"-ANTIISO-":{
-		"mt":"(byVLooseIsolationMVArun2017v2DBoldDMwLT2017_2 > 0.5 & iso_1 < 0.15)",
-		"et":"(byVLooseIsolationMVArun2017v2DBoldDMwLT2017_2 > 0.5 & byTightIsolationMVArun2017v2DBoldDMwLT2017_2 < 0.5 & iso_1 < 0.15)",
-		"tt":"( (byTightIsolationMVArun2017v2DBoldDMwLT2017_2 > 0.5 & byVLooseIsolationMVArun2017v2DBoldDMwLT2017_1 > 0.5 & byTightIsolationMVArun2017v2DBoldDMwLT2017_1< 0.5) | (byTightIsolationMVArun2017v2DBoldDMwLT2017_1 > 0.5 & byVLooseIsolationMVArun2017v2DBoldDMwLT2017_2 > 0.5 & byTightIsolationMVArun2017v2DBoldDMwLT2017_2 < 0.5) )",
+		"mt":"(byVLooseIsolationMVArun2017v2DBoldDMwLT2017_2 > 0.5 & mva17_1 < 0.5 & iso_1 < 0.15)",
+		"et":"(byVLooseIsolationMVArun2017v2DBoldDMwLT2017_2 > 0.5 & mva17_1 < 0.5 & iso_1 < 0.15)",
+		"tt":"( (mva17_1 > 0.5 & byVLooseIsolationMVArun2017v2DBoldDMwLT2017_1 > 0.5 & byTightIsolationMVArun2017v2DBoldDMwLT2017_1< 0.5) | (byTightIsolationMVArun2017v2DBoldDMwLT2017_1 > 0.5 & byVLooseIsolationMVArun2017v2DBoldDMwLT2017_2 > 0.5 & mva17_1 < 0.5) )",
 		"em":"(iso_1<0.50 & iso_2>0.2 & iso_2<0.5)"
 	},
 	"-ANTIISO1-":{
-		"mt":"(byVLooseIsolationMVArun2017v2DBoldDMwLT2017_2 > 0.5 & byTightIsolationMVArun2017v2DBol dDMwLT2017_2 < 0.5  & iso_1 < 0.15)",
-		"et":"(byVLooseIsolationMVArun2017v2DBoldDMwLT2017_2 > 0.5 & byTightIsolationMVArun2017v2DBoldDMwLT2017_2 < 0.5 & iso_1 < 0.15)",
-		"tt":"( (byTightIsolationMVArun2017v2DBoldDMwLT2017_2 > 0.5 )  & (byVLooseIsolationMVArun2017v2DBoldDMwLT2017_1 > 0.5 & byTightIsolationMVArun2017v2DBoldDMwLT2017_1 < 0.5) )",
+		"mt":"(byVLooseIsolationMVArun2017v2DBoldDMwLT2017_2 > 0.5 & mva17_1 < 0.5  & iso_1 < 0.15)",
+		"et":"(byVLooseIsolationMVArun2017v2DBoldDMwLT2017_2 > 0.5 & mva17_1 < 0.5 & iso_1 < 0.15)",
+		"tt":"( (mva17_1 > 0.5 )  & (byVLooseIsolationMVArun2017v2DBoldDMwLT2017_1 > 0.5 & byTightIsolationMVArun2017v2DBoldDMwLT2017_1 < 0.5) )",
 		"em":"(iso_1<0.50 & iso_2>0.2 & iso_2<0.5)"
 	},
 	"-ANTIISO2-":{
-		"mt":"(byVLooseIsolationMVArun2017v2DBoldDMwLT2017_2 > 0.5   & iso_1 < 0.15)",
-		"et":"(byVLooseIsolationMVArun2017v2DBoldDMwLT2017_2 > 0.5 & byTightIsolationMVArun2017v2DBoldDMwLT2017_2 < 0.5 & iso_1 < 0.15)",
-		"tt":"( (byTightIsolationMVArun2017v2DBoldDMwLT2017_1 > 0.5 )  & (byVLooseIsolationMVArun2017v2DBoldDMwLT2017_2 > 0.5 & byTightIsolationMVArun2017v2DBoldDMwLT2017_2 < 0.5) )",
+		"mt":"(byVLooseIsolationMVArun2017v2DBoldDMwLT2017_2 > 0.5 & mva17_1 < 0.5  & iso_1 < 0.15)",
+		"et":"(byVLooseIsolationMVArun2017v2DBoldDMwLT2017_2 > 0.5 & mva17_1 < 0.5 & iso_1 < 0.15)",
+		"tt":"( (byTightIsolationMVArun2017v2DBoldDMwLT2017_1 > 0.5 )  & (byVLooseIsolationMVArun2017v2DBoldDMwLT2017_2 > 0.5 & mva17_1 < 0.5) )",
 		"em":"(iso_1<0.50 & iso_2>0.2 & iso_2<0.5)"
 	},
 	"-TRIG-":{
-		"mt":"( ( (abs(eta_1) < 2.1 & pt_1 < 25)  ) & pt_2 > 30 )",
+		"mt":"( ( (xTriggerLep & abs(eta_1) < 2.1 & pt_1 < 25) | trg_singlemuon  ) & pt_2 > 30 )",
 		"et":"( ( (trg_crossele_ele24tau30 && pt_1 < 28) | trg_singleelectron_27 | trg_singleelectron_32 | trg_singleelectron_35 ) & pt_2 > 30 )",
 		"tt":"( trg_doubletau_40_tightiso | trg_doubletau_40_mediso_tightid | trg_doubletau_35_tightiso_tightid )",
 		"em":"(trg_muonelectron & pt_1 > 13 & pt_2 > 10 & TMath::Max(pt_1,pt_2)>24)"

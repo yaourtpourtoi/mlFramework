@@ -347,9 +347,9 @@ class Reader():
             add = "addvar_Embedding"
 
         snowflakes = ["evt"]
-        if "ggH" in sample_path:
-            snowflakes.append("THU*")
-            snowflakes.append("*NNLO*")
+#        if "ggH" in sample_path:
+#            snowflakes.append("THU*")
+#            snowflakes.append("*NNLO*")
 
         branches = list(set( self.config["variables"] + self.config[ "weights" ] + snowflakes + self.addvar ))
         if "EMB" in sample_path and "sf*" in branches:
