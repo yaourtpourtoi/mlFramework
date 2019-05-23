@@ -20,27 +20,27 @@
 		"em":"mt_1 >= 0"
 	},
 	"-ISO-":{
-		"mt":"mva17_1 > 0.5 & iso_1 < 0.15",
-		"et":"mva17_1  & iso_1 < 0.15",
-		"tt":"(byTightIsolationMVArun2017v2DBoldDMwLT2017_1 > 0.5 )  & (mva17_1 > 0.5 )",
+		"mt":"mva17_2 > 0.5 & iso_1 < 0.15",
+		"et":"mva17_2  & iso_1 < 0.15",
+		"tt":"(byTightIsolationMVArun2017v2DBoldDMwLT2017_1 > 0.5 )  & (mva17_2 > 0.5 )",
 		"em":"iso_2 < 0.2 & iso_1 < 0.15"
 	},
 	"-ANTIISO-":{
-		"mt":"(byVLooseIsolationMVArun2017v2DBoldDMwLT2017_2 > 0.5 & mva17_1 < 0.5 & iso_1 < 0.15)",
-		"et":"(byVLooseIsolationMVArun2017v2DBoldDMwLT2017_2 > 0.5 & mva17_1 < 0.5 & iso_1 < 0.15)",
-		"tt":"( (mva17_1 > 0.5 & byVLooseIsolationMVArun2017v2DBoldDMwLT2017_1 > 0.5 & byTightIsolationMVArun2017v2DBoldDMwLT2017_1< 0.5) | (byTightIsolationMVArun2017v2DBoldDMwLT2017_1 > 0.5 & byVLooseIsolationMVArun2017v2DBoldDMwLT2017_2 > 0.5 & mva17_1 < 0.5) )",
+		"mt":"(byVLooseIsolationMVArun2017v2DBoldDMwLT2017_2 > 0.5 & mva17_2 < 0.5 & iso_1 < 0.15)",
+		"et":"(byVLooseIsolationMVArun2017v2DBoldDMwLT2017_2 > 0.5 & mva17_2 < 0.5 & iso_1 < 0.15)",
+		"tt":"( (mva17_2 > 0.5 & byVLooseIsolationMVArun2017v2DBoldDMwLT2017_1 > 0.5 & byTightIsolationMVArun2017v2DBoldDMwLT2017_1< 0.5) | (byTightIsolationMVArun2017v2DBoldDMwLT2017_1 > 0.5 & byVLooseIsolationMVArun2017v2DBoldDMwLT2017_2 > 0.5 & mva17_2 < 0.5) )",
 		"em":"(iso_1<0.50 & iso_2>0.2 & iso_2<0.5)"
 	},
 	"-ANTIISO1-":{
-		"mt":"(byVLooseIsolationMVArun2017v2DBoldDMwLT2017_2 > 0.5 & mva17_1 < 0.5  & iso_1 < 0.15)",
-		"et":"(byVLooseIsolationMVArun2017v2DBoldDMwLT2017_2 > 0.5 & mva17_1 < 0.5 & iso_1 < 0.15)",
-		"tt":"( (mva17_1 > 0.5 )  & (byVLooseIsolationMVArun2017v2DBoldDMwLT2017_1 > 0.5 & byTightIsolationMVArun2017v2DBoldDMwLT2017_1 < 0.5) )",
+		"mt":"(byVLooseIsolationMVArun2017v2DBoldDMwLT2017_2 > 0.5 & mva17_2 < 0.5  & iso_1 < 0.15)",
+		"et":"(byVLooseIsolationMVArun2017v2DBoldDMwLT2017_2 > 0.5 & mva17_2 < 0.5 & iso_1 < 0.15)",
+		"tt":"( (mva17_2 > 0.5 )  & (byVLooseIsolationMVArun2017v2DBoldDMwLT2017_1 > 0.5 & byTightIsolationMVArun2017v2DBoldDMwLT2017_1 < 0.5) )",
 		"em":"(iso_1<0.50 & iso_2>0.2 & iso_2<0.5)"
 	},
 	"-ANTIISO2-":{
-		"mt":"(byVLooseIsolationMVArun2017v2DBoldDMwLT2017_2 > 0.5 & mva17_1 < 0.5  & iso_1 < 0.15)",
-		"et":"(byVLooseIsolationMVArun2017v2DBoldDMwLT2017_2 > 0.5 & mva17_1 < 0.5 & iso_1 < 0.15)",
-		"tt":"( (byTightIsolationMVArun2017v2DBoldDMwLT2017_1 > 0.5 )  & (byVLooseIsolationMVArun2017v2DBoldDMwLT2017_2 > 0.5 & mva17_1 < 0.5) )",
+		"mt":"(byVLooseIsolationMVArun2017v2DBoldDMwLT2017_2 > 0.5 & mva17_2 < 0.5  & iso_1 < 0.15)",
+		"et":"(byVLooseIsolationMVArun2017v2DBoldDMwLT2017_2 > 0.5 & mva17_2 < 0.5 & iso_1 < 0.15)",
+		"tt":"( (byTightIsolationMVArun2017v2DBoldDMwLT2017_1 > 0.5 )  & (byVLooseIsolationMVArun2017v2DBoldDMwLT2017_2 > 0.5 & mva17_2 < 0.5) )",
 		"em":"(iso_1<0.50 & iso_2>0.2 & iso_2<0.5)"
 	},
 	"-TRIG-":{
