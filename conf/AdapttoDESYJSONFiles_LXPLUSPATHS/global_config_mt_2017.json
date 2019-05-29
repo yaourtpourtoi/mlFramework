@@ -1,6 +1,6 @@
 {
-    "path": "/nfs/dust/cms/user/klundert/HiggsCPTauProject/DNNTuples/2019_5_3/CMSSW_9_4_9/src/HtautauCP_mutau/Inputs/NTuples_mt_Klundert_V3_2017", 
-    "outpath": "/nfs/dust/cms/user/klundert/HiggsCPTauProject/DNNTuples/2019_5_3/CMSSW_9_4_9/src/Outputs/",
+    "path": "/afs/cern.ch/work/m/mvandekl/CMSSW_9_4_9/src/Inputs/", 
+    "outpath": "/afs/cern.ch/work/m/mvandekl/CMSSW_9_4_9/src/Outputs/",
     "variables":{
         "mt": [
             "pt_2",
