@@ -1,6 +1,6 @@
 {
-    "path": "/nfs/dust/cms/user/klundert/HiggsCPTauProject/DNNTuples/2019_5_3/CMSSW_9_4_9/src/HtautauCP_mutau/Inputs/NTuples_mt_Klundert_V3_2017", 
-    "outpath": "/nfs/dust/cms/user/klundert/HiggsCPTauProject/DNNTuples/2019_5_3/CMSSW_9_4_9/src/Outputs/",
+    "path": "/nfs/dust/cms/user/klundert/HiggsCPTauProject/DNNTuples/2019_5_3/CMSSW_9_4_9/src/HtautauCP_mutau/Inputs/NTuples_mt_Klundert_V7_FixpfMETCorr2017", 
+    "outpath": "/nfs/dust/cms/user/klundert/HiggsCPTauProject/DNNTuples/2019_5_3/CMSSW_9_4_9/src/Outputs/2019_6_21",
     "variables":{
         "mt": [
             "pt_2",
@@ -64,7 +64,7 @@
         "qqH125": {
             "target":{"mt":"qqh", "et":"qqh"},
             "select": "-OS- && -ISO- && -VETO- && -MT- && -TRIG-", 
-            "name": "NOMINAL_ntuple_VBF", 
+            "name": "NOMINAL_ntuple_qqH", 
             "event_weight": "( weight * trigweight * ( 0.95+0.02*( (jpt_1>0 & jpt_1<200) & (njets<2 | ( (jdeta<2.8 | mjj<400 ) & (mjj<60 | mjj>=120 ) ) ) ) - 0.1*(jpt_1>=200) ) * ( 0.89*(gen_match_2 == 5) + 1.*(gen_match_2 !=5) ) )"
         }, 
         "ZTT": {
@@ -178,7 +178,7 @@
         "qqH125_full": {
             "target":"none",
             "select": "-VETO- && -MT- && -TRIG-", 
-            "name": "NOMINAL_ntuple_qqh", 
+            "name": "NOMINAL_ntuple_qqH", 
             "event_weight": 1.0
         },
         "WH125_full": {
