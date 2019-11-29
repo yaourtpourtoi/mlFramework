@@ -19,7 +19,7 @@ def main():
     parser.add_argument('-t', dest='train',   help='Train new model' , action='store_true')
     parser.add_argument('-s', dest='short',   help='Do !!NOT!! predict shapes' , action='store_true')
     parser.add_argument('-d', dest='datacard',  help='Only produce Datacard' , action='store_true')
-    parser.add_argument('-e', dest='era',  help='Era' , choices=["2016","2017"], required = True)
+    parser.add_argument('-e', dest='era',  help='Era' , choices=["2016","2017","2018"], required = True)
     parser.add_argument('--add_nominal', dest='add_nom',  help='Add nominal samples to prediction', action='store_true' )    
     args = parser.parse_args()
 

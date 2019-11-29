@@ -2,45 +2,45 @@
 	"-SS-":"q_1 * q_2 > 0",
 	"-OS-":"q_1 * q_2 < 0",
 	"-VETO-":{
-		"mt":"((extramuon_veto < 0.5) & (extraelec_veto < 0.5) & (dilepton_veto<0.5) & (againstMuonTight3_2>0.5) & (againstElectronVLooseMVA6_2>0.5) & flagMETFilter )",
-		"et":"((extramuon_veto < 0.5) & (extraelec_veto < 0.5) & (dilepton_veto<0.5) & (againstMuonLoose3_2>0.5) & (againstElectronTightMVA6_2>0.5)  & flagMETFilter)",
-		"tt":"((extramuon_veto < 0.5) & (extraelec_veto < 0.5) & (dilepton_veto<0.5) & (againstMuonLoose3_1>0.5) & (againstElectronVLooseMVA6_1>0.5) & (againstMuonLoose3_2>0.5) & (againstElectronVLooseMVA6_2>0.5) & flagMETFilter )",
+		"mt":"((extramuon_veto < 0.5) & (extraelec_veto < 0.5) & (dilepton_veto<0.5) & (byTightDeepTau2017v2p1VSmu_2>0.5) & (byVLooseDeepTau2017v2p1VSe_2>0.5) )",
+		"et":"((extramuon_veto < 0.5) & (extraelec_veto < 0.5) & (dilepton_veto<0.5) & (byVLooseDeepTau2017v2p1VSmu_2>0.5) & (byTightDeepTau2017v2p1VSe_2>0.5) )",
+		"tt":"((extramuon_veto < 0.5) & (extraelec_veto < 0.5) & (dilepton_veto<0.5) & (byVLooseDeepTau2017v2p1VSmu_1>0.5) & (byVLooseDeepTau2017v2p1VSe_1>0.5) & (byVLooseDeepTau2017v2p1VSmu_2>0.5) & (byVLooseDeepTau2017v2p1VSe_2>0.5) )",
 		"em":"((extramuon_veto < 0.5) & (extraelec_veto < 0.5) & metFilters)"
 	},
 	"-MT-":{
-		"mt":"(mt_1 < 50 )",
-		"et":"mt_1 < 50",
-		"tt":"(mt_1 >= 0 & pt_tt > 50)",
+		"mt":"(puppimt_1 < 50 )",
+		"et":"puppimt_1 < 50",
+		"tt":"(puppimt_1 >= 0 & pt_tt > 50)",
 		"em":"(mTdileptonMET < 60)"
 	},
 	"-HIGHMT-":{
-		"mt":"mt_1 > 80",
-		"et":"mt_1 > 80",
-		"tt":"mt_1 >= 0",
-		"em":"mt_1 >= 0"
+		"mt":"puppimt_1 > 80",
+		"et":"puppimt_1 > 80",
+		"tt":"puppimt_1 >= 0",
+		"em":"puppimt_1 >= 0"
 	},
 	"-ISO-":{
-		"mt":"byTightIsolationMVArun2v1DBoldDMwLT_2 > 0.5 & iso_1 < 0.15",
-		"et":"byTightIsolationMVArun2v1DBoldDMwLT_2  & iso_1 < 0.1",
-		"tt":"(byTightIsolationMVArun2v1DBoldDMwLT_1 > 0.5 )  & (byTightIsolationMVArun2v1DBoldDMwLT_2 > 0.5 )",
+		"mt":"byMediumDeepTau2017v2p1VSjet_2 > 0.5 & iso_1 < 0.15",
+		"et":"byMediumDeepTau2017v2p1VSjet_2  & iso_1 < 0.1",
+		"tt":"(byMediumDeepTau2017v2p1VSjet_1 > 0.5 )  & (byMediumDeepTau2017v2p1VSjet_2 > 0.5 )",
 		"em":"iso_2 < 0.2 & iso_1 < 0.15"
 	},
 	"-ANTIISO-":{
-		"mt":"(byVLooseIsolationMVArun2v1DBoldDMwLT_2 > 0.5 & byTightIsolationMVArun2v1DBoldDMwLT_2 < 0.5 & iso_1 < 0.15)",
-		"et":"(byVLooseIsolationMVArun2v1DBoldDMwLT_2 > 0.5 & byTightIsolationMVArun2v1DBoldDMwLT_2 < 0.5 & iso_1 < 0.1)",
-		"tt":"( (byTightIsolationMVArun2v1DBoldDMwLT_2 > 0.5 & byVLooseIsolationMVArun2v1DBoldDMwLT_1 > 0.5 & byTightIsolationMVArun2v1DBoldDMwLT_1< 0.5) | (byTightIsolationMVArun2v1DBoldDMwLT_1 > 0.5 & byVLooseIsolationMVArun2v1DBoldDMwLT_2 > 0.5 & byTightIsolationMVArun2v1DBoldDMwLT_2 < 0.5) )",
+		"mt":"(byVVVLooseDeepTau2017v2p1VSjet_2 > 0.5 & byMediumDeepTau2017v2p1VSjet_2 < 0.5 & iso_1 < 0.15)",
+		"et":"(byVVVLooseDeepTau2017v2p1VSjet_2 > 0.5 & byMediumDeepTau2017v2p1VSjet_2 < 0.5 & iso_1 < 0.1)",
+		"tt":"( (byMediumDeepTau2017v2p1VSjet_2 > 0.5 & byVVVLooseDeepTau2017v2p1VSjet_1 > 0.5 & byMediumDeepTau2017v2p1VSjet_1< 0.5) | (byMediumDeepTau2017v2p1VSjet_1 > 0.5 & byVVVLooseDeepTau2017v2p1VSjet_2 > 0.5 & byMediumDeepTau2017v2p1VSjet_2 < 0.5) )",
 		"em":"(iso_1<0.50 & iso_2>0.2 & iso_2<0.5)"
 	},
 	"-ANTIISO1-":{
-		"mt":"(byVLooseIsolationMVArun2v1DBoldDMwLT_2 > 0.5 & byTightIsolationMVArun2v1DBoldDMwLT_2 < 0.5  & iso_1 < 0.15)",
-		"et":"(byVLooseIsolationMVArun2v1DBoldDMwLT_2 > 0.5 & byTightIsolationMVArun2v1DBoldDMwLT_2 < 0.5 & iso_1 < 0.1)",
-		"tt":"( (byTightIsolationMVArun2v1DBoldDMwLT_2 > 0.5 )  & (byVLooseIsolationMVArun2v1DBoldDMwLT_1 > 0.5 & byTightIsolationMVArun2v1DBoldDMwLT_1 < 0.5) )",
+		"mt":"(byVVVLooseDeepTau2017v2p1VSjet_2 > 0.5 & byMediumDeepTau2017v2p1VSjet_2 < 0.5  & iso_1 < 0.15)",
+		"et":"(byVVVLooseDeepTau2017v2p1VSjet_2 > 0.5 & byMediumDeepTau2017v2p1VSjet_2 < 0.5 & iso_1 < 0.1)",
+		"tt":"( (byMediumDeepTau2017v2p1VSjet_2 > 0.5 )  & (byVVVLooseDeepTau2017v2p1VSjet_1 > 0.5 & byMediumDeepTau2017v2p1VSjet_1 < 0.5) )",
 		"em":"(iso_1<0.50 & iso_2>0.2 & iso_2<0.5)"
 	},
 	"-ANTIISO2-":{
-		"mt":"(byVLooseIsolationMVArun2v1DBoldDMwLT_2 > 0.5 & byTightIsolationMVArun2v1DBoldDMwLT_2 < 0.5  & iso_1 < 0.15)",
-		"et":"(byVLooseIsolationMVArun2v1DBoldDMwLT_2 > 0.5 & byTightIsolationMVArun2v1DBoldDMwLT_2 < 0.5 & iso_1 < 0.1)",
-		"tt":"( (byTightIsolationMVArun2v1DBoldDMwLT_1 > 0.5 )  & (byVLooseIsolationMVArun2v1DBoldDMwLT_2 > 0.5 & byTightIsolationMVArun2v1DBoldDMwLT_2 < 0.5) )",
+		"mt":"(byVVVLooseDeepTau2017v2p1VSjet_2 > 0.5 & byMediumDeepTau2017v2p1VSjet_2 < 0.5  & iso_1 < 0.15)",
+		"et":"(byVVVLooseDeepTau2017v2p1VSjet_2 > 0.5 & byMediumDeepTau2017v2p1VSjet_2 < 0.5 & iso_1 < 0.1)",
+		"tt":"( (byMediumDeepTau2017v2p1VSjet_1 > 0.5 )  & (byVVVLooseDeepTau2017v2p1VSjet_2 > 0.5 & byMediumDeepTau2017v2p1VSjet_2 < 0.5) )",
 		"em":"(iso_1<0.50 & iso_2>0.2 & iso_2<0.5)"
 	},
 	"-TRIG-":{

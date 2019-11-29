@@ -205,7 +205,7 @@ class Reader():
 
     def loadForMe(self, sample_info):
         if not os.path.exists( sample_info["path"] ):
-            print "\033[1;31mWarning:\033[0m ", constStrLen( sample_info["histname"] ) , sample_info["path"].split("/")[-1]
+            print "\033[1;31mWarning:\033[0m ", constStrLen( sample_info["histname"] ) , sample_info["path"]
             return []
             
         print "\033[1;32mLoading:\033[0m ", constStrLen( sample_info["histname"] ) , sample_info["path"].split("/")[-1]
@@ -249,6 +249,17 @@ class Reader():
 
 
         if self.era == "2017":
+            DF.replace({"jdeta":-1.},-10., inplace = True)
+            DF.replace({"mjj":-11.},-10., inplace = True)
+            DF.replace({"dijetpt":-11.},-10., inplace = True)
+
+            DF.eval("jdeta =   (njets < 2) *-10 + (njets > 1 )*jdeta ", inplace=True)
+            DF.eval("mjj =     (njets < 2) *-10 + (njets > 1 )*mjj ", inplace=True)
+            DF.eval("dijetpt = (njets < 2) *-10 + (njets > 1 )*dijetpt ", inplace=True)
+            DF.eval("jpt_1 =   (njets == 0)*-10 + (njets > 0 )*jpt_1 ", inplace=True)
+            DF.eval("jpt_2 =   (njets < 2 )*-10 + (njets > 1 )*jpt_2 ", inplace=True)            
+
+        if self.era == "2018":
             DF.replace({"jdeta":-1.},-10., inplace = True)
             DF.replace({"mjj":-11.},-10., inplace = True)
             DF.replace({"dijetpt":-11.},-10., inplace = True)

@@ -1,6 +1,6 @@
 {
-    "path": "/nfs/dust/cms/user/cardinia/HtoTauTau/HiggsCP/DNN/CMSSW_10_2_16/src/HiggsCP/Inputs/nobveto/NTuples_mt_2016", 
-    "outpath": "/nfs/dust/cms/user/cardinia/HtoTauTau/HiggsCP/DNN/CMSSW_10_2_16/src/HiggsCP/Outputs/nobveto/NTuples_mt_2016",
+    "path": "/nfs/dust/cms/user/cardinia/HtoTauTau/HiggsCP/DNN/CMSSW_10_2_16/src/HiggsCP/Inputs/NTuples_mt_2018", 
+    "outpath": "/nfs/dust/cms/user/cardinia/HtoTauTau/HiggsCP/DNN/CMSSW_10_2_16/src/HiggsCP/Outputs/NTuples_mt_2018",
     "variables":{
         "mt": [
             "pt_2",
@@ -25,16 +25,16 @@
     "version":{
         "mt":"v5"
     },
-    "lumi": 35.9,
+    "lumi": 59.9,
       "class_weight":{
-        "ggh":     {"mt":3.9},
-        "qqh":     {"mt":6.0},
-        "ztt":     {"mt":2.4},
-        "zll":     {"mt":47.6},
-        "w":       {"mt":32.0},
-        "tt":      {"mt":12.4},
-        "ss":      {"mt":605.5},
-        "misc":    {"mt":29.9}
+        "ggh":     {"mt":3.6},
+        "qqh":     {"mt":76.2},
+        "ztt":     {"mt":89.5},
+        "zll":     {"mt":617.0},
+        "w":       {"mt":1156.9},
+        "tt":      {"mt":1.6},
+        "ss":      {"mt":8594.4},
+        "misc":    {"mt":19.8}
       },
 
     "target_values":{
@@ -48,7 +48,7 @@
         "misc":   7
     },
 
-    "weights":["*weight*","gen_match*","topptweight*","zptweight", "trigweight*","njets","jpt_1","jdeta","mjj"],
+    "weights":["*weight*","gen_match*","topptweight*","zptweight", "trigweight*","njets","jpt_1","jdeta","mjj","gen_sm_htt125","gen_ps_htt125","gen_mm_htt125"],
     "shape_from_file":["TES1p0p0","TES1p1p0","TES3p0p0","MES1p0p0","MES1p1p0"],
     "shape_from_tree":["Total","CMS_scale_j_eta0to5_13TeV","CMS_scale_j_eta0to3_13TeV","CMS_scale_j_eta3to5_13TeV","CMS_scale_j_RelativeBal_13TeV","CMS_scale_j_RelativeSample_13TeV",
                        "Btag","Mistag","CMS_htt_boson_reso_met_13TeV","CMS_htt_boson_scale_met_13TeV"
@@ -200,6 +200,30 @@
             "event_weight": 1.0
         },
         "qqH125_full": {
+            "target":"none",
+            "select": "-VETO- && -MT- && -TRIG-", 
+            "name": "NOMINAL_ntuple_VBF", 
+            "event_weight": 1.0
+        },
+        "ggPSH125_full": {
+            "target":"none",
+            "select": "-VETO- && -MT- && -TRIG-", 
+            "name": "NOMINAL_ntuple_ggH", 
+            "event_weight": 1.0
+        },
+        "qqPSH125_full": {
+            "target":"none",
+            "select": "-VETO- && -MT- && -TRIG-", 
+            "name": "NOMINAL_ntuple_VBF", 
+            "event_weight": 1.0
+        },
+        "ggMMH125_full": {
+            "target":"none",
+            "select": "-VETO- && -MT- && -TRIG-", 
+            "name": "NOMINAL_ntuple_ggH", 
+            "event_weight": 1.0
+        },
+        "qqMMH125_full": {
             "target":"none",
             "select": "-VETO- && -MT- && -TRIG-", 
             "name": "NOMINAL_ntuple_VBF", 
