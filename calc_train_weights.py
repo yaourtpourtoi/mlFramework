@@ -5,7 +5,7 @@ import argparse
 def main():
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('-e', '--era', help='Era (2016 or 2017) to use' ,choices = ['2016','2017'],  default = '2016')
+    parser.add_argument('-e', '--era', help='Era (2016, 2017 or 2018) to use' ,choices = ['2016','2017','2018'],  default = '2016')
     parser.add_argument('-c', '--channel', nargs='+', help='define channels to use in a space seperated list, e.g. -c mt tt' ,choices = ['mt','et','tt','em'])
 
     args = parser.parse_args()
@@ -22,7 +22,7 @@ def main():
         train_weights[channel] = getWeights(config_to_use, channel, era)
 
         class_weights = {}
-        for cl in ["ztt", "zll", "misc", "tt", "w", "ss", "noniso", "ggh", "qqh","diboson","singletop"]:
+        for cl in ["ztt", "zll", "misc", "tt", "w", "ss", "noniso", "ggh", "qqh","diboson","singletop","taus","fake","higgs"]:
             class_weights[cl] = {}
             for ch in ["mt","et","tt","em"]:
                 tmp = train_weights.get(ch,{})
