@@ -1,5 +1,5 @@
 import json
-import pandas
+import pandas as pd
 import root_pandas as rp
 import os
 import sys
@@ -216,7 +216,7 @@ class Reader():
             return DF
 
         self.modifyDF(DF, sample_info)
-
+        print(f'size of {sample_info["histname"]} is {DF.shape[0]}')
         return self._getFolds( DF[ self.config["variables"] + ["target","train_weight","evt","event_weight"] ] )
 
     def modifyDF(self, DF, sample_info):
@@ -276,7 +276,7 @@ class Reader():
                 folds[i].append( sample[i] )
 
         for i,fold in enumerate(folds): 
-            folds[i] = pandas.concat( fold, ignore_index=True).sample(frac=1., random_state = 41).reset_index(drop=True)
+            folds[i] = pd.concat( fold, ignore_index=True).sample(frac=1., random_state = 41).reset_index(drop=True)
 
         return folds
 

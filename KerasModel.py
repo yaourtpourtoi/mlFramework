@@ -1,7 +1,7 @@
 import ROOT
 ROOT.PyConfig.IgnoreCommandLineOptions = True  # disable ROOT internal argument parser
 import numpy as np
-from pandas import DataFrame,concat
+import pandas as pd
 import json
 np.random.seed(0)
 import conf.keras_models as keras_models
@@ -75,7 +75,7 @@ class KerasObject():
             for j in range(2, len(samples) ):
                 train.append( samples[j] )
             
-            train = concat(train , ignore_index=True).reset_index(drop=True)
+            train = pd.concat(train , ignore_index=True).reset_index(drop=True)
 
             self.models.append( self.trainSingle( train, test ) )
             samples.rotate(-1)
@@ -147,7 +147,7 @@ class KerasObject():
 
     def testSingle(self, test,fold ):
 
-        prediction = DataFrame( self.models[fold].predict(test[self.variables].values) )
+        prediction = pd.DataFrame( self.models[fold].predict(test[self.variables].values) )
 
-        return DataFrame(dtype = float, data = {"predicted_class":prediction.idxmax(axis=1).values,
+        return pd.DataFrame(dtype = float, data = {"predicted_class":prediction.idxmax(axis=1).values,
                                  "predicted_prob": prediction.max(axis=1).values } )

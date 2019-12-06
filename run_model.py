@@ -1,6 +1,6 @@
 from Reader import Reader
 import copy
-import pandas
+import pandas as pd
 import json
 import sys
 import os
@@ -198,7 +198,7 @@ def addPrediction(channel,prediction, df, sample, outpath, new = True):
 def trainScaler(folds, variables):
     from sklearn.preprocessing import StandardScaler
 
-    total = pandas.concat( folds, ignore_index = True ).reset_index(drop=True)
+    total = pd.concat( folds, ignore_index = True ).reset_index(drop=True)
     Scaler = StandardScaler()
     Scaler.fit( total[ variables ] )
 
