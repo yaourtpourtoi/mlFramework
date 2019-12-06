@@ -36,7 +36,7 @@ class Reader():
     def __iter__(self):
         return self
 
-    def next(self):
+    def __next__(self):
         try:
             sample = self.itersamples[ self.idx ]
             self.idx += 1
@@ -53,8 +53,8 @@ class Reader():
             with open(self.config_file,"r") as FSO:
                 config = json.load(FSO)
         except ValueError as e:
-            print e
-            print "Check {0}. Probably a ',' ".format(self.config_file)
+            print(e)
+            print(("Check {0}. Probably a ',' ".format(self.config_file)))
             sys.exit(0)
 
         targets = []
@@ -119,15 +119,14 @@ class Reader():
         samples = []
         for sample,histname in self:
             samples.append(sample)
-        print "Combining for training"
+        print("Combining for training")
         return self.combineFolds(samples)
 
     def setNominalSamples(self):
         self.addvar = []
         self.itersamples = []
         self.idx = 0
-        samples = self.config["samples"].keys()
-        samples.sort()
+        samples = sorted(self.config["samples"])
         for sample in samples:
             if sample == "data" or "_full" in sample: continue
 
@@ -151,8 +150,7 @@ class Reader():
 
         self.itersamples = []
         self.idx = 0
-        samples = self.config["samples"].keys()
-        samples.sort()
+        samples = sorted(self.config["samples"])
         for sample in samples:
             if "_full" in sample:
 
@@ -182,8 +180,7 @@ class Reader():
         self.addvar = self.config["addvar"]
         self.itersamples = []
         self.idx = 0
-        samples = self.config["samples"].keys()
-        samples.sort()
+        samples = sorted(self.config["samples"])
         for sample in samples:
             if "data" in sample or not "_full" in sample: continue
 
@@ -205,10 +202,10 @@ class Reader():
 
     def loadForMe(self, sample_info):
         if not os.path.exists( sample_info["path"] ):
-            print "\033[1;31mWarning:\033[0m ", constStrLen( sample_info["histname"] ) , sample_info["path"]
+            print(("\033[1;31mWarning:\033[0m ", constStrLen( sample_info["histname"] ) , sample_info["path"]))
             return []
             
-        print "\033[1;32mLoading:\033[0m ", constStrLen( sample_info["histname"] ) , sample_info["path"].split("/")[-1]
+        print(("\033[1;32mLoading:\033[0m ", constStrLen( sample_info["histname"] ) , sample_info["path"].split("/")[-1]))
         DF = self._getDF(sample_path = sample_info["path"], 
                           select = sample_info["select"])
 
@@ -275,7 +272,7 @@ class Reader():
 
         folds = [ [fold] for fold in samples[0] ]
         for sample in samples[1:]:
-            for i in xrange(len(folds)):
+            for i in range(len(folds)):
                 folds[i].append( sample[i] )
 
         for i,fold in enumerate(folds): 
@@ -291,7 +288,7 @@ class Reader():
 
     def _parseCut(self, cutstring):
         cutstring = self._assertChannel( cutstring )
-        for alias,cut in self.cut_dict.items():
+        for alias,cut in list(self.cut_dict.items()):
             cutstring = cutstring.replace( alias, cut )
         return cutstring
 
@@ -333,7 +330,7 @@ class Reader():
         if type( self.config["samples"][sample]["event_weight"] ) is float:
             return str( self.config["samples"][sample]["event_weight"] )
 
-        if type( self.config["samples"][sample]["event_weight"] ) is unicode:
+        if type( self.config["samples"][sample]["event_weight"] ) is str:
             return "*".join([str( self.config["samples"][sample]["event_weight"] ), str(self.config["lumi"]) ])
 
         else:

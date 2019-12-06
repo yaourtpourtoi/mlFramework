@@ -51,7 +51,7 @@ class Plotter():
 
 
         if not self.loadFile():
-            print self.filename, "not found!!"
+            print(self.filename, "not found!!")
             return None
 
     def loadFile(self):
@@ -114,7 +114,7 @@ class Plotter():
         
         self.histos[cat+"_FF"] = {  }
         self.histos[cat+"_ER"] = {  }
-        inclhist = inclusive.keys()
+        inclhist = list(inclusive.keys())
         inclhist.sort()
         for hist in inclhist:
             if hist in self.naming["FF"]:
@@ -131,7 +131,7 @@ class Plotter():
 
     def makePlots(self):
 
-        for cat in self.histos.keys():
+        for cat in list(self.histos.keys()):
             if self.asimov: self.histos[cat].pop("data",None)
             pl.plot(histos = self.histos[cat],
                     signal = self.sig,
@@ -141,7 +141,7 @@ class Plotter():
      
     def blindBins(self, h, bins, canvas ):
 
-        for i in xrange( h.GetNbinsX() + 1 ):
+        for i in range( h.GetNbinsX() + 1 ):
             if bins[i]:
                 if canvas == "data":
                     h.SetBinContent(i, 0.)
@@ -155,7 +155,7 @@ class Plotter():
         bins = hists[0].GetNbinsX()
 
         blind = []
-        for i in xrange(bins + 1):
+        for i in range(bins + 1):
             NBkg = 0
             NSig = 0
             for hist in hists:

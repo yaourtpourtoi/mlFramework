@@ -28,13 +28,13 @@ def main():
     parser.add_argument('-m', dest='model',   help='Use predictions from model' ,default = 'keras')
     args = parser.parse_args()
 
-    print "---------------------------------"
-    print "Collecting {0} events".format(args.channel)
-    print "Using prediction from {0}".format(args.model)
-    print "Writing {0} to datacard".format( args.var )
+    print("---------------------------------")
+    print("Collecting {0} events".format(args.channel))
+    print("Using prediction from {0}".format(args.model))
+    print("Writing {0} to datacard".format( args.var ))
     if args.all:
-        print "Add systematic templates in datacard"
-    print "---------------------------------"
+        print("Add systematic templates in datacard")
+    print("---------------------------------")
 
     read = Reader(channel=args.channel,
                   config_file = "conf/global_config_2017.json",
@@ -64,7 +64,7 @@ class Collector():
         self.predictionPath = "/".join(["predictions",path, channel])
 
         if recreate and os.path.exists(self.predictionPath ):
-            print "Replacing predictions in {0} {1}".format(channel, path)
+            print("Replacing predictions in {0} {1}".format(channel, path))
             shutil.rmtree( self.predictionPath  )
 
         if not os.path.exists(self.predictionPath ):
@@ -76,7 +76,7 @@ class Collector():
         if path:  self.filename = "/".join([path, "htt_"+channel+".inputs-sm-13TeV-ML.root"])
         else:     self.filename = "htt_"+channel+".inputs-sm-13TeV-ML.root"
 
-        if target_names:  self.target_names = {int(k):v for k,v in target_names.items()}
+        if target_names:  self.target_names = {int(k):v for k,v in list(target_names.items())}
         else:             self.target_names = target_names
 
         self.createDCFile()
@@ -124,7 +124,7 @@ class Collector():
         self.FileClosed = False
         self.DCfile =  R.TFile(self.filename,"RECREATE")
 
-        for name in self.target_names.values():
+        for name in list(self.target_names.values()):
             self.DCfile.mkdir( self.d(name) )
 
     def d(self, target):
@@ -143,7 +143,7 @@ class Collector():
         df.eval("event_weight = {0}".format( apply_sf ), inplace = True )
 
     def addPrediction(self, prediction, df, sample):
-        for i in xrange( len(df) ):
+        for i in range( len(df) ):
 
             df[i]["pred_prob"] =  prediction[i]["predicted_prob"]
             df[i]["pred_class"] = prediction[i]["predicted_class"]
@@ -155,7 +155,7 @@ class Collector():
 
     def createDC(self, writeAll = True, abs_path = ""):
         if not self.DCfile or self.FileClosed:
-            print "Where should I write?"
+            print("Where should I write?")
             return
 
 
@@ -177,7 +177,7 @@ class Collector():
         self.FileClosed = True
 
         if self.rebin:
-            print "Start rebinning"
+            print("Start rebinning")
             self.setRebinning()
             self.createDCFile()
 
@@ -223,7 +223,7 @@ class Collector():
 
 
     def writeTemplates(self, templates, add_systematics = False):
-        print "Write Templates"
+        print("Write Templates")
 
         for template in templates:
             histname = template.split("/")[-1].replace(".root","")
@@ -288,12 +288,12 @@ class Collector():
 
     def estimateQCD(self, looseMC, add_systematics = False):
 
-        print "Estimating Jet Fakes"
+        print("Estimating Jet Fakes")
         for i,template in enumerate(looseMC):
             if not "data" in template: continue
             FF = FakeFactor( self.channel, data_file = template )
 
-            for c,t in self.target_names.items():
+            for c,t in list(self.target_names.items()):
                 binning = self.var.bins( t )
                 ff_select = Cut("pred_class == {0} && -OS- && -ANTIISO- ".format( int(c) ), self.channel)
                 FFHistos = FF.calc( self.var, ff_select, add_systematics )
@@ -301,15 +301,15 @@ class Collector():
                 self.DCfile.cd( self.d( t ) )
 
 
-                for name,FFHist in FFHistos.items():
+                for name,FFHist in list(FFHistos.items()):
                     FFHist.Write()
                     FFHist.Delete()
                     
 
-        print "Estimating QCD"
+        print("Estimating QCD")
         if self.channel != "tt":
 
-            for c,t in self.target_names.items():
+            for c,t in list(self.target_names.items()):
                 binning = self.var.bins( t )
 
                 tmpQCD = R.TH1D("QCD","QCD",*binning)
@@ -343,7 +343,7 @@ class Collector():
                 tmpQCD.Write()
         else:
 
-            for c,t in self.target_names.items():
+            for c,t in list(self.target_names.items()):
 
                 binning = self.var.bins( t )
 
@@ -403,7 +403,7 @@ def rebin(m_sig, m_bg):
     s=0
     serr2=0
     berr2=0
-    for i in reversed(xrange(1,nedges-1)): #loop over bin edges
+    for i in reversed(range(1,nedges-1)): #loop over bin edges
 
 
         s += m_sig.GetBinContent(i)

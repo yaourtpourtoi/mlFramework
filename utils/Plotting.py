@@ -49,7 +49,7 @@ def plot( histos, signal=[], canvas = "semi", outfile = "", descriptions = {} ):
             applySignalHistStyle(tmp, s,3)
             signal_hists.append( tmp )
             
-    yields = [ ( h.Integral(), name ) for name,h in histos.items() ]
+    yields = [ ( h.Integral(), name ) for name,h in list(histos.items()) ]
     yields.sort()
     what = [ y[1] for y in yields ]
 
@@ -70,12 +70,12 @@ def plot( histos, signal=[], canvas = "semi", outfile = "", descriptions = {} ):
 
     ratio = copy.deepcopy( data )
     tmp = copy.deepcopy( cumul )
-    for i in xrange( tmp.GetNbinsX() + 1 ):
+    for i in range( tmp.GetNbinsX() + 1 ):
         tmp.SetBinError(i,0.0)    
     ratio.Divide( tmp )
 
     ratio_error = copy.deepcopy( cumul )
-    for i in xrange( ratio_error.GetNbinsX() + 1 ):
+    for i in range( ratio_error.GetNbinsX() + 1 ):
         ratio_error.SetBinError(i,0.0)
     ratio_error.Divide(cumul)
     ratio_error.SetFillColorAlpha(33,0.7)

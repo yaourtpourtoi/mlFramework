@@ -21,9 +21,9 @@ def main():
 
     filepath = "/".join([model,"htt_{0}.inputs-sm-13TeV-ML.root".format(channel)])
     if not os.path.exists(filepath):
-        print "file not found!"
+        print("file not found!")
         return 
-    print "Loading datacard: " + filepath
+    print("Loading datacard: " + filepath)
     rootfile=R.TFile(filepath, "READ")
 
 
@@ -49,7 +49,7 @@ def main():
     # plotting confusion matrices
     # print confusion
 
-    print "Writing confusion matrices to plots/confusion"
+    print("Writing confusion matrices to plots/confusion")
     plot_confusion(confusion,classes,"plots/confusion/{0}_{1}_confusion.png".format(model,channel), "std")
 
     conf_eff1, conf_eff2 = get_efficiency_representations(confusion)
@@ -100,9 +100,9 @@ def plot_confusion(confusion, classes, filename, form="arb", markup='{:.2f}'):
     else:
         cbar.set_label("Arbitrary units", rotation=270, labelpad=50)
     plt.xticks(
-        np.array(range(len(classes))) + 0.5, classes, rotation='vertical')
+        np.array(list(range(len(classes)))) + 0.5, classes, rotation='vertical')
     plt.yticks(
-        np.array(range(len(classes))) + 0.5,
+        np.array(list(range(len(classes)))) + 0.5,
         classes[::-1],
         rotation='horizontal')
     plt.xlim(0, len(classes))

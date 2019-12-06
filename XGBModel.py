@@ -24,7 +24,7 @@ class XGBObject():
                     params = json.load(FSO)
                 self.params = params
         except Warning as e:
-            print e
+            print(e)
             self.params = []
 
         if target_names: self.target_names = target_names
@@ -35,7 +35,7 @@ class XGBObject():
         with open(filename + ".dict", 'rb') as FSO:
             tmp_dict = json.load(FSO)
 
-        print "Loading model from: " + filename 
+        print("Loading model from: " + filename) 
         self.__dict__.clear()
         self.__dict__.update(tmp_dict)
 
@@ -75,11 +75,11 @@ class XGBObject():
         else:
             self.params = self.params["binary"]
 
-        for i in xrange( len(samples) ):
+        for i in range( len(samples) ):
             test = samples[0]
             train = [ samples[1] ]
 
-            for j in xrange(2, len(samples) ):
+            for j in range(2, len(samples) ):
                 train.append( samples[j] )
             
             train = concat(train , ignore_index=True).reset_index(drop=True)
@@ -87,7 +87,7 @@ class XGBObject():
             self.models.append( self.trainSingle( train, test ) )
             samples.rotate(-1)
 
-        print "Finished training!"
+        print("Finished training!")
 
 
     def trainSingle(self, train, test ):
@@ -109,7 +109,7 @@ class XGBObject():
                         evals = [(dtest,"test")],
                         early_stopping_rounds = self.params["early_stopping"]
                         )
-        print bst.attributes()
+        print(bst.attributes())
         return bst
 
     def predict(self, samples, where=""):
@@ -118,7 +118,7 @@ class XGBObject():
         if type(samples) is list:
             samples = deque(samples)
 
-        for i in xrange( len(samples) ):
+        for i in range( len(samples) ):
             test = samples[0]
             if where: test  = test.query( where ).reset_index(drop=True)
 

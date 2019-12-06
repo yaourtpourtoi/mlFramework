@@ -13,11 +13,11 @@ def main():
     era = args.era
     channel_list = args.channel
 
-    print 'considered channel(s) : ' + str(channel_list)
+    print('considered channel(s) : ' + str(channel_list))
 
     for channel in channel_list:
         config_to_use = "conf/global_config_{0}_{1}.json".format(channel,era)
-        print "config : "  + config_to_use
+        print("config : "  + config_to_use)
         train_weights = {}
         train_weights[channel] = getWeights(config_to_use, channel, era)
 
@@ -30,7 +30,7 @@ def main():
 
 
     for cl in class_weights:
-        print '"{0}":'.format(cl) + " "*(7-len(cl)),'{'+'"mt":{mt}, "et":{et}, "tt":{tt}, "em":{em} '.format(**class_weights[cl])+'},'
+        print('"{0}":'.format(cl) + " "*(7-len(cl)),'{'+'"mt":{mt}, "et":{et}, "tt":{tt}, "em":{em} '.format(**class_weights[cl])+'},')
 
 def getWeights(samples, channel, era):
 
@@ -70,7 +70,7 @@ def getWeights(samples, channel, era):
         if n not in targets: continue
         train_weights[n] = round(total / numbers[n]["evt"], 1)
 
-        print n+" "*(15 - len(n)) ,round(total / numbers[n]["evt"], 1)
+        print(n+" "*(15 - len(n)) ,round(total / numbers[n]["evt"], 1))
 
     return train_weights
 

@@ -134,8 +134,8 @@ class Fractions():
         for f in ["total","QCD","W","ZTT","ZL","ZJ","TTT","TTJ","VVT","VVJ"]:
             fracs[f] = self.cpHist(dummy, f)
  
-        for i in xrange(1, dummy.GetNbinsX() + 1 ):
-            for j in xrange(1, dummy.GetNbinsY() + 1 ):
+        for i in range(1, dummy.GetNbinsX() + 1 ):
+            for j in range(1, dummy.GetNbinsY() + 1 ):
 
                 total = float( histos["data"].GetBinContent( i,j ) )
                 part_mc = 0.
@@ -156,7 +156,7 @@ class Fractions():
                         fracs[f].SetBinContent( i,j, part_other[f] / total )
 
         comp = {}
-        for c,part in self.composition[self.channel].items() :
+        for c,part in list(self.composition[self.channel].items()) :
 
             for i,p in enumerate( part ):
                 if i == 0:
@@ -180,7 +180,7 @@ class Fractions():
 
         file.Close()
 
-        print "written fractions to:", self.channel +"_fractions.root"
+        print("written fractions to:", self.channel +"_fractions.root")
 
     def applySF(self, df, process):
         with open("scalefactors.json","r") as FSO:
@@ -201,7 +201,7 @@ class Fractions():
         tmpHist = R.TH2D(name,name,*( self.binning ))
 
         if not os.path.exists(path):
-            print "Warning", path
+            print("Warning", path)
             return tmpHist
 
         tmp =   rp.read_root( paths = path,
@@ -243,7 +243,7 @@ class Fractions():
 
         Hists = { c:file.Get("fracs/"+c) for c in contr   }
 
-        for i in xrange(1, Hists[ contr[0] ].GetNbinsY() + 1 ):
+        for i in range(1, Hists[ contr[0] ].GetNbinsY() + 1 ):
 
             hists = { c: Hists[c].ProjectionX(c +"x",i,i) for c in Hists }
             dummy = self.cpHist(hists[ contr[0] ], "Fractions")
@@ -430,7 +430,7 @@ class FakeFactor():
             FFHistos[name] = self.unroll2D(FFHistos[name])
 
         norm_factors = {}
-        for name, hist in FFHistos.items():
+        for name, hist in list(FFHistos.items()):
             if "jetFakes" in name: continue
             norm_factors[name] =  FFHistos["jetFakes"].Integral() / hist.Integral()
 
@@ -449,8 +449,8 @@ class FakeFactor():
         unrolled = R.TH1D(name,name, *(bins,0,bins) )
         unrolled.Sumw2(True)
 
-        for i,y in  enumerate( xrange(1,th.GetNbinsY()+1) ):
-            for x in xrange(1,th.GetNbinsX()+1):
+        for i,y in  enumerate( range(1,th.GetNbinsY()+1) ):
+            for x in range(1,th.GetNbinsX()+1):
                 offset = i*th.GetNbinsX()
 
                 unrolled.SetBinContent( x+offset, th.GetBinContent(x,y) )
@@ -473,7 +473,7 @@ class FakeFactor():
         ff_norm = R.TH1D("jetFakes_norm","jetFakes_norm",4,-0.5,3.5 )
 
         norms = { "statUp":0.,"statDown":0.,"systUp":0.,"systDown":0. }
-        for name, factor in norm_factors.items():
+        for name, factor in list(norm_factors.items()):
             if "syst" in name: key  = "syst"
             else:              key  = "stat"
             if factor > 1:     key += "Up"

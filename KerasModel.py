@@ -28,7 +28,7 @@ class KerasObject():
                     params = json.load(FSO)
                 self.params = params["model"]
         except Warning as e:
-            print e
+            print(e)
             self.params = []
 
         if target_names: self.target_names = target_names
@@ -39,7 +39,7 @@ class KerasObject():
         with open(filename + ".dict", 'rb') as FSO:
             tmp_dict = json.load(FSO)
 
-        print "Loading model from: " + filename 
+        print(("Loading model from: " + filename)) 
         self.__dict__.clear()
         self.__dict__.update(tmp_dict)
 
@@ -68,11 +68,11 @@ class KerasObject():
         if type(samples) is list:
             samples = deque(samples)
 
-        for i in xrange( len(samples) ):
+        for i in range( len(samples) ):
             test = samples[0]
             train = [ samples[1] ]
 
-            for j in xrange(2, len(samples) ):
+            for j in range(2, len(samples) ):
                 train.append( samples[j] )
             
             train = concat(train , ignore_index=True).reset_index(drop=True)
@@ -80,7 +80,7 @@ class KerasObject():
             self.models.append( self.trainSingle( train, test ) )
             samples.rotate(-1)
 
-        print "Finished training!"
+        print("Finished training!")
 
 
     def trainSingle(self, train, test):
@@ -111,8 +111,8 @@ class KerasObject():
         mpl.use('Agg')
         import matplotlib.pyplot as plt
 
-        print "plotting training"
-        epochs = xrange(1, len(history.history["loss"]) + 1)
+        print("plotting training")
+        epochs = range(1, len(history.history["loss"]) + 1)
         plt.plot(epochs, history.history["loss"], lw=3, label="Training loss")
         plt.plot(epochs, history.history["val_loss"], lw=3, label="Validation loss")
         plt.xlabel("Epoch")
@@ -123,7 +123,7 @@ class KerasObject():
         plt.savefig("plots/fold_{0}_loss.png".format(best), bbox_inches="tight")
 
 
-        print "Reloading best model"
+        print("Reloading best model")
         model = lm(best + ".model")
         os.remove( best + ".model" )
 
@@ -135,7 +135,7 @@ class KerasObject():
         if type(samples) is list:
             samples = deque(samples)
 
-        for i in xrange( len(samples) ):
+        for i in range( len(samples) ):
             predictions.append( self.testSingle( samples[0], i ) )
             samples.rotate(-1)
 
@@ -151,4 +151,3 @@ class KerasObject():
 
         return DataFrame(dtype = float, data = {"predicted_class":prediction.idxmax(axis=1).values,
                                  "predicted_prob": prediction.max(axis=1).values } )
-

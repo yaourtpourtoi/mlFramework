@@ -10,9 +10,9 @@ def main():
     # C = C.invert("-ISO-")
     # print C.original
     # C = C+A
-    print C.original
-    print new.original
-    print C.get()
+    print(C.original)
+    print(new.original)
+    print(C.get())
 
 class Cut():
 

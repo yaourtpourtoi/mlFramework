@@ -6,7 +6,7 @@ import sys
 import os
 from glob import glob
 import argparse
-import cPickle
+import pickle
 import subprocess as sp
 import multiprocessing as mp
 import keras
@@ -23,15 +23,15 @@ def main():
     parser.add_argument('--add_nominal', dest='add_nom',  help='Add nominal samples to prediction', action='store_true' )    
     args = parser.parse_args()
 
-    print "---------------------------"
-    print "Era: ", args.era
-    print "Running over {0} samples".format(args.channel)
-    print "Using {0}".format(args.model), keras.__version__
+    print("---------------------------")
+    print("Era: ", args.era)
+    print("Running over {0} samples".format(args.channel))
+    print("Using {0}".format(args.model), keras.__version__)
     if args.train:
-        print "Training new model"
+        print("Training new model")
     if args.short:
-        print "Not predicting shape templates."
-    print "---------------------------"
+        print("Not predicting shape templates.")
+    print("---------------------------")
 
         
     run(samples = "conf/global_config_{0}_{1}.json".format(args.channel,args.era),
@@ -71,16 +71,16 @@ def run(samples,channel, era, use, train,short, datacard = False, add_nominal=Fa
     scaler = None
 
     if train:
-        print "Training new model"
-        print "Loading Training set"
+        print("Training new model")
+        print("Loading Training set")
         trainSet = read.getSamplesForTraining()
 
-        print "Fit Scaler to training set...",
+        print("Fit Scaler to training set...", end=' ')
         scaler = trainScaler(trainSet, variables )
 
-        print " done. Dumping for later."
+        print(" done. Dumping for later.")
         with open("{0}/StandardScaler.{1}.pkl".format(models_folder,channel), 'wb') as FSO:
-            cPickle.dump(scaler, FSO , 2)
+            pickle.dump(scaler, FSO , 2)
         scaler = [scaler, scaler] # Hotfix since KIT uses 2 scalers
 
         trainSet = applyScaler(scaler, trainSet, variables)
@@ -94,21 +94,21 @@ def run(samples,channel, era, use, train,short, datacard = False, add_nominal=Fa
     elif not datacard:
         # TODO: Maybe not needed to check. Just load what is there
         if os.path.exists("{0}/StandardScaler.{1}.pkl".format(models_folder,channel) ):
-            print "Loading Scaler"
+            print("Loading Scaler")
             scaler = []
             if glob("{0}/{1}_*_keras_preprocessing.pickle".format(models_folder,channel)) :
                 with open( "{0}/{1}_fold0_keras_preprocessing.pickle".format(models_folder,channel), "rb" ) as FSO:
-                    scaler.append( cPickle.load( FSO ) )
+                    scaler.append( pickle.load( FSO ) )
 
                 with open( "{0}/{1}_fold1_keras_preprocessing.pickle".format(models_folder,channel), "rb" ) as FSO:
-                    scaler.append( cPickle.load( FSO ) )
+                    scaler.append( pickle.load( FSO ) )
             else:
                 with open( "{0}/StandardScaler.{1}.pkl".format(models_folder,channel), "rb" ) as FSO:
-                    tmp = cPickle.load( FSO )
+                    tmp = pickle.load( FSO )
                     scaler = [tmp,tmp]
 
 
-        print "Loading model and predicting."
+        print("Loading model and predicting.")
         model = modelObject( filename = modelname )
         read.variables = model.variables
         variables = model.variables
@@ -117,9 +117,9 @@ def run(samples,channel, era, use, train,short, datacard = False, add_nominal=Fa
 
         outpath = read.config["outpath"] + "/predictions_" + era
         predictions = {}
-        print "Predicting samples"
+        print("Predicting samples")
         if add_nominal:
-            print "Predicting Nominal"
+            print("Predicting Nominal")
             for sample, sampleConfig in read.get(what = "nominal", for_prediction = True):
                 sandbox(channel, model, scaler, sample, variables, "nom_" + sampleConfig["histname"], outpath ,sampleConfig, read.modifyDF )
 
@@ -134,7 +134,7 @@ def run(samples,channel, era, use, train,short, datacard = False, add_nominal=Fa
                 sandbox(channel, model, scaler, sample, variables,  "_".join(splName[1:])+"_ntuple_" + sampleConfig["histname"].split("_")[0], outpath, sampleConfig, read.modifyDF )
 
         if not short:
-            print "Predicting shapes"
+            print("Predicting shapes")
             for sample, sampleConfig in read.get(what = "tes", for_prediction = True):
                 sandbox(channel, model, scaler, sample, variables, sampleConfig["histname"], outpath ,sampleConfig, read.modifyDF )
 
@@ -185,7 +185,7 @@ def addPrediction(channel,prediction, df, sample, outpath, new = True):
     if not os.path.exists(outpath):
         os.mkdir(outpath)
 
-    for i in xrange( len(df) ):
+    for i in range( len(df) ):
         for c in prediction[i].columns.values.tolist():
             df[i][c] =  prediction[i][c]
             
