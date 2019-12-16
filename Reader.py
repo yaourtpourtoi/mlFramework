@@ -134,6 +134,7 @@ class Reader():
 
             tmp["path"] = self.config["samples"][sample]["name"] 
             tmp["histname"   ] = sample
+            tmp["tree_name"   ] = self.config['tree_name_prefix']
             tmp["rename"      ] = {}
 
             self.itersamples.append( tmp )
@@ -143,11 +144,11 @@ class Reader():
     def setFullSamples(self, add_jec = False):
         self.addvar = self.config["addvar"]
 
-        # If shifts are needed add them in the tree
-        for v in self.config["shifted_variables"]:
-            # if v in self.config["shifted_variables"]:
-                self.addvar.append(v+"*")
-
+        # # If shifts are needed add them in the tree
+        # for v in self.config["shifted_variables"]:
+        #     # if v in self.config["shifted_variables"]:
+        #         self.addvar.append(v+"*")
+        
         self.itersamples = []
         self.idx = 0
         samples = sorted(self.config["samples"])
@@ -157,6 +158,7 @@ class Reader():
                 tmp = self._getCommonSettings(sample)
                 tmp["path"] = self.config["samples"][sample]["name"] 
                 tmp["histname"   ] = sample
+                tmp["tree_name"   ] = self.config['tree_name_prefix']
                 tmp["rename"      ] = {}
                 self.itersamples.append( tmp )
 
@@ -166,10 +168,11 @@ class Reader():
                         shapename = shape.replace("Up","").replace("Down","")
                         if not shapename in self.config["shape_from_tree"]: continue
                         if "EMB" in sample and ("em" not in self.channel or ("em" in self.channel and not "escale" in shapename)) :  continue
+                        
                         tmp = self._getCommonSettings(sample)
-
+                        tmp["tree_name"   ] = self.config['tree_name_prefix'] + '_' + shape
                         tmp["path"] = self.config["samples"][sample]["shapes"][shape] 
-                        tmp["histname"   ] = sample.replace("full",shape)
+                        tmp["histname"   ] = sample
                         tmp["rename"      ] = self._getRenaming( shape )
 
                         self.itersamples.append( tmp )                
@@ -202,12 +205,13 @@ class Reader():
 
     def loadForMe(self, sample_info):
         if not os.path.exists( sample_info["path"] ):
-            print(("\033[1;31mWarning:\033[0m ", constStrLen( sample_info["histname"] ) , sample_info["path"]))
-            return []
-            
-        print(("\033[1;32mLoading:\033[0m ", constStrLen( sample_info["histname"] ) , sample_info["path"].split("/")[-1]))
+            print(f'Warning: couldn\'t find {sample_info["path"]}')
+            return []        
+        print(f'Loading: {sample_info["histname"]} from {sample_info["path"].split("/")[-1]}, tree = {sample_info["tree_name"]}')
+        
         DF = self._getDF(sample_path = sample_info["path"], 
-                          select = sample_info["select"])
+                          select = sample_info["select"],
+                          tree_name = sample_info['tree_name'])
 
         # A bit hacky. Return  iterator when predicting to reduce memory consumption
         # Otherweise split in folds
@@ -348,7 +352,7 @@ class Reader():
         if self.folds != 2: raise NotImplementedError("Only implemented two folds so far!!!")
         return [df.query( "abs(evt % 2) != 0 " ).reset_index(drop=True), df.query( "abs(evt % 2) == 0 " ).reset_index(drop=True) ]
 
-    def _getDF( self, sample_path, select ):
+    def _getDF( self, sample_path, select, tree_name ):
 
         add = "addvar"
         if "Embedd" in sample_path:
@@ -368,12 +372,16 @@ class Reader():
         if self.for_prediction:
             chunksize = 100000
 
-        tmp = rp.read_root( paths = sample_path,
-                            where = select,
-                            columns = branches,
-                            chunksize = chunksize)
-
-
+        try:
+            tmp = rp.read_root( paths = sample_path,
+                                key = tree_name,
+                                where = select,
+                                columns = branches,
+                                chunksize = chunksize)
+        except OSError as e:
+            print('\n', e, '\nSkipping this tree\n') 
+            return
+        
         # tmp.replace(-999.,-10, inplace = True)
         # tmp["evt"] = tmp["evt"].astype('int64')
 
