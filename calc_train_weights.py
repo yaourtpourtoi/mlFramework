@@ -22,7 +22,7 @@ def main():
         train_weights[channel] = getWeights(config_to_use, channel, era)
 
         class_weights = {}
-        for cl in ["ztt", "zll", "misc", "tt", "w", "ss", "noniso", "ggh", "qqh","diboson","singletop","taus","fake","higgs"]:
+        for cl in ["ztt", "zll", "misc", "tt", "w", "ss", "noniso", "ggh", "qqh","diboson","singletop","taus","fakes","higgs"]:
             class_weights[cl] = {}
             for ch in ["mt","et","tt","em"]:
                 tmp = train_weights.get(ch,{})

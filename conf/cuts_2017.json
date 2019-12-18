@@ -2,8 +2,8 @@
 	"-SS-":"q_1 * q_2 > 0",
 	"-OS-":"q_1 * q_2 < 0",
 	"-VETO-":{
-		"mt":"((extramuon_veto < 0.5) & (extraelec_veto < 0.5) & (dilepton_veto<0.5) & (byTightDeepTau2017v2p1VSmu_2>0.5) & (byVLooseDeepTau2017v2p1VSe_2>0.5) )",
-		"et":"((extramuon_veto < 0.5) & (extraelec_veto < 0.5) & (dilepton_veto<0.5) & (byVLooseDeepTau2017v2p1VSmu_2>0.5) & (byTightDeepTau2017v2p1VSe_2>0.5) )",
+		"mt":"((extramuon_veto < 0.5) & (extraelec_veto < 0.5) & (dilepton_veto<0.5) & (byVLooseDeepTau2017v2p1VSmu_2>0.5) & (byVVVLooseDeepTau2017v2p1VSe_2>0.5) )",
+		"et":"((extramuon_veto < 0.5) & (extraelec_veto < 0.5) & (dilepton_veto<0.5) & (byVVVLooseDeepTau2017v2p1VSmu_2>0.5) & (byVLooseDeepTau2017v2p1VSe_2>0.5) )",
 		"tt":"((extramuon_veto < 0.5) & (extraelec_veto < 0.5) & (dilepton_veto<0.5) & (byVLooseDeepTau2017v2p1VSmu_1>0.5) & (byVLooseDeepTau2017v2p1VSe_1>0.5) & (byVLooseDeepTau2017v2p1VSmu_2>0.5) & (byVLooseDeepTau2017v2p1VSe_2>0.5) )",
 		"em":"((extramuon_veto < 0.5) & (extraelec_veto < 0.5) & metFilters)"
 	},
