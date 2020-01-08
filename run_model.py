@@ -173,6 +173,7 @@ def sandbox(channel, model, scaler, sample, variables, outname, outpath, config 
         print(f'\nSandbox for sample: {config["histname"]} and tree: {config["tree_name"]} is None. Skipping.\n')
         return
     for part in sample:
+        part = part.query(config['select']) # sample is iterator - can't filter events in _getDF() so implement it here
         # This is awful. Try to figure out a better way to add stuff to generator.
         if modify:
             modify(part, config)

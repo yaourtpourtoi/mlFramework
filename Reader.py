@@ -1,5 +1,6 @@
 import json
 import pandas as pd
+import uproot
 import root_pandas as rp
 import os
 import sys
@@ -363,23 +364,29 @@ class Reader():
 #            snowflakes.append("THU*")
 #            snowflakes.append("*NNLO*")
 
-        branches = list(set( self.config["variables"] + self.config[ "weights" ] + snowflakes + self.addvar ))
+        branches = list(set( self.config["variables"] + self.config[ "weights" ] + self.config["cut_variables"] + snowflakes + self.addvar ))
         if "EMB" in sample_path and "sf*" in branches:
             branches.remove("sf*")
-        
-        # Return iterator when predicting samples
-        chunksize = None
-        if self.for_prediction:
-            chunksize = 100000
-
+    
         try:
-            tmp = rp.read_root( paths = sample_path,
-                                key = tree_name,
-                                where = select,
-                                columns = branches,
-                                chunksize = chunksize)
+            if self.for_prediction:
+                chunksize = self.config['chunksize_for_inference'] 
+                
+                # return iterator when predicting samples
+                # selection is done in for-loop of sandbox()
+                tmp = uproot.pandas.iterate(sample_path, tree_name, branches, entrysteps=chunksize)
+            else:
+                data = uproot.open(sample_path)[tree_name]
+                tmp = data.pandas.df(branches).query(select)
+            
+            # tmp = rp.read_root( paths = sample_path,
+            #                     key = tree_name,
+            #                     where = select,
+            #                     columns = branches,
+            #                     chunksize = chunksize)
+            
         except OSError as e:
-            print('\n', e, '\nSkipping this tree\n') 
+            print('\n', e, f'\nCouldnt find {tree_name} tree, skipping it\n') 
             return
         
         # tmp.replace(-999.,-10, inplace = True)
@@ -388,7 +395,6 @@ class Reader():
         return tmp
 
 def constStrLen(string):
-
     return string + " "*(40 - len(string) )
 
 
