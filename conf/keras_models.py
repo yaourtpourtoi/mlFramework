@@ -150,12 +150,12 @@ def smhtt_dropout_tanh(num_inputs, num_outputs):
         else:
             model.add(Dense(nodes, kernel_regularizer=l2(1e-5)))
         model.add(Activation("tanh"))
-        model.add(Dropout(0.3))
+        model.add(Dropout(0.5))
 
     model.add(Dense(num_outputs, kernel_regularizer=l2(1e-5)))
     model.add(Activation("softmax"))
 
-    model.compile(loss="categorical_crossentropy", optimizer=Adam(lr=1e-4), metrics=['categorical_accuracy'])
+    model.compile(loss="categorical_crossentropy", optimizer=Adam(lr=1e-5), metrics=['categorical_accuracy'])
     return model
 
 def smhtt_dropout_selu(num_inputs, num_outputs):
