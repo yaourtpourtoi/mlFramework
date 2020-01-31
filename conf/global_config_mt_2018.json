@@ -45,169 +45,169 @@
     "samples":{
         "ggH125": {
             "target":{"mt":"higgs"},
-            "select": "-OS- && -ISO- && -VETO- && -MT- && -TRIG-", 
+            "select": "-OS- & -ISO-", 
             "name": "NOMINAL_ntuple_GluGluHToUncorrTauTau_2018", 
             "event_weight": "( gen_sm_htt125 *  weight * ( 0.8*(gen_match_2 == 5) + 1.*(gen_match_2 !=5) ) )"
         },
         "qqH125": {
             "target":{"mt":"higgs", "et":"higgs"},
-            "select": "-OS- && -ISO- && -VETO- && -MT- && -TRIG-", 
+            "select": "-OS- & -ISO-", 
             "name": "NOMINAL_ntuple_VBFHToUncorrTauTau_2018", 
             "event_weight": "( gen_sm_htt125 *  weight * ( 0.95+0.02*( (jpt_1>0 & jpt_1<200) & (njets<2 | ( (jdeta<2.8 | mjj<400 ) & (mjj<60 | mjj>=120 ) ) ) ) - 0.1*(jpt_1>=200) ) * ( 0.8*(gen_match_2 == 5) + 1.*(gen_match_2 !=5) ) )"
         }, 
         "ZTT": {
             "target":{"mt":"taus", "et":"taus"},
-            "select": "-OS- && -ISO- && -VETO- && -MT- && -TRIG- && -GENTAU-", 
+            "select": "-OS- & -ISO- & -GENTAU-", 
             "name": "NOMINAL_ntuple_DYJets_2018", 
             "event_weight": "weight*( 0.8*(gen_match_2 == 5) + 1.*(gen_match_2 !=5) )"
         },
         "ZL": {
             "target":{"mt":"fakes", "et":"fakes"},
-            "select": "-OS- && -ISO- && -VETO- && -MT- && -TRIG- &&  ((-GENJET- || -GENTAU-) < 0.5)", 
+            "select": "-OS- & -ISO- &  ((-GENJET- | -GENTAU-) < 0.5)", 
             "name": "NOMINAL_ntuple_DYJets_2018", 
             "event_weight": "weight*( 0.8*(gen_match_2 == 5) + 1.*(gen_match_2 !=5) )"
         },
         "ZJ": {
             "target":{"mt":"fakes", "et":"fakes"},
-            "select": "-OS- && -ISO- && -VETO- && -MT- && -TRIG- && -GENJET-", 
+            "select": "-OS- & -ISO- & -GENJET-", 
             "name": "NOMINAL_ntuple_DYJets_2018", 
             "event_weight": "weight*( 0.8*(gen_match_2 == 5) + 1.*(gen_match_2 !=5) )"
         },
         "TTT": {
             "target":{"mt":"taus", "et":"taus"},
-            "select": "-OS- && -ISO- && -VETO- && -MT- && -TRIG- && -GENTAU- ", 
+            "select": "-OS- & -ISO- & -GENTAU- ", 
             "name": "NOMINAL_ntuple_TTbar_2018", 
             "event_weight": "weight*( 0.8*(gen_match_2 == 5) + 1.*(gen_match_2 !=5) )"
         },
         "TTL": {
             "target":{"mt":"fakes", "et":"fakes"},
-            "select": "-OS- && -ISO- && -VETO- && -MT- && -TRIG- && ((-GENJET- || -GENTAU-) < 0.5)", 
+            "select": "-OS- & -ISO- & ((-GENJET- | -GENTAU-) < 0.5)", 
             "name": "NOMINAL_ntuple_TTbar_2018", 
             "event_weight": "weight*( 0.8*(gen_match_2 == 5) + 1.*(gen_match_2 !=5) )"
         },        
         "TTJ": {
             "target":{"mt":"fakes", "et":"fakes"},
-            "select": "-OS- && -ISO- && -VETO- && -MT- && -TRIG- && -GENJET- ", 
+            "select": "-OS- & -ISO- & -GENJET- ", 
             "name": "NOMINAL_ntuple_TTbar_2018", 
             "event_weight": "weight*( 0.8*(gen_match_2 == 5) + 1.*(gen_match_2 !=5) )"
         },
         "VVT": {
             "target":{"mt":"fakes", "et":"fakes"},
-            "select": "-OS- && -ISO- && -VETO- && -MT- && -TRIG- && -GENTAU- ", 
+            "select": "-OS- & -ISO- & -GENTAU- ", 
             "name": "NOMINAL_ntuple_Diboson_2018", 
             "event_weight": "weight*( 0.8*(gen_match_2 == 5) + 1.*(gen_match_2 !=5) )"
         },
         "VVL": {
             "target":{"mt":"fakes", "et":"fakes"},
-            "select": "-OS- && -ISO- && -VETO- && -MT- && -TRIG- && ((-GENJET- || -GENTAU-) < 0.5)", 
+            "select": "-OS- & -ISO- & ((-GENJET- | -GENTAU-) < 0.5)", 
             "name": "NOMINAL_ntuple_Diboson_2018", 
             "event_weight": "weight*( 0.8*(gen_match_2 == 5) + 1.*(gen_match_2 !=5) )"
         },        
         "VVJ": {
             "target":{"mt":"fakes", "et":"fakes"},
-            "select": "-OS- && -ISO- && -VETO- && -MT- && -TRIG- && -GENJET-", 
+            "select": "-OS- & -ISO- & -GENJET-", 
             "name": "NOMINAL_ntuple_Diboson_2018", 
             "event_weight": "weight*( 0.8*(gen_match_2 == 5) + 1.*(gen_match_2 !=5) )"
         },
         "TT": {
             "target":{"mt":"fakes", "et":"fakes"},
-            "select": "-OS- && -ISO- && -VETO- && -MT- && -TRIG- && -GENTAU- ", 
+            "select": "-OS- & -ISO- & -GENTAU- ", 
             "name": "NOMINAL_ntuple_SingleTop_2018", 
             "event_weight": "weight*( 0.8*(gen_match_2 == 5) + 1.*(gen_match_2 !=5) )"
         },
         "TL": {
             "target":{"mt":"fakes", "et":"fakes"},
-            "select": "-OS- && -ISO- && -VETO- && -MT- && -TRIG- && ((-GENJET- || -GENTAU-) < 0.5)", 
+            "select": "-OS- & -ISO- & ((-GENJET- | -GENTAU-) < 0.5)", 
             "name": "NOMINAL_ntuple_SingleTop_2018", 
             "event_weight": "weight*( 0.8*(gen_match_2 == 5) + 1.*(gen_match_2 !=5) )"
         },        
         "TJ": {
             "target":{"mt":"fakes", "et":"fakes"},
-            "select": "-OS- && -ISO- && -VETO- && -MT- && -TRIG- && -GENJET-", 
+            "select": "-OS- & -ISO- & -GENJET-", 
             "name": "NOMINAL_ntuple_SingleTop_2018", 
             "event_weight": "weight*( 0.8*(gen_match_2 == 5) + 1.*(gen_match_2 !=5) )"
         },
         "W": {
             "target":{"mt":"fakes", "et":"fakes"},
-            "select": "-OS- && -ISO- && -VETO- && -MT- && -TRIG-", 
+            "select": "-OS- & -ISO-", 
             "name": "NOMINAL_ntuple_WJets_2018", 
             "event_weight": "weight*( 0.8*(gen_match_2 == 5) + 1.*(gen_match_2 !=5) )"
         },
         "estimate": {
             "target":{"mt":"fakes", "et":"fakes", "tt":"noniso" },
-            "select": "-SS- && -ISO- && -VETO- && -MT- && -TRIG-",
+            "select": "-SS- & -ISO-",
             "name": "NOMINAL_ntuple_SingleMuon_2018",
             "event_weight": 1.0
         },
         "VV_full": {
             "target":"none",
-            "select": "-VETO- && -MT- && -TRIG-",
+            "select": "-ISO-",
             "name": "NOMINAL_ntuple_Diboson_2018", 
             "event_weight": 1.0
         },
         "ST_full": {
             "target":"none",
-            "select": "-VETO- && -MT- && -TRIG-",
+            "select": "-ISO-",
             "name": "NOMINAL_ntuple_SingleTop_2018", 
             "event_weight": 1.0
         },
         "DY_full": {
             "target":"none",
-            "select": "-VETO- && -MT- && -TRIG- ",
+            "select": "-ISO- ",
             "name": "NOMINAL_ntuple_DYJets_2018", 
             "event_weight": 1.0
         },
         "EMB_full": {
             "target":"none",
-            "select": "-VETO- && -MT- && -TRIG-",
+            "select": "-ISO-",
             "name": "NOMINAL_ntuple_EmbeddedMuTau_2018", 
             "event_weight": 1.0
         },        
         "TT_full": {
             "target":"none",
-            "select": "-VETO- && -MT- && -TRIG-",
+            "select": "-ISO-",
             "name": "NOMINAL_ntuple_TTbar_2018", 
             "event_weight": 1.0
         },
         "W_full": {
             "target":"none",
-            "select": "-VETO- && -MT- && -TRIG-",
+            "select": "-ISO-",
             "name": "NOMINAL_ntuple_WJets_2018", 
             "event_weight": 1.0
         },
         "data_full": {
             "target":"none",
-            "select": "-VETO- && -MT- && -TRIG-",
+            "select": "-ISO-",
             "name": "NOMINAL_ntuple_SingleMuon_2018",
             "event_weight": 1.0
         },
         "ggH125_full": {
             "target":"none",
-            "select": "-VETO- && -MT- && -TRIG-", 
+            "select": "-ISO-", 
             "name": "NOMINAL_ntuple_GluGluHToUncorrTauTau_2018", 
             "event_weight": 1.0
         },
         "qqH125_full": {
             "target":"none",
-            "select": "-VETO- && -MT- && -TRIG-", 
+            "select": "-ISO-", 
             "name": "NOMINAL_ntuple_VBFHToUncorrTauTau_2018", 
             "event_weight": 1.0
         },
         "WH125_full": {
             "target":"none",
-            "select": "-VETO- && -MT- && -TRIG-", 
+            "select": "-ISO-", 
             "name": "NOMINAL_ntuple_WH125", 
             "event_weight": 1.0
         },  
         "ZH125_full": {
             "target":"none",
-            "select": "-VETO- && -MT- && -TRIG-", 
+            "select": "-ISO-", 
             "name": "NOMINAL_ntuple_ZH125", 
             "event_weight": 1.0
         },          
         "data": {
             "target":"none",
-            "select": "-OS- && -ISO- && -VETO- && -MT- && -TRIG-",
+            "select": "-ISO-",
             "event_weight": 1.0,
             "name": "NOMINAL_ntuple_SingleMuon_2018"         
         }
