@@ -17,7 +17,7 @@
             ]
     },
     "shifted_variables": [],
-    "cut_variables":["*DeepTau*", "trg_*", "iso_1", "pt_1", "eta_1", "pt_tt", "puppimt_1", "*_veto", "q_*"],
+    "cut_variables":["*DeepTau*", "trg_*", "iso_1", "pt_1", "eta_1", "pt_tt", "puppimt_1", "*_veto", "q_*", "os"],
     "addvar": ["*"
     ],
 
