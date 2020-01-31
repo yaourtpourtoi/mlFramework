@@ -135,9 +135,8 @@ class Reader():
 
             tmp["path"] = self.config["samples"][sample]["name"] 
             tmp["histname"   ] = sample
-            tmp["tree_name"   ] = self.config['tree_name_prefix']
+            tmp["tree_name"   ] = self.config['tree_name']
             tmp["rename"      ] = {}
-            tmp["tree_name"   ] = self.config["tree_name_prefix"]
             
             self.itersamples.append( tmp )
 
@@ -160,7 +159,7 @@ class Reader():
                 tmp = self._getCommonSettings(sample)
                 tmp["path"] = self.config["samples"][sample]["name"] 
                 tmp["histname"   ] = sample
-                tmp["tree_name"   ] = self.config["tree_name_prefix"]
+                tmp["tree_name"   ] = self.config['tree_name']
                 tmp["rename"      ] = {}
                 self.itersamples.append( tmp )
 
@@ -173,7 +172,7 @@ class Reader():
                         
                         tmp = self._getCommonSettings(sample)
 
-                        tmp["tree_name"] = self.config["tree_name_prefix"] + "_" + shape
+                        tmp["tree_name"] = self.config["tree_name"]
                         tmp["path"] = self.config["samples"][sample]["shapes"][shape] 
                         tmp["histname"   ] = sample
                         tmp["rename"      ] = self._getRenaming( shape )

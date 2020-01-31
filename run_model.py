@@ -14,6 +14,7 @@ import keras
 def main():
 
     parser = argparse.ArgumentParser()
+    parser.add_argument('tree_name')
     parser.add_argument('-c', dest='channel', help='Decay channel' ,choices = ['mt','et','tt','em'], default = 'mt')
     parser.add_argument('-m', dest='model',   help='ML model to use' ,choices = ['keras','xgb'],  default = 'keras')
     parser.add_argument('-t', dest='train',   help='Train new model' , action='store_true')
@@ -26,6 +27,7 @@ def main():
     print("---------------------------")
     print("Era: ", args.era)
     print("Running over {0} samples".format(args.channel))
+    print("Opening {0} tree".format(args.tree_name))
     print("Using {0}".format(args.model), keras.__version__)
     if args.train:
         print("Training new model")
@@ -37,6 +39,7 @@ def main():
     run(samples = "conf/global_config_{0}_{1}.json".format(args.channel,args.era),
         channel=args.channel,
         era = args.era,
+        tree_name = args.tree_name,
         use = args.model,
         train = args.train,
         short = args.short,
@@ -44,7 +47,7 @@ def main():
         add_nominal = args.add_nom
           )
 
-def run(samples,channel, era, use, train,short, datacard = False, add_nominal=False ):
+def run(samples, channel, era, tree_name, use, train, short, datacard=False, add_nominal=False ):
 
     if use == "xgb":
         from XGBModel import XGBObject as modelObject
@@ -54,6 +57,12 @@ def run(samples,channel, era, use, train,short, datacard = False, add_nominal=Fa
         from KerasModel import KerasObject as modelObject
         parameters = "conf/parameters_keras.json"
 
+    with open(samples, 'r+') as f:
+        cfg_data = json.load(f)
+        cfg_data['tree_name'] = tree_name
+        f.seek(0)     
+        json.dump(cfg_data, f, indent=4)
+        f.truncate()
 
     read = Reader(channel = channel,
                   config_file = samples,
