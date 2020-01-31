@@ -17,7 +17,7 @@
             ]
     },
     "shifted_variables": [],
-    "cut_variables":["iso_1", "pt_1", "eta_1", "pt_tt", "puppimt_1", "os"],
+    "cut_variables":["byMediumDeepTau2017v2p1VSjet_2", "iso_1", "pt_1", "eta_1", "pt_tt", "puppimt_1", "os"],
     "addvar": ["*"
     ],
 
