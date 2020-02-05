@@ -173,7 +173,7 @@ def sandbox(channel, model, scaler, sample, variables, outname, outpath, config 
         print(f'\nSandbox for sample: {config["histname"]} and tree: {config["tree_name"]} is None. Skipping.\n')
         return
     for part in sample:
-        if select != "None": # "None" is defined in cuts_{era}.json 
+        if config['select'] != "None": # "None" is defined in cuts_{era}.json 
             part = part.query(config['select']) # sample is iterator - can't filter events in _getDF() so implement it here
         # This is awful. Try to figure out a better way to add stuff to generator.
         if modify:
