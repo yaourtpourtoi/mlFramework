@@ -370,13 +370,12 @@ class Reader():
         if True not in [tree_name in str(data_tree_name) for data_tree_name in data_file.keys()]:
             print(f'\nCouldnt find {tree_name} tree in {sample_path}, skipping it\n') 
             return
-        
+                
         if self.for_prediction:
             chunksize = self.config['chunksize_for_inference'] 
         
             # return iterator when predicting samples
             # selection is done in for-loop of sandbox()
-            print(tree_name)
             tmp = uproot.pandas.iterate(sample_path, tree_name, branches, entrysteps=chunksize)
         else:
             data_tree = data_file[tree_name]
