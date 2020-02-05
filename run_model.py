@@ -173,17 +173,20 @@ def sandbox(channel, model, scaler, sample, variables, outname, outpath, config 
     if sample is None:
         print(f'\nSandbox for sample: {config["histname"]} and tree: {config["tree_name"]} is None. Skipping.\n')
         return
-    for part in sample:
+    for i, part in enumerate(sample):
         if config['select'] != "None": # "None" is defined in cuts_{era}.json 
             part = part.query(config['select']) # sample is iterator - can't filter events in _getDF() so implement it here
         # This is awful. Try to figure out a better way to add stuff to generator.
         
         if np.sum(part.isna()).sum() != 0:
-            print('\n**********\n')
-            print(f'\nSample {config["histname"]} has {np.sum(part.isna()).sum()} NaNs in columns: {part.columns[(np.sum(part.isna())) != 0].values}\n')
-            print('Will drop them\n')
-            print('\n**********\n')
-            part.dropna(inplace=True)
+            nan_columns = part.columns[(np.sum(part.isna())) != 0].values
+            print('\n**********')
+            print(f'Sample {config["histname"]} has in {i}th chunk {np.sum(part.isna()).sum()} NaNs in columns: {nan_columns}\n')
+            if any(elem in nan_columns for elem in ['gen_sm_htt125','gen_ps_htt125','gen_mm_htt125']):    
+                print('Will drop them for tau spinner weights\n')
+                part.dropna(subset=['gen_sm_htt125','gen_ps_htt125','gen_mm_htt125'], inplace=True)
+            print('**********\n')
+            
         if modify:
             modify(part, config)
 
