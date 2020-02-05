@@ -377,7 +377,9 @@ class Reader():
                 tmp = uproot.pandas.iterate(sample_path, tree_name, branches, entrysteps=chunksize)
             else:
                 data = uproot.open(sample_path)[tree_name]
-                tmp = data.pandas.df(branches).query(select)
+                tmp = data.pandas.df(branches)
+                if select != "None": # "None" is defined in cuts_{era}.json 
+                    tmp.query(select, inplace=True)
             
             # tmp = rp.read_root( paths = sample_path,
             #                     key = tree_name,
