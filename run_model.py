@@ -85,6 +85,15 @@ def run(samples,channel, era, use, train,short, datacard = False, add_nominal=Fa
         scaler = [scaler, scaler] # Hotfix since KIT uses 2 scalers
 
         trainSet = applyScaler(scaler, trainSet, variables)
+        
+        for i, train_df in enumerate(trainSet):
+            if np.sum(train_df.isna()).sum() != 0:
+                nan_columns = train_df.columns[(np.sum(train_df.isna())) != 0].values
+                print('\n**********')
+                print(f'trainSet[{i}] has {np.sum(train_df.isna()).sum()} NaNs in columns: {nan_columns}')
+                print('Will drop them all\n')
+                train_df.dropna(inplace=True)
+                print('**********\n')
 
         model = modelObject( parameter_file = parameters,
                              variables=variables,
@@ -181,7 +190,7 @@ def sandbox(channel, model, scaler, sample, variables, outname, outpath, config 
         if np.sum(part.isna()).sum() != 0:
             nan_columns = part.columns[(np.sum(part.isna())) != 0].values
             print('\n**********')
-            print(f'Sample {config["histname"]} has in {i}th chunk {np.sum(part.isna()).sum()} NaNs in columns: {nan_columns}\n')
+            print(f'Sample {config["histname"]} has in {i}th chunk {np.sum(part.isna()).sum()} NaNs in columns: {nan_columns}')
             if any(elem in nan_columns for elem in ['gen_sm_htt125','gen_ps_htt125','gen_mm_htt125']):    
                 print('Will drop them for tau spinner weights\n')
                 part.dropna(subset=['gen_sm_htt125','gen_ps_htt125','gen_mm_htt125'], inplace=True)
