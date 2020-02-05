@@ -1,6 +1,7 @@
 from Reader import Reader
 import copy
 import pandas as pd
+import numpy as np
 import json
 import sys
 import os
