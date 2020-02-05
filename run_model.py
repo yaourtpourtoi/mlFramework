@@ -176,6 +176,13 @@ def sandbox(channel, model, scaler, sample, variables, outname, outpath, config 
         if config['select'] != "None": # "None" is defined in cuts_{era}.json 
             part = part.query(config['select']) # sample is iterator - can't filter events in _getDF() so implement it here
         # This is awful. Try to figure out a better way to add stuff to generator.
+        
+        if np.sum(part.isna()).sum() != 0:
+            print('\n**********\n')
+            print(f'\nSample {config["histname"]} has {np.sum(part.isna()).sum()} NaNs in columns: {part.columns[(np.sum(part.isna())) != 0].values}\n')
+            print('Will drop them\n')
+            print('\n**********\n')
+            part.dropna(inplace=True)
         if modify:
             modify(part, config)
 
