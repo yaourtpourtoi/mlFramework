@@ -134,9 +134,10 @@ class Reader():
             tmp = self._getCommonSettings(sample)
 
             tmp["path"] = self.config["samples"][sample]["name"] 
-            tmp["histname"   ] = sample
-            tmp["tree_name"   ] = self.config['tree_name_prefix']
-            tmp["rename"      ] = {}
+            tmp["histname"] = sample
+            tmp["tree_name"] = self.config['tree_name_prefix']
+            tmp["drop_nan_columns"] = self.config['drop_nan_columns']
+            tmp["rename"] = {}
 
             self.itersamples.append( tmp )
 
@@ -160,6 +161,7 @@ class Reader():
                 tmp["path"] = self.config["samples"][sample]["name"] 
                 tmp["histname"   ] = sample
                 tmp["tree_name"   ] = self.config['tree_name_prefix']
+                tmp["drop_nan_columns"] = self.config['drop_nan_columns']
                 tmp["rename"      ] = {}
                 self.itersamples.append( tmp )
 
