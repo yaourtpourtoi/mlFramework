@@ -172,13 +172,7 @@
             "select": "-NONE-",
             "name": "NOMINAL_ntuple_DYJets_2018", 
             "event_weight": 1.0
-        },
-        "EMB_full": {
-            "target":"none",
-            "select": "-NONE-",
-            "name": "NOMINAL_ntuple_EmbeddedMuTau_2018", 
-            "event_weight": 1.0
-        },        
+        },      
         "TT_full": {
             "target":"none",
             "select": "-NONE-",
@@ -201,12 +195,6 @@
             "target":"none",
             "select": "-NONE-", 
             "name": "NOMINAL_ntuple_GluGluHToUncorrTauTau_2018", 
-            "event_weight": 1.0
-        },
-        "qqH125_full": {
-            "target":"none",
-            "select": "-NONE-", 
-            "name": "NOMINAL_ntuple_VBFHToUncorrTauTau_2018", 
             "event_weight": 1.0
         },
         "WH125_full": {
