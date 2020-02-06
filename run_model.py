@@ -196,7 +196,7 @@ def sandbox(channel, model, scaler, sample, variables, outname, outpath, config 
                 print(f'Will drop them for {drop_nan_columns}\n')
                 part.dropna(subset=drop_nan_columns, inplace=True)
             else:
-                print(f'Leaving them, dropping is set only for {drop_nan_columns}\n')
+                print(f'\nLeaving them, dropping is set only for {drop_nan_columns}')
             print('**********\n')
             
         if modify:

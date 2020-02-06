@@ -136,7 +136,7 @@ class Reader():
             tmp["path"] = self.config["samples"][sample]["name"] 
             tmp["histname"] = sample
             tmp["tree_name"] = self.config['tree_name_prefix']
-            tmp["drop_nan_columns"] = self.config['drop_nan_columns']
+            tmp['drop_nan_columns'] = self.config['drop_nan_columns']
             tmp["rename"] = {}
 
             self.itersamples.append( tmp )
@@ -161,7 +161,7 @@ class Reader():
                 tmp["path"] = self.config["samples"][sample]["name"] 
                 tmp["histname"   ] = sample
                 tmp["tree_name"   ] = self.config['tree_name_prefix']
-                tmp["drop_nan_columns"] = self.config['drop_nan_columns']
+                tmp['drop_nan_columns'] = self.config['drop_nan_columns']
                 tmp["rename"      ] = {}
                 self.itersamples.append( tmp )
 
@@ -172,6 +172,8 @@ class Reader():
                         if not shapename in self.config["shape_from_tree"]: continue                        
                         tmp = self._getCommonSettings(sample)
                         tmp["tree_name"   ] = self.config['tree_name_prefix'] + '_' + shape
+                        tmp['drop_nan_columns'] = self.config['drop_nan_columns']
+
                         tmp["path"] = self.config["samples"][sample]["shapes"][shape] 
                         tmp["histname"   ] = sample
                         tmp["rename"      ] = self._getRenaming( shape )
