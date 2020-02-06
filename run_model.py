@@ -189,11 +189,14 @@ def sandbox(channel, model, scaler, sample, variables, outname, outpath, config 
         
         if np.sum(part.isna()).sum() != 0:
             nan_columns = part.columns[(np.sum(part.isna())) != 0].values
+            drop_nan_columns = config["drop_nan_columns"]
             print('\n**********')
             print(f'Sample {config["histname"]} has in {i}th chunk {np.sum(part.isna()).sum()} NaNs in columns: {nan_columns}')
-            if any(elem in nan_columns for elem in ['gen_sm_htt125','gen_ps_htt125','gen_mm_htt125']):    
-                print('Will drop them for tau spinner weights\n')
-                part.dropna(subset=['gen_sm_htt125','gen_ps_htt125','gen_mm_htt125'], inplace=True)
+            if any(elem in nan_columns for elem in drop_nan_columns):    
+                print(f'Will drop them for {drop_nan_columns}\n')
+                part.dropna(subset=drop_nan_columns, inplace=True)
+            else:
+                print(f'Leaving them, dropping is set only for {drop_nan_columns}\n')
             print('**********\n')
             
         if modify:
