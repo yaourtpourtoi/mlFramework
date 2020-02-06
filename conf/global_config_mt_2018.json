@@ -168,7 +168,7 @@
         },
         "DY_full": {
             "target":"none",
-            "select": "-NONE- ",
+            "select": "-NONE-",
             "name": "NOMINAL_ntuple_DYJets_2018", 
             "event_weight": 1.0
         },
