@@ -166,6 +166,6 @@
             "select": "-NONE-", 
             "name": "NOMINAL_ntuple_VBFHToUncorrTauTau_2018", 
             "event_weight": 1.0
-        },
+        }
     }
 }
