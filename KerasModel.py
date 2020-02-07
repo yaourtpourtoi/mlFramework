@@ -100,7 +100,7 @@ class KerasObject():
             train[self.variables].values,
             y_train,
             sample_weight=train["train_weight"].values,
-            validation_split = 0.25,
+            validation_split = 0.1,
             # validation_data=(test[self.variables].values, y_test, test["train_weight"].values),
             batch_size=self.params["batch_size"],
             epochs=self.params["epochs"],
