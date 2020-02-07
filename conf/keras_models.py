@@ -213,6 +213,6 @@ def cp_htt_mt(num_inputs, num_outputs):
     model.add(Dropout(0.5))
     
     model.add( Dense( num_outputs, kernel_initializer="glorot_normal", activation="softmax"))
-    model.compile(loss="categorical_crossentropy", optimizer=Adam(lr=1e-3), metrics=['categorical_accuracy'])
+    model.compile(loss="categorical_crossentropy", optimizer=Adam(lr=1e-4), metrics=['categorical_accuracy'])
 
     return model
