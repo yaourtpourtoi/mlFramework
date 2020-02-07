@@ -4,16 +4,19 @@
     "tree_name_prefix":"TauCheck",
     "variables":{
         "mt": [
+            "pt_1",
             "pt_2",
             "jpt_1",
             "jpt_2",
+            "dijetpt",
+            "jdeta",
             "njets",
+            "mjj",
             "m_sv",
+            "m_vis",
             "puppimt_1",
             "pt_tt",
-            "mjj",
-            "jdeta",
-            "dijetpt"
+            "puppimet"
             ]
     },
     "shifted_variables": [],

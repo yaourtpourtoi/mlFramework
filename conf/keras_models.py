@@ -194,3 +194,25 @@ def smhtt_em(num_inputs, num_outputs):
             num_outputs, kernel_initializer="glorot_normal", activation="softmax"))
     model.compile(loss="mean_squared_error", optimizer=Nadam(), metrics=[])
     return model
+    
+def cp_htt_mt(num_inputs, num_outputs):
+    model = Sequential()
+    model.add( Dense( 100, kernel_initializer="glorot_normal", activation="relu", input_dim=num_inputs) )
+    model.add(Activation("relu"))
+    model.add(BatchNormalization())
+    model.add(Dropout(0.5))
+    
+    model.add( Dense( 100, kernel_initializer="glorot_normal", activation="relu") )
+    model.add(Activation("relu"))
+    model.add(BatchNormalization())
+    model.add(Dropout(0.5))
+    
+    model.add( Dense( 100, kernel_initializer="glorot_normal", activation="relu") )
+    model.add(Activation("relu"))
+    model.add(BatchNormalization())
+    model.add(Dropout(0.5))
+    
+    model.add( Dense( num_outputs, kernel_initializer="glorot_normal", activation="softmax"))
+    model.compile(loss="categorical_crossentropy", optimizer=Adam(lr=1e-3), metrics=['categorical_accuracy'])
+
+    return model
