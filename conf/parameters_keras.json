@@ -2,7 +2,7 @@
 	"model":{
 		"name":"cp_htt_mt",
 		"batch_size":1000,
-		"epochs":100,
+		"epochs":50,
 		"early_stopping":10
 	}
 }

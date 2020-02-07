@@ -197,19 +197,19 @@ def smhtt_em(num_inputs, num_outputs):
     
 def cp_htt_mt(num_inputs, num_outputs):
     model = Sequential()
-    model.add( Dense( 100, kernel_initializer="glorot_normal", activation="relu", input_dim=num_inputs) )
-    model.add(Activation("relu"))
+    model.add( Dense( 100, kernel_initializer="glorot_normal", input_dim=num_inputs) )
     model.add(BatchNormalization())
+    model.add(Activation("relu"))
     model.add(Dropout(0.5))
     
-    model.add( Dense( 100, kernel_initializer="glorot_normal", activation="relu") )
-    model.add(Activation("relu"))
+    model.add( Dense( 100, kernel_initializer="glorot_normal") )
     model.add(BatchNormalization())
+    model.add(Activation("relu"))
     model.add(Dropout(0.5))
     
-    model.add( Dense( 100, kernel_initializer="glorot_normal", activation="relu") )
-    model.add(Activation("relu"))
+    model.add( Dense( 100, kernel_initializer="glorot_normal") )
     model.add(BatchNormalization())
+    model.add(Activation("relu"))
     model.add(Dropout(0.5))
     
     model.add( Dense( num_outputs, kernel_initializer="glorot_normal", activation="softmax"))
