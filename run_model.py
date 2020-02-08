@@ -221,6 +221,7 @@ def addPrediction(channel, prediction, df, sample, tree_name, outpath, new = Tru
         for c in prediction[i].columns.values.tolist():
             df[i][c] =  prediction[i][c]
             
+        print(df[i].pt_1[1])
         # if i == 0 and new: mode = "w"
         # else: mode = "a"
         # df[i].to_root("{0}/{1}-{2}.root".format("predictions",channel, sample), key="TauCheck", mode = mode)
