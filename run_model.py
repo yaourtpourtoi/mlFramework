@@ -207,7 +207,7 @@ def sandbox(channel, model, scaler, sample, variables, outname, outpath, config 
         folds = [part.query( "abs(evt % 2) != 0 " ).reset_index(drop=True), part.query( "abs(evt % 2) == 0 " ).reset_index(drop=True) ]
         print('pt_1 = ', folds[0].pt_1[0])
         print('pt_1 = ', folds[1].pt_1[0])
-        addPrediction(channel, model.predict( applyScaler(scaler, folds, variables) ), folds, outname, config['tree_name'], outpath, new = first )
+        addPrediction(channel, model.predict( [fold[variables] for fold in folds] ), folds, outname, config['tree_name'], outpath, new = first )
         
         folds[0].drop(folds[0].index, inplace=True)
         folds[1].drop(folds[1].index, inplace=True)
