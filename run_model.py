@@ -209,14 +209,17 @@ def sandbox(channel, model, scaler, sample, variables, outname, outpath, config 
         predictions = pd.concat(model.predict( [fold[variables] for fold in folds] ), axis=0)
         folds = pd.concat(folds, axis=0)
         df = pd.concat([folds, predictions], axis=1).reset_index()
-        df.to_root(outfile_name, key=tree_name, mode = 'a')
+        
+        outfile_name = "{0}/{1}-{2}.root".format(outpath, channel, outname)
+        df.to_root(outfile_name, key=config['tree_name'], mode = 'a')
 
         # print('pt_1 = ', folds[0].pt_1[0])
         # print('pt_1 = ', folds[1].pt_1[0])
         # addPrediction(channel, model.predict( [fold[variables] for fold in folds] ), folds, outname, config['tree_name'], outpath, new = first )
         
-        folds[0].drop(folds[0].index, inplace=True)
-        folds[1].drop(folds[1].index, inplace=True)
+        folds.drop(folds.index, inplace=True)
+        # folds[0].drop(folds[0].index, inplace=True)
+        # folds[1].drop(folds[1].index, inplace=True)
         part.drop(part.index, inplace=True)
 
         first = False
