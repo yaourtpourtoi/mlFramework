@@ -158,17 +158,65 @@
             "name": "NOMINAL_ntuple_SingleMuon_2018",
             "event_weight": 1.0
         },
+        "VV_full": {
+          "target":"none",
+          "select": "-NONE-",
+          "name": "NOMINAL_ntuple_Diboson_2018", 
+          "event_weight": 1.0
+        },
+        "ST_full": {
+          "target":"none",
+          "select": "-NONE-",
+          "name": "NOMINAL_ntuple_SingleTop_2018", 
+          "event_weight": 1.0
+        },
+        "DY_full": {
+          "target":"none",
+          "select": "-NONE-",
+          "name": "NOMINAL_ntuple_DYJets_2018", 
+          "event_weight": 1.0
+        },
         "EMB_full": {
-            "target":"none",
-            "select": "-NONE-",
-            "name": "NOMINAL_ntuple_EmbeddedMuTau_2018", 
-            "event_weight": 1.0
-        },   
+          "target":"none",
+          "select": "-NONE-",
+          "name": "NOMINAL_ntuple_EmbeddedMuTau_2018", 
+          "event_weight": 1.0
+        },        
+        "TT_full": {
+          "target":"none",
+          "select": "-NONE-",
+          "name": "NOMINAL_ntuple_TTbar_2018", 
+          "event_weight": 1.0
+        },
+        "W_full": {
+          "target":"none",
+          "select": "-NONE-",
+          "name": "NOMINAL_ntuple_WJets_2018", 
+          "event_weight": 1.0
+        },
+        "data_full": {
+          "target":"none",
+          "select": "-NONE-",
+          "name": "NOMINAL_ntuple_SingleMuon_2018",
+          "event_weight": 1.0
+        },
+        "ggH125_full": {
+          "target":"none",
+          "select": "-NONE-", 
+          "name": "NOMINAL_ntuple_GluGluHToUncorrTauTau_2018", 
+          "event_weight": 1.0
+        },
         "qqH125_full": {
-            "target":"none",
-            "select": "-NONE-", 
-            "name": "NOMINAL_ntuple_VBFHToUncorrTauTau_2018", 
-            "event_weight": 1.0
+          "target":"none",
+          "select": "-NONE-", 
+          "name": "NOMINAL_ntuple_VBFHToUncorrTauTau_2018", 
+          "event_weight": 1.0
+        },        
+        "data": {
+          "target":"none",
+          "select": "-NONE-",
+          "event_weight": 1.0,
+          "name": "NOMINAL_ntuple_SingleMuon_2018"         
         }
     }
 }
