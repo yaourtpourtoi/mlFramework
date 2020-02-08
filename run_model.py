@@ -184,7 +184,8 @@ def sandbox(channel, model, scaler, sample, variables, outname, outpath, config 
         return
     for i, part in enumerate(sample):
         if config['select'] != "None": # "None" is defined in cuts_{era}.json 
-            part = part.query(config['select']) # sample is iterator - can't filter events in _getDF() so implement it here
+            part.query(config['select'], inplace=True) # sample is iterator - can't filter events in _getDF() so implement it here
+            
         # This is awful. Try to figure out a better way to add stuff to generator.
         
         if np.sum(part.isna()).sum() != 0:
@@ -205,9 +206,14 @@ def sandbox(channel, model, scaler, sample, variables, outname, outpath, config 
         part["THU"] = 1 # Add dummy
         # Carefull!! Check if splitting is done the same for training. This is the KIT splitting
         folds = [part.query( "abs(evt % 2) != 0 " ).reset_index(drop=True), part.query( "abs(evt % 2) == 0 " ).reset_index(drop=True) ]
-        print('pt_1 = ', folds[0].pt_1[0])
-        print('pt_1 = ', folds[1].pt_1[0])
-        addPrediction(channel, model.predict( [fold[variables] for fold in folds] ), folds, outname, config['tree_name'], outpath, new = first )
+        predictions = pd.concat(model.predict( [fold[variables] for fold in folds] ), axis=0)
+        folds = pd.concat(folds, axis=0)
+        df = pd.concat([folds, predictions], axis=1).reset_index(inplace=True)
+        df.to_root(outfile_name, key=tree_name, mode = 'a')
+
+        # print('pt_1 = ', folds[0].pt_1[0])
+        # print('pt_1 = ', folds[1].pt_1[0])
+        # addPrediction(channel, model.predict( [fold[variables] for fold in folds] ), folds, outname, config['tree_name'], outpath, new = first )
         
         folds[0].drop(folds[0].index, inplace=True)
         folds[1].drop(folds[1].index, inplace=True)

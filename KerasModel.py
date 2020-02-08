@@ -133,14 +133,14 @@ class KerasObject():
 
         predictions = []
         if type(samples) is list:
-            samples = deque(samples)
+            samples_deque = deque(samples)
 
-        for i in range( len(samples) ):
-            predictions.append( self.testSingle( samples[0], i ) )
-            samples.rotate(-1)
+        for i in range( len(samples_deque) ):
+            predictions.append( self.testSingle( samples_deque[0], i ) )
+            samples_deque.rotate(-1)
 
-        samples[0].drop(samples[0].index, inplace = True)
-        samples[1].drop(samples[1].index, inplace = True)
+        # samples[0].drop(samples[0].index, inplace = True)
+        # samples[1].drop(samples[1].index, inplace = True)
 
         return predictions
 
