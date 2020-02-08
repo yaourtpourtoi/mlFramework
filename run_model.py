@@ -216,12 +216,12 @@ def sandbox(channel, model, scaler, sample, variables, outname, outpath, config 
 
 def addPrediction(channel, prediction, df, sample, tree_name, outpath, new = True):
     outfile_name = "{0}/{1}-{2}.root".format(outpath, channel, sample)
+    print(df[0].pt_1[1])
         
     for i in range( len(df) ):
         for c in prediction[i].columns.values.tolist():
             df[i][c] =  prediction[i][c]
             
-        print(df[i].pt_1[1])
         # if i == 0 and new: mode = "w"
         # else: mode = "a"
         # df[i].to_root("{0}/{1}-{2}.root".format("predictions",channel, sample), key="TauCheck", mode = mode)
