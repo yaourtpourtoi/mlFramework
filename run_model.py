@@ -208,7 +208,7 @@ def sandbox(channel, model, scaler, sample, variables, outname, outpath, config 
         folds = [part.query( "abs(evt % 2) != 0 " ).reset_index(drop=True), part.query( "abs(evt % 2) == 0 " ).reset_index(drop=True) ]
         predictions = pd.concat(model.predict( [fold[variables] for fold in folds] ), axis=0)
         folds = pd.concat(folds, axis=0)
-        df = pd.concat([folds, predictions], axis=1).reset_index(inplace=True)
+        df = pd.concat([folds, predictions], axis=1).reset_index()
         df.to_root(outfile_name, key=tree_name, mode = 'a')
 
         # print('pt_1 = ', folds[0].pt_1[0])
