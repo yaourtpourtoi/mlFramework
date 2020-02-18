@@ -76,24 +76,24 @@ def run(samples,channel, era, use, train,short, datacard = False, add_nominal=Fa
         print("Loading Training set")
         trainSet = read.getSamplesForTraining()
 
-        print("Fit Scaler to training set...", end=' ')
-        scaler = trainScaler(trainSet, variables )
-
-        print(" done. Dumping for later.")
-        with open("{0}/StandardScaler.{1}.pkl".format(models_folder,channel), 'wb') as FSO:
-            pickle.dump(scaler, FSO , 2)
-        scaler = [scaler, scaler] # Hotfix since KIT uses 2 scalers
-
-        trainSet = applyScaler(scaler, trainSet, variables)
+        # print("Fit Scaler to training set...", end=' ')
+        # scaler = trainScaler(trainSet, variables )
+        # 
+        # print(" done. Dumping for later.")
+        # with open("{0}/StandardScaler.{1}.pkl".format(models_folder,channel), 'wb') as FSO:
+        #     pickle.dump(scaler, FSO , 2)
+        # scaler = [scaler, scaler] # Hotfix since KIT uses 2 scalers
+        # 
+        # trainSet = applyScaler(scaler, trainSet, variables)
         
         for i, train_df in enumerate(trainSet):
             if np.sum(train_df.isna()).sum() != 0:
                 nan_columns = train_df.columns[(np.sum(train_df.isna())) != 0].values
-                print('\n**********')
+                print('\n\n**********')
                 print(f'trainSet[{i}] has {np.sum(train_df.isna()).sum()} NaNs in columns: {nan_columns}')
                 print('Will drop them all\n')
                 train_df.dropna(inplace=True)
-                print('**********\n')
+                print('**********\n\n')
 
         model = modelObject( parameter_file = parameters,
                              variables=variables,
