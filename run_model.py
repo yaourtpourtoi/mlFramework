@@ -196,10 +196,10 @@ def sandbox(channel, model, scaler, sample, variables, outname, outpath, config 
         # print('pt_1 = ', folds[1].pt_1[0])
         # addPrediction(channel, model.predict( [fold[variables] for fold in folds] ), folds, outname, config['tree_name'], outpath, new = first )
         
-        folds.drop(folds.index, inplace=True)
+        # folds.drop(folds.index, inplace=True)
         # folds[0].drop(folds[0].index, inplace=True)
         # folds[1].drop(folds[1].index, inplace=True)
-        part.drop(part.index, inplace=True)
+        # part.drop(part.index, inplace=True)
 
         first = False
     del sample
@@ -217,7 +217,7 @@ def addPrediction(channel, prediction, df, sample, tree_name, outpath, new = Tru
         # else: mode = "a"
         # df[i].to_root("{0}/{1}-{2}.root".format("predictions",channel, sample), key="TauCheck", mode = mode)
         df[i].to_root(outfile_name, key=tree_name, mode = 'a')
-        prediction[i].drop(prediction[i].index, inplace = True)
+        # prediction[i].drop(prediction[i].index, inplace = True)
 
 def trainScaler(folds, variables):
     from sklearn.preprocessing import StandardScaler
