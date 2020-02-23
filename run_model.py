@@ -13,12 +13,13 @@ import multiprocessing as mp
 import keras
 from keras.models import load_model as lm
 import xgboost as xgb 
+import lightgbm as lgb
 
 def main():
 
     parser = argparse.ArgumentParser()
     parser.add_argument('-c', dest='channel', help='Decay channel' ,choices = ['mt','et','tt','em'], default = 'mt')
-    parser.add_argument('-m', dest='model',   help='ML model to use' ,choices = ['keras','xgb'],  default = 'keras')
+    parser.add_argument('-m', dest='model',   help='ML model to use' ,choices = ['keras','xgb', 'lgb'],  default = 'keras')
     parser.add_argument('-t', dest='train',   help='Train new model' , action='store_true')
     parser.add_argument('-s', dest='short',   help='Do !!NOT!! predict shapes' , action='store_true')
     parser.add_argument('-d', dest='datacard',  help='Only produce Datacard' , action='store_true')
@@ -59,6 +60,10 @@ def run(samples, channel, era, use, train, short, input_model_name, datacard=Fal
     if use == "keras":
         from KerasModel import KerasObject as modelObject
         parameters = "conf/parameters_keras.json"
+
+    if use == "lgb":
+        from LGBModel import LGBObject as modelObject
+        parameters = "conf/parameters_lgb.json"
 
 
     read = Reader(channel = channel,
@@ -113,6 +118,9 @@ def run(samples, channel, era, use, train, short, input_model_name, datacard=Fal
         if use == 'xgb':
             model.models[0].save_model(f'{modelname}.fold0.json')
             model.models[1].save_model(f'{modelname}.fold1.json')
+        if use == 'lgb':
+            model.models[0].save_model(f'{modelname}.fold0.txt')
+            model.models[1].save_model(f'{modelname}.fold1.txt')
             
         
     elif not datacard:
@@ -131,12 +139,6 @@ def run(samples, channel, era, use, train, short, input_model_name, datacard=Fal
         #             tmp = pickle.load( FSO )
         #             scaler = [tmp,tmp]
         
-        if use == 'keras':
-            from KerasModel import KerasObject as modelObject
-            parameters = "conf/parameters_keras.json"
-        if use == 'xgb':
-            from XGBModel import XGBObject as modelObject
-            parameters = "conf/parameters_xgb.json"
         
         model = modelObject( parameter_file = parameters,
                              variables=variables,
@@ -161,6 +163,9 @@ def run(samples, channel, era, use, train, short, input_model_name, datacard=Fal
             bst_fold1.load_model(f'{modelname}.fold1.json')
             model.models.append( bst_fold0 )
             model.models.append( bst_fold1 )
+        if use == 'lgb':
+            model.models.append( lgb.Booster(model_file=f'{modelname}.fold0.txt') )
+            model.models.append( lgb.Booster(model_file=f'{modelname}.fold1.txt') )
             
 
     if not datacard:
