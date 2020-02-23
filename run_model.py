@@ -12,6 +12,7 @@ import subprocess as sp
 import multiprocessing as mp
 import keras
 from keras.models import load_model as lm
+import xgboost as xgb 
 
 def main():
 
@@ -106,8 +107,13 @@ def run(samples, channel, era, use, train, short, input_model_name, datacard=Fal
         model.train( trainSet )
 
         print(f'Will save the trained model to: {modelname}')
-        model.models[0].save(modelname + ".fold0")
-        model.models[1].save(modelname + ".fold1")
+        if use == 'keras':
+            model.models[0].save(modelname + ".fold0")
+            model.models[1].save(modelname + ".fold1")
+        if use == 'xgb':
+            model.models[0].save_model(f'{modelname}.fold0.json')
+            model.models[1].save_model(f'{modelname}.fold1.json')
+            
         
     elif not datacard:
         # TODO: Maybe not needed to check. Just load what is there
@@ -144,9 +150,18 @@ def run(samples, channel, era, use, train, short, input_model_name, datacard=Fal
         [print(f'      * {var}') for var in variables]
         print()
         
-        model.models = []        
-        model.models.append( lm(modelname + ".fold0") )
-        model.models.append( lm(modelname + ".fold1") )
+        model.models = []     
+        if use == 'keras':   
+            model.models.append( lm(modelname + ".fold0") )
+            model.models.append( lm(modelname + ".fold1") )
+        if use == 'xgb':
+            bst_fold0 = xgb.Booster() #init model
+            bst_fold1 = xgb.Booster() #init model
+            bst_fold0.load_model(f'{modelname}.fold0.json')
+            bst_fold1.load_model(f'{modelname}.fold1.json')
+            model.models.append( bst_fold0 )
+            model.models.append( bst_fold1 )
+            
 
     if not datacard:
         outpath = read.config["outpath"] + "/predictions_" + era

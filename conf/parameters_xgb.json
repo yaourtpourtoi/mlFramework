@@ -7,7 +7,7 @@
 		"eta": 0.025,
 		"max_depth":8,
 		"subsampling":0.75,
-		"n_estimators":500,
+		"n_estimators":2,
 		"early_stopping":20
 	},
 	"binary":{
