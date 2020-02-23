@@ -3,11 +3,11 @@
 		"objective":"multi:softprob",
 		"eval_metric":"mlogloss",
 		"silent":1,
-		"eta": 0.1,
+		"eta": 0.02,
 		"max_depth":5,
-		"subsampling":0.75,
+		"subsampling":0.8,
 		"colsample_bytree":0.8,
-		"n_estimators":500,
+		"n_estimators":1000,
 		"early_stopping":20
 	},
 	"binary":{
