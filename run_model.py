@@ -11,6 +11,7 @@ import pickle
 import subprocess as sp
 import multiprocessing as mp
 import keras
+from keras.models import load_model as lm
 
 def main():
 
@@ -21,7 +22,9 @@ def main():
     parser.add_argument('-s', dest='short',   help='Do !!NOT!! predict shapes' , action='store_true')
     parser.add_argument('-d', dest='datacard',  help='Only produce Datacard' , action='store_true')
     parser.add_argument('-e', dest='era',  help='Era' , choices=["2016","2017","2018"], required = True)
-    parser.add_argument('--add_nominal', dest='add_nom',  help='Add nominal samples to prediction', action='store_true' )    
+    parser.add_argument('--add_nominal', dest='add_nom',  help='Add nominal samples to prediction', action='store_true' ) 
+    parser.add_argument('-mn', dest='input_model_name',   help='name of the ML model to use for prediction',  default = None)
+
     args = parser.parse_args()
 
     print("---------------------------")
@@ -36,16 +39,17 @@ def main():
 
         
     run(samples = "conf/global_config_{0}_{1}.json".format(args.channel,args.era),
-        channel=args.channel,
+        channel = args.channel,
         era = args.era,
         use = args.model,
         train = args.train,
         short = args.short,
+        input_model_name = args.input_model_name,
         datacard = args.datacard,
         add_nominal = args.add_nom
           )
 
-def run(samples,channel, era, use, train,short, datacard = False, add_nominal=False ):
+def run(samples, channel, era, use, train, short, input_model_name, datacard=False, add_nominal=False ):
 
     if use == "xgb":
         from XGBModel import XGBObject as modelObject
@@ -68,7 +72,7 @@ def run(samples,channel, era, use, train,short, datacard = False, add_nominal=Fa
     if not os.path.exists(models_folder):
         os.makedirs(models_folder)
 
-    modelname = "{0}/{1}.{2}".format(models_folder,channel,use)
+    modelname = "{0}/{1}.{2}".format(models_folder,channel,use) if input_model_name is None else input_model_name
     scaler = None
 
     if train:
@@ -90,8 +94,8 @@ def run(samples,channel, era, use, train,short, datacard = False, add_nominal=Fa
             if np.sum(train_df.isna()).sum() != 0:
                 nan_columns = train_df.columns[(np.sum(train_df.isna())) != 0].values
                 print('\n\n**********')
-                print(f'trainSet[{i}] has {np.sum(train_df.isna()).sum()} NaNs in columns: {nan_columns}')
-                print('Will drop them all\n')
+                print(f'Warning: trainSet[{i}] has {np.sum(train_df.isna()).sum()} NaNs in columns: {nan_columns}')
+                print('Will drop them all')
                 train_df.dropna(inplace=True)
                 print('**********\n\n')
 
@@ -130,22 +134,33 @@ def run(samples,channel, era, use, train,short, datacard = False, add_nominal=Fa
         model = modelObject( parameter_file = parameters,
                              variables=variables,
                              target_names = target_names )
-                                 
-        model.models = []
-        model.models.append( lm(modelname) )
-        model.models.append( lm(modelname) )
+                    
+        if input_model_name is not None:  
+            modelname = input_model_name
+        print('*' * 35)
+        print(f'\nWill use model {modelname}.fold\{0,1\}')
+        print(f'Warning: will take model\'s parameters from {parameters}')
+        print(f'       input variables:')
+        [print(f'          * {var}') for var in variables]
+        print()
+        
+        model.models = []        
+        model.models.append( lm(modelname + ".fold0") )
+        model.models.append( lm(modelname + ".fold1") )
 
     if not datacard:
         outpath = read.config["outpath"] + "/predictions_" + era
         if not os.path.exists(outpath):
             os.mkdir(outpath)                
         files = glob(outpath + '/*.root')
-        print(f'\nDeleting root files in {outpath}\n')
+        print(f'\nWarning: deleting all the files in {outpath}\n')
         for f in files:
             os.remove(f)
             
         predictions = {}
-        print("Predicting samples")
+        print("Predicting samples:")
+        print('*' * 35)
+        print()
         if add_nominal:
             print("Predicting Nominal")
             for sample, sampleConfig in read.get(what = "nominal", for_prediction = True):
