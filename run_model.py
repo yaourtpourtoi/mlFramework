@@ -72,7 +72,7 @@ def run(samples, channel, era, use, train, short, input_model_name, datacard=Fal
     if not os.path.exists(models_folder):
         os.makedirs(models_folder)
 
-    modelname = "{0}/{1}.{2}".format(models_folder,channel,use) if input_model_name is None else input_model_name
+    modelname = "{0}/{1}.{2}".format(models_folder,channel,use) if input_model_name is None else "{0}/{1}".format(models_folder, input_model_name)
     scaler = None
 
     if train:
@@ -93,16 +93,19 @@ def run(samples, channel, era, use, train, short, input_model_name, datacard=Fal
         for i, train_df in enumerate(trainSet):
             if np.sum(train_df.isna()).sum() != 0:
                 nan_columns = train_df.columns[(np.sum(train_df.isna())) != 0].values
-                print('\n\n**********')
-                print(f'Warning: trainSet[{i}] has {np.sum(train_df.isna()).sum()} NaNs in columns: {nan_columns}')
-                print('Will drop them all')
+                print('\n\n\n**********\n')
+                print(f'Warning!')
+                print(f'trainSet[{i}] has {np.sum(train_df.isna()).sum()} NaNs in columns: {nan_columns}')
+                print('Will drop them all\n')
                 train_df.dropna(inplace=True)
-                print('**********\n\n')
+                print('**********\n\n\n')
 
         model = modelObject( parameter_file = parameters,
                              variables=variables,
                              target_names = target_names )
         model.train( trainSet )
+
+        print(f'Will save the trained model to: {modelname}')
         model.models[0].save(modelname + ".fold0")
         model.models[1].save(modelname + ".fold1")
         
@@ -121,8 +124,6 @@ def run(samples, channel, era, use, train, short, input_model_name, datacard=Fal
         #         with open( "{0}/StandardScaler.{1}.pkl".format(models_folder,channel), "rb" ) as FSO:
         #             tmp = pickle.load( FSO )
         #             scaler = [tmp,tmp]
-
-        print("Loading model and predicting.")
         
         if use == 'keras':
             from KerasModel import KerasObject as modelObject
@@ -135,13 +136,12 @@ def run(samples, channel, era, use, train, short, input_model_name, datacard=Fal
                              variables=variables,
                              target_names = target_names )
                     
-        if input_model_name is not None:  
-            modelname = input_model_name
-        print('*' * 35)
-        print(f'\nWill use model {modelname}.fold\{0,1\}')
-        print(f'Warning: will take model\'s parameters from {parameters}')
-        print(f'       input variables:')
-        [print(f'          * {var}') for var in variables]
+        print('\n\n' + '*' * 35)
+        print()
+        print(f'Will use for prediction the model: {modelname}.fold[0,1]')
+        print(f'Will take model\'s parameters from: {parameters}')
+        print(f'Input variables:')
+        [print(f'      * {var}') for var in variables]
         print()
         
         model.models = []        
@@ -153,12 +153,11 @@ def run(samples, channel, era, use, train, short, input_model_name, datacard=Fal
         if not os.path.exists(outpath):
             os.mkdir(outpath)                
         files = glob(outpath + '/*.root')
-        print(f'\nWarning: deleting all the files in {outpath}\n')
+        print(f'\n\nWarning!\n Deleting all the files to avoid appended writing in:\n{outpath}\n\n')
         for f in files:
             os.remove(f)
             
         predictions = {}
-        print("Predicting samples:")
         print('*' * 35)
         print()
         if add_nominal:
@@ -185,10 +184,11 @@ def sandbox(channel, model, scaler, sample, variables, outname, outpath, config 
         if np.sum(part.isna()).sum() != 0:
             nan_columns = part.columns[(np.sum(part.isna())) != 0].values
             drop_nan_columns = config["drop_nan_columns"]
-            print('\n**********')
-            print(f'Sample {config["histname"]} has in {i}th chunk {np.sum(part.isna()).sum()} NaNs in columns: {nan_columns}')
+            print('\n\n**********\n')
+            print('Warning!')
+            print(f'sample {config["histname"]} has in {i}th chunk {np.sum(part.isna()).sum()} NaNs in columns: {nan_columns}')
             if any(elem in nan_columns for elem in drop_nan_columns):    
-                print(f'Will drop them for {drop_nan_columns}\n')
+                print(f'will drop them for {drop_nan_columns}\n')
                 part.dropna(subset=drop_nan_columns, inplace=True)
             else:
                 print(f'\nLeaving them, dropping is set only for {drop_nan_columns}')
