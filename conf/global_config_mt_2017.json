@@ -31,8 +31,8 @@
     },
     "lumi": 41.5,
     "class_weight":{
-        "higgs":   {"mt":197.5},
-        "taus":     {"mt":1.5},
+        "higgs":   {"mt":209.2},
+        "taus":     {"mt":1.4},
         "fakes":   {"mt":3.3}
       },
 
@@ -50,6 +50,10 @@
       "CMS_scale_t_3prong_13TeV",
       "CMS_shape_dyShape_13TeV",
       "topPtWeight",
+      "CMS_htt_ZLShape_1prong_13TeV",
+      "CMS_htt_ZLShape_1prong1pi_13TeV",
+      "CMS_htt_boson_reso_met_13TeV",
+      "CMS_htt_boson_scale_met_13TeV",
       "CMS_scale_met_unclustered_13TeV",
       "CMS_scale_met_boson_resolution_13TeV",
       "CMS_scale_met_boson_response_13TeV",

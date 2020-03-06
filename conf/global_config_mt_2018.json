@@ -31,7 +31,7 @@
     },
     "lumi": 59.9,
       "class_weight":{
-        "higgs":   {"mt":189.3},
+        "higgs":   {"mt":187.7},
         "taus" :   {"mt":1.4},
         "fakes":   {"mt":3.6}
       },
