@@ -139,11 +139,7 @@ def run(samples, channel, era, use, train, short, input_model_name, datacard=Fal
         #             tmp = pickle.load( FSO )
         #             scaler = [tmp,tmp]
         
-        
-        model = modelObject( parameter_file = parameters,
-                             variables=variables,
-                             target_names = target_names )
-                    
+                            
         print('\n\n' + '*' * 35)
         print()
         print(f'Will use for prediction the model: {modelname}.fold[0,1]')
@@ -151,18 +147,17 @@ def run(samples, channel, era, use, train, short, input_model_name, datacard=Fal
         print(f'Input variables:')
         [print(f'      * {var}') for var in variables]
         print()
-        
+
+        model = modelObject( parameter_file = parameters,
+                             variables=variables,
+                             target_names = target_names )        
         model.models = []     
         if use == 'keras':   
             model.models.append( lm(modelname + ".fold0") )
             model.models.append( lm(modelname + ".fold1") )
         if use == 'xgb':
-            bst_fold0 = xgb.Booster() #init model
-            bst_fold1 = xgb.Booster() #init model
-            bst_fold0.load_model(f'{modelname}.fold0.json')
-            bst_fold1.load_model(f'{modelname}.fold1.json')
-            model.models.append( bst_fold0 )
-            model.models.append( bst_fold1 )
+            model.models.append( xgb.Booster(model_file=f'{modelname}.fold0.json') )
+            model.models.append( xgb.Booster(model_file=f'{modelname}.fold1.json') )
         if use == 'lgb':
             model.models.append( lgb.Booster(model_file=f'{modelname}.fold0.txt') )
             model.models.append( lgb.Booster(model_file=f'{modelname}.fold1.txt') )
