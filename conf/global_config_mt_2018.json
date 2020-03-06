@@ -1,6 +1,6 @@
 {
-    "path": "/nfs/dust/cms/user/rasp/HiggsCP/2018/DNN_new", 
-    "outpath": "/nfs/dust/cms/user/filatovo/HTT/CMSSW_10_2_16/src/mlFramework/Out_Tuples_2018/LGB",
+    "path": "/nfs/dust/cms/user/cardinia/HtoTauTau/HiggsCP/DNN/Jan20/CMSSW_10_2_16/src/HiggsCP/Inputs/test/NTuples_mt_2018_v2", 
+    "outpath": "/nfs/dust/cms/user/filatovo/HTT/CMSSW_10_2_16/src/mlFramework/Out_Tuples_2018/test_campaign_v3_LGB_6Mar",
     "tree_name_prefix":"TauCheck",
     "variables":{
         "mt": [
@@ -50,6 +50,10 @@
       "CMS_scale_t_3prong_13TeV",
       "CMS_shape_dyShape_13TeV",
       "topPtWeight",
+      "CMS_htt_ZLShape_1prong_13TeV",
+      "CMS_htt_ZLShape_1prong1pi_13TeV",
+      "CMS_htt_boson_reso_met_13TeV",
+      "CMS_htt_boson_scale_met_13TeV",
       "CMS_scale_met_unclustered_13TeV",
       "CMS_scale_met_boson_resolution_13TeV",
       "CMS_scale_met_boson_response_13TeV",
