@@ -1,6 +1,6 @@
 {
-    "path": "/nfs/dust/cms/user/cardinia/HtoTauTau/HiggsCP/DNN/Jan20/CMSSW_10_2_16/src/HiggsCP/Inputs/test/NTuples_mt_2018_v2", 
-    "outpath": "/nfs/dust/cms/user/filatovo/HTT/CMSSW_10_2_16/src/mlFramework/Out_Tuples_2018/test_campaign_v3_LGB_6Mar",
+    "path": "/nfs/dust/cms/user/rasp/storage/cardinia/2018/InputDNN", 
+    "outpath": "/nfs/dust/cms/user/filatovo/HTT/CMSSW_10_2_16/src/mlFramework/Out_Tuples_2018/test_campaign_v3_LGB_8Mar",
     "tree_name_prefix":"TauCheck",
     "variables":{
         "mt": [
