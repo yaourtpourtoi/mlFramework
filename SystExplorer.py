@@ -86,15 +86,14 @@ class SystExplorer(object):
             raise     
         if verbose:    
             print(f'\n\nLooking into systematic: {self.systematic_tree_name}\nplotting up(down)/central ratio for variable: {var_name}\n\n')
-
-        
+    
         counts, edges, _ = plt.hist(self.data_central[var_name], label='central', range=var_range, bins=nbins, histtype='step', alpha=0.7, color='black')
         if self.mode == 'weight':
-            plt.hist(self.data_central[var_name], label='up', range=var_range, bins=nbins, weights = self.weight_up, histtype='step', linewidth=5, alpha=0.7, color='black')
-            plt.hist(self.data_central[var_name], label='down', range=var_range, bins=nbins, weights = self.weight_down, histtype='step', linewidth=5, alpha=0.7, color='black')
-            if self.mode == 'tree':
-                counts_up, edges_up, _ = plt.hist(self.data_up[var_name], label='up', range=var_range, bins=nbins, histtype='step', linewidth=5, alpha=1., color='tan')
-                counts_down, edges_down, _ = plt.hist(self.data_down[var_name], label='down', range=var_range, bins=nbins, histtype='step', linewidth=5, alpha=1., color='steelblue')        
+            counts_up, edges_up, _ = plt.hist(self.data_central[var_name], label='up', range=var_range, bins=nbins, weights = self.weight_up, histtype='step', linewidth=5, alpha=0.7, color='black')
+            counts_down, edges_down, _ = plt.hist(self.data_central[var_name], label='down', range=var_range, bins=nbins, weights = self.weight_down, histtype='step', linewidth=5, alpha=0.7, color='black')
+        if self.mode == 'tree':
+            counts_up, edges_up, _ = plt.hist(self.data_up[var_name], label='up', range=var_range, bins=nbins, histtype='step', linewidth=5, alpha=1., color='tan')
+            counts_down, edges_down, _ = plt.hist(self.data_down[var_name], label='down', range=var_range, bins=nbins, histtype='step', linewidth=5, alpha=1., color='steelblue')        
         plt.close()
         
         if normalise:
