@@ -236,8 +236,6 @@ def sandbox(channel, model, scaler, sample, variables, outname, outpath, config 
 
 def addPrediction(channel, prediction, df, sample, tree_name, outpath, new = True):
     outfile_name = "{0}/{1}-{2}.root".format(outpath, channel, sample)
-    print(len(df))
-    print(list(df[0].pt_1))
         
     for i in range( len(df) ):
         for c in prediction[i].columns.values.tolist():
