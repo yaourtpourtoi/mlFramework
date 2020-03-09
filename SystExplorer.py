@@ -37,9 +37,9 @@ class SystExplorer(object):
             self.data_up = self.tree_up.pandas.df(branches)
             self.data_down = self.tree_down.pandas.df(branches)
         elif self.systematic_type == 'weight':
-            self.data_central = self.tree_central.pandas.df(branches + [systematic_weight_name + 'Up', systematic_weight_name + 'Down'])
-            self.weight_up = self.data_central[f'{systematic_weight_name}Up']
-            self.weight_down = self.data_central[f'{systematic_weight_name}Down']
+            self.data_central = self.tree_central.pandas.df(branches + [systematic_name + 'Up', systematic_name + 'Down'])
+            self.weight_up = self.data_central[f'{systematic_name}Up']
+            self.weight_down = self.data_central[f'{systematic_name}Down']
         else:
             print('systematic type should be either tree or weight: will do nothing')
         if cut:
