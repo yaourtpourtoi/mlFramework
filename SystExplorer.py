@@ -18,35 +18,36 @@ class SystExplorer(object):
             print(dir_item_name) 
             
     def set_central_tree(self, tree_name):
-        self.central_tree_name = tree_name
         self.tree_central = self.data_file[tree_name]
         
-    # TODO: systematic_tree_name might not relate to the dataframe attributes. 
+    # TODO: systematic_name might not relate to the dataframe attributes. 
     # Merge (set trees) with (set dataframes)? lacks flexibility in loading though
-    def set_updown_trees(self, systematic_tree_name):
-        self.systematic_tree_name = systematic_tree_name
-        self.tree_up = self.data_file[systematic_tree_name + 'Up']
-        self.tree_down = self.data_file[systematic_tree_name + 'Down']
+    def _set_updown_trees(self):
+        self.tree_up = self.data_file[self.systematic_name + 'Up']
+        self.tree_down = self.data_file[self.systematic_name + 'Down']
     
-    def set_dataframes(self, branches, systematic_weight_name=None, cut=None):
+    def set_dataframes(self, branches, systematic_name, systematic_type, cut=None):
         # picking just branches of interest speeds loading
         self.applied_cuts = []
-        if systematic_weight_name:
-            self.data_central = self.tree_central.pandas.df(branches + [f'{systematic_weight_name}Up', f'{systematic_weight_name}Down'])
-            self.weight_up = self.data_central[f'{systematic_weight_name}Up']
-            self.weight_down = self.data_central[f'{systematic_weight_name}Down']
-            self.mode = 'weight'
-        else:
+        self.systematic_name = systematic_name
+        self.systematic_type = systematic_type
+        if self.systematic_type == 'tree':
             self.data_central = self.tree_central.pandas.df(branches)
+            self._set_updown_trees()
             self.data_up = self.tree_up.pandas.df(branches)
             self.data_down = self.tree_down.pandas.df(branches)
-            self.mode = 'tree'
+        elif self.systematic_type == 'weight':
+            self.data_central = self.tree_central.pandas.df(branches + [systematic_weight_name + 'Up', systematic_weight_name + 'Down'])
+            self.weight_up = self.data_central[f'{systematic_weight_name}Up']
+            self.weight_down = self.data_central[f'{systematic_weight_name}Down']
+        else:
+            print('systematic type should be either tree or weight: will do nothing')
         if cut:
-            self.filter_dataframes(cut)   
+            self._filter_dataframes(cut)   
         
-    def filter_dataframes(self, cut):
+    def _filter_dataframes(self, cut):
         self.data_central.query(cut, inplace=True)
-        if self.mode == 'tree':
+        if self.systematic_type == 'tree':
             self.data_up.query(cut, inplace=True)
             self.data_down.query(cut, inplace=True)
         self.applied_cuts.append(cut) 
@@ -56,27 +57,27 @@ class SystExplorer(object):
             print(f'Can\'t find variable {var_name} in data_central' )
             raise  
         if verbose:   
-            print(f'\n\nLooking into systematic: {self.systematic_tree_name}\nplotting up/down shifts for variable: {var_name}\n\n')
+            print(f'\n\nLooking into systematic: {self.systematic_name}\nplotting up/down shifts for variable: {var_name}\n\n')
 
         plt.figure(figsize=(15,10))
         plt.xlabel(var_name, size=20)
         plt.xticks(size=15)
         plt.yticks(size=15)
-        plt.title(self.systematic_tree_name, size=25)
+        plt.title(self.systematic_name, size=25)
         
         plt.hist(self.data_central[var_name], label='central', range=var_range, bins=nbins, histtype='step', linewidth=5, alpha=0.7, color='black')
-        if self.mode == 'weight':
+        if self.systematic_type == 'weight':
             plt.hist(self.data_central[var_name], label='up', range=var_range, bins=nbins, weights = self.weight_up, histtype='step', linewidth=5, alpha=0.7, color='black')
             plt.hist(self.data_central[var_name], label='down', range=var_range, bins=nbins, weights = self.weight_down, histtype='step', linewidth=5, alpha=0.7, color='black')
-        if self.mode == 'tree':
+        if self.systematic_type == 'tree':
             plt.hist(self.data_up[var_name], label='up', range=var_range, bins=nbins, histtype='step', linewidth=5, alpha=1., color='tan')
             plt.hist(self.data_down[var_name], label='down', range=var_range, bins=nbins, histtype='step', linewidth=5, alpha=1., color='steelblue')        
         plt.legend(fontsize=15)
         
         if save_plot:
-            if not os.path.exists(f'{out_plots_path}/{self.systematic_tree_name}/'):
-                os.mkdir(f'{out_plots_path}/{self.systematic_tree_name}/')            
-            plt.savefig(f'{out_plots_path}/{self.systematic_tree_name}/{var_name}.pdf')
+            if not os.path.exists(f'{out_plots_path}/{self.systematic_name}/'):
+                os.mkdir(f'{out_plots_path}/{self.systematic_name}/')            
+            plt.savefig(f'{out_plots_path}/{self.systematic_name}/{var_name}.pdf')
         if not verbose:
             plt.close()
             
@@ -85,13 +86,13 @@ class SystExplorer(object):
             print(f'Can\'t find variable {var_name} in data_central' )
             raise     
         if verbose:    
-            print(f'\n\nLooking into systematic: {self.systematic_tree_name}\nplotting up(down)/central ratio for variable: {var_name}\n\n')
+            print(f'\n\nLooking into systematic: {self.systematic_name}\nplotting up(down)/central ratio for variable: {var_name}\n\n')
     
         counts, edges, _ = plt.hist(self.data_central[var_name], label='central', range=var_range, bins=nbins, histtype='step', alpha=0.7, color='black')
-        if self.mode == 'weight':
+        if self.systematic_type == 'weight':
             counts_up, edges_up, _ = plt.hist(self.data_central[var_name], label='up', range=var_range, bins=nbins, weights = self.weight_up, histtype='step', linewidth=5, alpha=0.7, color='black')
             counts_down, edges_down, _ = plt.hist(self.data_central[var_name], label='down', range=var_range, bins=nbins, weights = self.weight_down, histtype='step', linewidth=5, alpha=0.7, color='black')
-        if self.mode == 'tree':
+        if self.systematic_type == 'tree':
             counts_up, edges_up, _ = plt.hist(self.data_up[var_name], label='up', range=var_range, bins=nbins, histtype='step', linewidth=5, alpha=1., color='tan')
             counts_down, edges_down, _ = plt.hist(self.data_down[var_name], label='down', range=var_range, bins=nbins, histtype='step', linewidth=5, alpha=1., color='steelblue')        
         plt.close()
@@ -115,13 +116,13 @@ class SystExplorer(object):
         plt.ylabel("{up, down} / central", size=20)
         plt.xticks(size=15)
         plt.yticks(size=15)
-        plt.title(self.systematic_tree_name, size=25)
+        plt.title(self.systematic_name, size=25)
         plt.legend(fontsize=15)
         
         if save_plot:
-            if not os.path.exists(f'{out_plots_path}/{self.systematic_tree_name}/'):
-                os.mkdir(f'{out_plots_path}/{self.systematic_tree_name}/')            
-            plt.savefig(f'{out_plots_path}/{self.systematic_tree_name}/ratio_{var_name}.pdf')
+            if not os.path.exists(f'{out_plots_path}/{self.systematic_name}/'):
+                os.mkdir(f'{out_plots_path}/{self.systematic_name}/')            
+            plt.savefig(f'{out_plots_path}/{self.systematic_name}/ratio_{var_name}.pdf')
         if not verbose:
             plt.close()
 
