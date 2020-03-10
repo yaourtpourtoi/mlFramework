@@ -26,13 +26,12 @@ class SystExplorer(object):
         self.tree_up = self.data_file[self.systematic_name + 'Up']
         self.tree_down = self.data_file[self.systematic_name + 'Down']
     
-    def set_dataframes(self, branches, systematic_name, systematic_type, weights=None, cut=None):
+    def set_dataframes(self, variables, systematic_name, systematic_type, weights=None, cut=None):
         # picking just branches of interest speeds loading
         self.applied_cuts = []
         self.systematic_name = systematic_name
         self.systematic_type = systematic_type
-        if weights:
-            branches += weights
+        branches = variables + weights if weights else variables
         if self.systematic_type == 'tree':
             self.data_central = self.tree_central.pandas.df(branches)
             self._set_updown_trees()
