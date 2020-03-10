@@ -31,6 +31,8 @@ class SystExplorer(object):
         self.applied_cuts = []
         self.systematic_name = systematic_name
         self.systematic_type = systematic_type
+        if weights:
+            branches += weights
         if self.systematic_type == 'tree':
             self.data_central = self.tree_central.pandas.df(branches)
             self._set_updown_trees()
