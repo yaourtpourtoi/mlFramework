@@ -26,7 +26,7 @@ class SystExplorer(object):
         self.tree_up = self.data_file[self.systematic_name + 'Up']
         self.tree_down = self.data_file[self.systematic_name + 'Down']
     
-    def set_dataframes(self, branches, systematic_name, systematic_type, cut=None):
+    def set_dataframes(self, branches, systematic_name, systematic_type, weights=None, cut=None):
         # picking just branches of interest speeds loading
         self.applied_cuts = []
         self.systematic_name = systematic_name
@@ -42,6 +42,12 @@ class SystExplorer(object):
             self.weight_down = self.data_central[f'{systematic_name}Down']
         else:
             print('systematic type should be either tree or weight: will do nothing')
+        
+        if weights:
+            self.weights = self.data_central[weights].prod(axis=1)
+        else:
+            self.weights = np.ones(self.data_central.shape[0])
+            
         if cut:
             self._filter_dataframes(cut)   
         
@@ -67,11 +73,15 @@ class SystExplorer(object):
         
         plt.hist(self.data_central[var_name], label='central', range=var_range, bins=nbins, histtype='step', linewidth=5, alpha=0.7, color='black')
         if self.systematic_type == 'weight':
-            plt.hist(self.data_central[var_name], label='up', range=var_range, bins=nbins, weights = self.weight_up, histtype='step', linewidth=5, alpha=0.7, color='tan')
-            plt.hist(self.data_central[var_name], label='down', range=var_range, bins=nbins, weights = self.weight_down, histtype='step', linewidth=5, alpha=0.7, color='steelblue')
+            weights_up = self.weights * self.weight_up
+            weights_down = self.weights * self.weight_down
+            plt.hist(self.data_central[var_name], label='up', range=var_range, bins=nbins, weights = weights_up, histtype='step', linewidth=5, alpha=0.7, color='tan')
+            plt.hist(self.data_central[var_name], label='down', range=var_range, bins=nbins, weights = weights_down, histtype='step', linewidth=5, alpha=0.7, color='steelblue')
         if self.systematic_type == 'tree':
-            plt.hist(self.data_up[var_name], label='up', range=var_range, bins=nbins, histtype='step', linewidth=5, alpha=1., color='tan')
-            plt.hist(self.data_down[var_name], label='down', range=var_range, bins=nbins, histtype='step', linewidth=5, alpha=1., color='steelblue')        
+            weights_up = self.weights
+            weights_down = self.weights
+            plt.hist(self.data_up[var_name], label='up', range=var_range, bins=nbins, weights = weights_up, histtype='step', linewidth=5, alpha=1., color='tan')
+            plt.hist(self.data_down[var_name], label='down', range=var_range, bins=nbins, weights = weights_down, histtype='step', linewidth=5, alpha=1., color='steelblue')        
         plt.legend(fontsize=15)
         
         if save_plot:
@@ -90,11 +100,15 @@ class SystExplorer(object):
     
         counts, edges, _ = plt.hist(self.data_central[var_name], label='central', range=var_range, bins=nbins, histtype='step', alpha=0.7, color='black')
         if self.systematic_type == 'weight':
-            counts_up, edges_up, _ = plt.hist(self.data_central[var_name], label='up', range=var_range, bins=nbins, weights = self.weight_up, histtype='step', linewidth=5, alpha=0.7, color='tan')
-            counts_down, edges_down, _ = plt.hist(self.data_central[var_name], label='down', range=var_range, bins=nbins, weights = self.weight_down, histtype='step', linewidth=5, alpha=0.7, color='steelblue')
+            weights_up = self.weights * self.weight_up
+            weights_down = self.weights * self.weight_down
+            counts_up, edges_up, _ = plt.hist(self.data_central[var_name], label='up', range=var_range, bins=nbins, weights = weights_up, histtype='step', linewidth=5, alpha=0.7, color='tan')
+            counts_down, edges_down, _ = plt.hist(self.data_central[var_name], label='down', range=var_range, bins=nbins, weights = weights_down, histtype='step', linewidth=5, alpha=0.7, color='steelblue')
         if self.systematic_type == 'tree':
-            counts_up, edges_up, _ = plt.hist(self.data_up[var_name], label='up', range=var_range, bins=nbins, histtype='step', linewidth=5, alpha=1., color='tan')
-            counts_down, edges_down, _ = plt.hist(self.data_down[var_name], label='down', range=var_range, bins=nbins, histtype='step', linewidth=5, alpha=1., color='steelblue')        
+            weights_up = self.weights
+            weights_down = self.weights
+            counts_up, edges_up, _ = plt.hist(self.data_up[var_name], label='up', range=var_range, bins=nbins, weights = weights_up, histtype='step', linewidth=5, alpha=1., color='tan')
+            counts_down, edges_down, _ = plt.hist(self.data_down[var_name], label='down', range=var_range, bins=nbins, weights = weights_down, histtype='step', linewidth=5, alpha=1., color='steelblue')        
         plt.close()
         
         if normalise:
