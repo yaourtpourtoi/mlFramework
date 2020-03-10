@@ -72,7 +72,7 @@ class SystExplorer(object):
         plt.yticks(size=15)
         plt.title(self.systematic_name, size=25)
         
-        plt.hist(self.data_central[var_name], label='central', range=var_range, bins=nbins, histtype='step', linewidth=5, alpha=0.7, color='black')
+        plt.hist(self.data_central[var_name], label='central', range=var_range, bins=nbins, weights = self.weights, histtype='step', linewidth=5, alpha=0.7, color='black')
         if self.systematic_type == 'weight':
             weights_up = self.weights * self.weight_up
             weights_down = self.weights * self.weight_down
@@ -99,7 +99,7 @@ class SystExplorer(object):
         if verbose:    
             print(f'\n\nLooking into systematic: {self.systematic_name}\nplotting up(down)/central ratio for variable: {var_name}\n\n')
     
-        counts, edges, _ = plt.hist(self.data_central[var_name], label='central', range=var_range, bins=nbins, histtype='step', alpha=0.7, color='black')
+        counts, edges, _ = plt.hist(self.data_central[var_name], label='central', range=var_range, bins=nbins, weights=self.weights, histtype='step', alpha=0.7, color='black')
         if self.systematic_type == 'weight':
             weights_up = self.weights * self.weight_up
             weights_down = self.weights * self.weight_down
