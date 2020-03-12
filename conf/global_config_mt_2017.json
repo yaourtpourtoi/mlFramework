@@ -1,6 +1,6 @@
 {
-    "path": "/nfs/dust/cms/user/rasp/storage/cardinia/2017/InputDNN", 
-    "outpath": "/nfs/dust/cms/user/filatovo/HTT/CMSSW_10_2_16/src/mlFramework/Out_Tuples_2017/test_campaign_v3_LGB_8Mar",
+    "path": "/nfs/dust/cms/user/rasp/storage/cardinia/2017/InputDNN_v3", 
+    "outpath": "/nfs/dust/cms/user/filatovo/HTT/CMSSW_10_2_16/src/mlFramework/Out_Tuples_2017/test_campaign_v3_LGB_12Mar",
     "tree_name_prefix":"TauCheck",
     "variables":{
         "mt": [
@@ -20,7 +20,7 @@
             ]
     },
     "shifted_variables": [],
-    "cut_variables": ["byMediumDeepTau2017v2p1VSjet_2", "iso_1", "pt_1", "eta_1", "pt_tt", "puppimt_1", "os"],
+    "cut_variables": ["byMediumDeepTau2017v2p1VSjet_2", "iso_1", "puppimt_1", "os"],
     "drop_nan_columns": ["gen_sm_htt125", "gen_ps_htt125", "gen_mm_htt125"],
     "addvar": ["*"
     ],
@@ -42,7 +42,7 @@
         "fakes":  2
     },
 
-    "weights":["*weight*","gen_match*","njets","jpt_1","jdeta","mjj","gen_sm_htt125","gen_ps_htt125","gen_mm_htt125"],
+    "weights":["*weight*","gen_match*","gen_sm_htt125","gen_ps_htt125","gen_mm_htt125"],
     "shape_from_file":["TES1p0p0","TES1p1p0","TES3p0p0","MES1p0p0","MES1p1p0"],
     "shape_from_tree":[
       "CMS_scale_t_1prong_13TeV",
@@ -149,24 +149,6 @@
             "name": "NOMINAL_ntuple_Diboson_2017", 
             "event_weight": "weight"
         },
-        "TT": {
-            "target":{"mt":"fakes", "et":"fakes"},
-            "select": "-OS- & -ISO- & -GENTAU- ", 
-            "name": "NOMINAL_ntuple_SingleTop_2017", 
-            "event_weight": "weight"
-        },
-        "TL": {
-            "target":{"mt":"fakes", "et":"fakes"},
-            "select": "-OS- & -ISO- & ((-GENJET- | -GENTAU-) < 0.5)", 
-            "name": "NOMINAL_ntuple_SingleTop_2017", 
-            "event_weight": "weight"
-        },        
-        "TJ": {
-            "target":{"mt":"fakes", "et":"fakes"},
-            "select": "-OS- & -ISO- & -GENJET-", 
-            "name": "NOMINAL_ntuple_SingleTop_2017", 
-            "event_weight": "weight"
-        },
         "W": {
             "target":{"mt":"fakes", "et":"fakes"},
             "select": "-OS- & -ISO-", 
@@ -183,12 +165,6 @@
           "target":"none",
           "select": "-NONE-",
           "name": "NOMINAL_ntuple_Diboson_2017", 
-          "event_weight": 1.0
-        },
-        "ST_full": {
-          "target":"none",
-          "select": "-NONE-",
-          "name": "NOMINAL_ntuple_SingleTop_2017", 
           "event_weight": 1.0
         },
         "DY_full": {

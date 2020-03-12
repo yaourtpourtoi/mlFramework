@@ -1,6 +1,6 @@
 {
-    "path": "/nfs/dust/cms/user/cardinia/HtoTauTau/HiggsCP/DNN/Jan20/CMSSW_10_2_16/src/HiggsCP/Inputs/test/NTuples_mt_2016_v2", 
-    "outpath": "/nfs/dust/cms/user/filatovo/HTT/CMSSW_10_2_16/src/mlFramework/Out_Tuples_2016/test_campaign_v3_LGB_8Mar",
+    "path": "/nfs/dust/cms/user/rasp/storage/cardinia/2016/InputDNN_v3", 
+    "outpath": "/nfs/dust/cms/user/filatovo/HTT/CMSSW_10_2_16/src/mlFramework/Out_Tuples_2016/test_campaign_v3_LGB_12Mar",
     "tree_name_prefix":"TauCheck",
     "variables":{
         "mt": [
@@ -149,24 +149,6 @@
             "name": "NOMINAL_ntuple_Diboson_2016", 
             "event_weight": "weight"
         },
-        "TT": {
-            "target":{"mt":"fakes", "et":"fakes"},
-            "select": "-OS- & -ISO- & -GENTAU- ", 
-            "name": "NOMINAL_ntuple_SingleTop_2016", 
-            "event_weight": "weight"
-        },
-        "TL": {
-            "target":{"mt":"fakes", "et":"fakes"},
-            "select": "-OS- & -ISO- & ((-GENJET- | -GENTAU-) < 0.5)", 
-            "name": "NOMINAL_ntuple_SingleTop_2016", 
-            "event_weight": "weight"
-        },        
-        "TJ": {
-            "target":{"mt":"fakes", "et":"fakes"},
-            "select": "-OS- & -ISO- & -GENJET-", 
-            "name": "NOMINAL_ntuple_SingleTop_2016", 
-            "event_weight": "weight"
-        },
         "W": {
             "target":{"mt":"fakes", "et":"fakes"},
             "select": "-OS- & -ISO-", 
@@ -183,12 +165,6 @@
           "target":"none",
           "select": "-NONE-",
           "name": "NOMINAL_ntuple_Diboson_2016", 
-          "event_weight": 1.0
-        },
-        "ST_full": {
-          "target":"none",
-          "select": "-NONE-",
-          "name": "NOMINAL_ntuple_SingleTop_2016", 
           "event_weight": 1.0
         },
         "DY_full": {
