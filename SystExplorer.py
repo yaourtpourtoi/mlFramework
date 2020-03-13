@@ -37,8 +37,12 @@ class SystExplorer(object):
             self._set_updown_trees()
             self.data_up = self.tree_up.pandas.df(branches)
             self.data_down = self.tree_down.pandas.df(branches)
+            if cut:
+                self._filter_dataframes(cut)   
         elif self.systematic_type == 'weight':
             self.data_central = self.tree_central.pandas.df(branches + [systematic_name + 'Up', systematic_name + 'Down'])
+            if cut:
+                self._filter_dataframes(cut)   
             self.weight_up = self.data_central[f'{systematic_name}Up']
             self.weight_down = self.data_central[f'{systematic_name}Down']
         else:
@@ -49,8 +53,6 @@ class SystExplorer(object):
         else:
             self.weights = np.ones(self.data_central.shape[0])
             
-        if cut:
-            self._filter_dataframes(cut)   
         
     def _filter_dataframes(self, cut):
         self.data_central.query(cut, inplace=True)
