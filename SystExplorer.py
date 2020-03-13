@@ -37,6 +37,7 @@ class SystExplorer(object):
             cut_pruned = re.sub('[\s()\[\]]', '', cut)
             cut_branches = [re.split('\s|>|<|=', s)[0] for s in re.split('&|\|', cut_pruned)]
             branches += cut_branches
+        branches = list(set(branches))
         if self.systematic_type == 'tree':
             self.data_central = self.tree_central.pandas.df(branches)
             self._set_updown_trees()
