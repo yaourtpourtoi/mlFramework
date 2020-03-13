@@ -2,6 +2,7 @@ import uproot
 from matplotlib import pyplot as plt 
 import numpy as np
 import os
+import re
 
 class SystExplorer(object):
     """docstring for SystExplorer."""
@@ -32,6 +33,10 @@ class SystExplorer(object):
         self.systematic_name = systematic_name
         self.systematic_type = systematic_type
         branches = variables + weights if weights else variables
+        if cut:
+            cut_pruned = re.sub('[\s()\[\]]', '', cut)
+            cut_branches = [re.split('\s|>|<|=', s)[0] for s in re.split('&|\|', cut_pruned)]
+            branches += cut_branches
         if self.systematic_type == 'tree':
             self.data_central = self.tree_central.pandas.df(branches)
             self._set_updown_trees()
