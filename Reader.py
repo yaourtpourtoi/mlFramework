@@ -356,20 +356,11 @@ class Reader():
         return [df.query( "abs(evt % 2) != 0 " ).reset_index(drop=True), df.query( "abs(evt % 2) == 0 " ).reset_index(drop=True) ]
 
     def _getDF( self, sample_path, select, tree_name ):
-
-        add = "addvar"
-        if "Embedd" in sample_path:
-            add = "addvar_Embedding"
-
-        snowflakes = ["evt"]
-#        if "ggH" in sample_path:
-#            snowflakes.append("THU*")
-#            snowflakes.append("*NNLO*")
-
-        branches = list(set( self.config["variables"] + self.config[ "weights" ] + self.config["cut_variables"] + snowflakes + self.addvar ))
-        if "EMB" in sample_path and "sf*" in branches:
-            branches.remove("sf*")
-    
+        snowflakes = ["evt"]        
+        if self.for_prediction:
+            branches = ['*']
+        else:
+            branches = list(set( self.config["variables"] + self.config["weights"] + self.config["cut_variables"] + snowflakes))    
         data_file = uproot.open(sample_path)
         if True not in [tree_name in str(data_tree_name) for data_tree_name in data_file.keys()]:
             print(f'\nCouldnt find {tree_name} tree in {sample_path}, skipping it\n') 
