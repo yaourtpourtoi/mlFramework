@@ -147,7 +147,10 @@ class KerasObject():
 
     def testSingle(self, test,fold ):
 
-        prediction = pd.DataFrame( self.models[fold].predict(test[self.variables].values) )
-
-        return pd.DataFrame(dtype = float, data = {"predicted_class":prediction.idxmax(axis=1).values,
-                                 "predicted_prob": prediction.max(axis=1).values } )
+        prediction = self.models[fold].predict(test[self.variables].values)
+        prediction_dict = {}
+        for i in prediction.shape[1]: 
+            prediction_dict[f'predicted_prob_{i}'] = prediction[:, i]
+        prediction_dict['predicted_class'] = np.argmax(prediction, axis=1)
+        prediction_dict['predicted_prob'] = np.max(prediction, axis=1)
+        return pd.DataFrame(dtype = float, data = prediction_dict )
