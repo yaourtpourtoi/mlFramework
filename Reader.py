@@ -380,6 +380,7 @@ class Reader():
         
             # return iterator when predicting samples
             # selection is done in for-loop of sandbox()
+            print(branches)
             tmp = uproot.pandas.iterate(sample_path, tree_name, branches, entrysteps=chunksize)
         else:
             data_tree = data_file[tree_name]

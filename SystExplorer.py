@@ -14,7 +14,7 @@ class SystExplorer(object):
         
     def print_file_content(self):
         for dir_item_name in self.data_file.keys(): # can use allkeys() to go recursively
-            dir_item_name = str(dir_item_name).split('\'', 1)[-1] # remove from the beginning up to \ 
+            dir_item_name = dir_item_name.decode("utf-8") # convert bytes into str
             dir_item_name = dir_item_name.split(';')[0] # remove from ; up to the end
             print(dir_item_name) 
             
