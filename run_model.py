@@ -209,7 +209,7 @@ def sandbox(channel, model, scaler, sample, variables, outname, outpath, config 
                 print(f'\nLeaving them, dropping is set only for {drop_nan_columns}')
             print('**********\n')
             
-        print(config.keys)
+        print(config.keys())
         for var_substring, replace_value in config['replace_nan_columns'].items():
             replace_nan_columns = [var_name for var_name in part.columns if var_substring in var_name]
             print(f'found {np.sum(part[replace_nan_columns].isna()).sum()} NaNs in \"*{var_substring}*\" branches')
