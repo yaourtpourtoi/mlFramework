@@ -1,7 +1,7 @@
 import lightgbm as lgb
 import json
 import pandas as pd
-from numpy import unique
+import numpy as np
 from collections import deque
 
 
@@ -67,7 +67,7 @@ class LGBObject():
         if type(samples) is list:
             samples = deque(samples)
 
-        N_classes = len( unique( samples[0]["target"].values ) )
+        N_classes = len( np.unique( samples[0]["target"].values ) )
         
         if N_classes > 2:
             self.params = self.params["multiclass"]
