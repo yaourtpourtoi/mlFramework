@@ -128,7 +128,7 @@ class XGBObject():
         return predictions
 
     def testSingle(self, test, fold):
-        devents = test[self.variables]
+        devents = xgb.DMatrix(test[self.variables].values)
         bst = self.models[fold]
         prediction = bst.predict(devents)  #, num_iteration=bst.best_iteration
         prediction_dict = {}
