@@ -146,7 +146,6 @@ class KerasObject():
 
 
     def testSingle(self, test,fold ):
-
         prediction = self.models[fold].predict(test[self.variables].values)
         prediction_dict = {}
         for i in prediction.shape[1]: 

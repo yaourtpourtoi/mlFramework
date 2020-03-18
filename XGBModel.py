@@ -1,6 +1,6 @@
 import xgboost as xgb
 import json
-from pandas import DataFrame, concat
+import pandas as pd 
 from numpy import unique
 from collections import deque
 
@@ -82,7 +82,7 @@ class XGBObject():
             for j in range(2, len(samples) ):
                 train.append( samples[j] )
             
-            train = concat(train , ignore_index=True).reset_index(drop=True)
+            train = pd.concat(train , ignore_index=True).reset_index(drop=True)
 
             self.models.append( self.trainSingle( train, test ) )
             samples.rotate(-1)
@@ -127,16 +127,16 @@ class XGBObject():
 
         return predictions
 
-
     def testSingle(self, test, fold):
-
-        devents = xgb.DMatrix( test[ self.variables ].values )
-        prediction = DataFrame( self.models[fold].predict( devents ) )
-
-        return DataFrame(dtype = float, data = {"predicted_class":prediction.idxmax(axis=1).values,
-                                 "predicted_prob": prediction.max(axis=1).values } )
-
-
+        devents = xgb.DMatrix(test[self.variables])
+        bst = self.models[fold]
+        prediction = bst.predict(devents)  #, num_iteration=bst.best_iteration
+        prediction_dict = {}
+        for i in prediction.shape[1]: 
+            prediction_dict[f'predicted_prob_{i}'] = prediction[:, i]
+        prediction_dict['predicted_class'] = np.argmax(prediction, axis=1)
+        prediction_dict['predicted_prob'] = np.max(prediction, axis=1)
+        return pd.DataFrame(dtype = float, data = prediction_dict )
 
 if __name__ == '__main__':
     main()
