@@ -22,6 +22,7 @@
     "shifted_variables": [],
     "cut_variables": ["byMediumDeepTau2017v2p1VSjet_2", "iso_1", "puppimt_1", "os"],
     "drop_nan_columns": ["gen_sm_htt125", "gen_ps_htt125", "gen_mm_htt125"],
+    "replace_nan_columns": [("weight", 1)],
     "addvar": ["*"
     ],
     "chunksize_for_inference": 100000,
