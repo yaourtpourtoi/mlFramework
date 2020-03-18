@@ -128,7 +128,7 @@ class LGBObject():
         bst = self.models[fold]
         prediction = bst.predict(devents) #, num_iteration=bst.best_iteration
         prediction_dict = {}
-        for i in prediction.shape[1]: 
+        for i in range(prediction.shape[1]): 
             prediction_dict[f'predicted_prob_{i}'] = prediction[:, i]
         prediction_dict['predicted_class'] = np.argmax(prediction, axis=1)
         prediction_dict['predicted_prob'] = np.max(prediction, axis=1)
