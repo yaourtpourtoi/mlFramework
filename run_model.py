@@ -209,7 +209,7 @@ def sandbox(channel, model, scaler, sample, variables, outname, outpath, config 
                 print(f'\nLeaving them, dropping is set only for {drop_nan_columns}')
             print('**********\n')
             
-        for var_substring, replace_value in self.config['replace_nan_columns'].items():
+        for var_substring, replace_value in config['replace_nan_columns'].items():
             replace_nan_columns = [var_name for var_name in part.columns if var_substring in var_name]
             print(f'found {np.sum(part[replace_nan_columns].isna()).sum()} NaNs in \"*{var_substring}*\" branches')
             print(f'will replace them with {replace_value}\n')
@@ -218,7 +218,6 @@ def sandbox(channel, model, scaler, sample, variables, outname, outpath, config 
         if modify:
             modify(part, config)
 
-        part["THU"] = 1 # Add dummy
         # Carefull!! Check if splitting is done the same for training. This is the KIT splitting
         folds = [part.query( "abs(evt % 2) != 0 " ).reset_index(drop=True), part.query( "abs(evt % 2) == 0 " ).reset_index(drop=True) ]
         predictions = pd.concat(model.predict( [fold[variables] for fold in folds] ), axis=0)
