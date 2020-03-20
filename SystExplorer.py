@@ -13,10 +13,44 @@ class SystExplorer(object):
         self.applied_cuts = []
         
     def print_file_content(self):
-        for dir_item_name in self.data_file.keys(): # can use allkeys() to go recursively
-            dir_item_name = dir_item_name.decode("utf-8") # convert bytes into str
-            dir_item_name = dir_item_name.split(';')[0] # remove from ; up to the end
-            print(dir_item_name) 
+        directories = self._process_names(self.data_file.keys()) # can use allkeys() to go recursively
+        for dir_name in directories:
+            print(dir_name) 
+            
+    def print_category_content(self):
+        category_name = self._process_names(self.data_file.keys())[0] # taking the first one
+        template_names = self._process_names(self.data_file[category_name].keys())
+        for template_name in template_names:
+            print(template_name) 
+
+    def print_templates_info(self):
+        samples = set()
+        systematics = set()
+        category_name = self._process_names(self.data_file.keys())[0] # taking the first one
+        template_names = self._process_names(self.data_file[category_name].keys())
+        for template_name in template_names:
+            if 'Up' not in template_name and 'Down' not in template_name:
+                samples.add(template_name)
+            else:
+                num_splits = 3 if 'htt125' in template_name else 1  
+                num_joints = 3 if 'htt125' in template_name else 1       
+                systematic_name = template_name.split('_', maxsplit=num_splits)[-1]
+                systematic_name = re.sub('Up$', '', systematic_name)
+                systematic_name = re.sub('Down$', '', systematic_name)
+                systematics.add(systematic_name)
+        print(f'found these samples in {category_name} category:')
+        [print(f'      * {sample}') for sample in sorted(samples)]
+        print(f'\nand these systematics:')
+        [print(f'      * {systematic}') for systematic in sorted(systematics)]
+    
+            
+    def _process_names(self, names):
+        cleaned_names = []
+        for name in names: # can use allkeys() to go recursively
+            cleaned_name = name.decode("utf-8") # convert bytes into str
+            cleaned_name = cleaned_name.split(';')[0] # remove from ; up to the end
+            cleaned_names.append(cleaned_name)
+        return cleaned_names
             
     def set_central_tree(self, tree_name):
         self.tree_central = self.data_file[tree_name]
@@ -26,6 +60,23 @@ class SystExplorer(object):
     def _set_updown_trees(self):
         self.tree_up = self.data_file[self.systematic_name + 'Up']
         self.tree_down = self.data_file[self.systematic_name + 'Down']
+
+    def set_templates(self, decay_mode, category, sample, year, systematic_name):
+        self.decay_mode = decay_mode
+        self.category = category
+        self.sample = sample
+        self.year = year
+        self.systematic_name = systematic_name
+        self.systematic_type = 'datacard'
+        self._set_central_template()
+        self._set_updown_templates()
+        
+    def _set_central_template(self):
+        self.template_central = self.data_file[f'mt_{self.decay_mode}_{self.category}_{self.year}/{self.sample}']
+
+    def _set_updown_templates(self):
+        self.template_up = self.data_file[f'mt_{self.decay_mode}_{self.category}_{self.year}/{self.sample}_{self.systematic_name}Up']
+        self.template_down = self.data_file[f'mt_{self.decay_mode}_{self.category}_{self.year}/{self.sample}_{self.systematic_name}Down']
     
     def set_dataframes(self, variables, systematic_name, systematic_type, weights=None, cut=None):
         # picking just branches of interest speeds loading
@@ -67,58 +118,96 @@ class SystExplorer(object):
             self.data_down.query(cut, inplace=True)
         self.applied_cuts.append(cut) 
 
-    def plot_var_shifts(self, var_name, var_range, nbins, out_plots_path='./', verbose=False, save_plot=True):
-        if var_name not in self.data_central.columns:
-            print(f'Can\'t find variable {var_name} in data_central' )
-            raise  
-        if verbose:   
-            print(f'\n\nLooking into systematic: {self.systematic_name}\nplotting up/down shifts for variable: {var_name}\n\n')
-
+    def plot_var_shifts(self, var_name=None, var_range=None, nbins=None, out_plots_path='./', verbose=False, save_plot=True):
+        if verbose:  
+            if self.systematic_type != 'datacard': 
+                print(f'\n\nLooking into systematic: {self.systematic_name}\nplotting up/down shifts for variable: {var_name}\n\n')
+            else:
+                print(f'\n\nLooking into systematic: {self.systematic_name}\nplotting up/down shifts for {self.sample} template in category: mt_{self.decay_mode}_{self.category}_{self.year}\n\n')
+                
         plt.figure(figsize=(15,10))
         plt.xlabel(var_name, size=20)
         plt.xticks(size=15)
         plt.yticks(size=15)
         plt.title(self.systematic_name, size=25)
         
-        plt.hist(self.data_central[var_name], label='central', range=var_range, bins=nbins, weights = self.weights, histtype='step', linewidth=5, alpha=0.7, color='black')
         if self.systematic_type == 'weight':
+            weights_central = self.weights
             weights_up = self.weights * self.weight_up
             weights_down = self.weights * self.weight_down
-            plt.hist(self.data_central[var_name], label='up', range=var_range, bins=nbins, weights = weights_up, histtype='step', linewidth=5, alpha=0.7, color='tan')
-            plt.hist(self.data_central[var_name], label='down', range=var_range, bins=nbins, weights = weights_down, histtype='step', linewidth=5, alpha=0.7, color='steelblue')
+            data_central = self.data_central[var_name]
+            data_up = self.data_central[var_name]
+            data_down = self.data_central[var_name]
         if self.systematic_type == 'tree':
+            weights_central = self.weights
             weights_up = self.weights
             weights_down = self.weights
-            plt.hist(self.data_up[var_name], label='up', range=var_range, bins=nbins, weights = weights_up, histtype='step', linewidth=5, alpha=1., color='tan')
-            plt.hist(self.data_down[var_name], label='down', range=var_range, bins=nbins, weights = weights_down, histtype='step', linewidth=5, alpha=1., color='steelblue')        
-        plt.legend(fontsize=15)
+            data_central = self.data_central[var_name]
+            data_up = self.data_up[var_name]
+            data_down = self.data_down[var_name]              
+        if self.systematic_type == 'tree' or self.systematic_type == 'weight':
+            plt.hist(data_central, label='central', range=var_range, bins=nbins, weights = weights_central, histtype='step', linewidth=5, alpha=0.7, color='black')
+            plt.hist(data_up, label='up', range=var_range, bins=nbins, weights = weights_up, histtype='step', linewidth=5, alpha=.7, color='tan')
+            plt.hist(data_down, label='down', range=var_range, bins=nbins, weights = weights_down, histtype='step', linewidth=5, alpha=.7, color='steelblue')        
+            plt.legend(fontsize=15)
+            plot_name = var_name
+        elif self.systematic_type == 'datacard':
+            edges = self.template_central.edges
+            x = [0] + [edges[i] + (edges[i+1] - edges[i])/2 for i in range(edges.shape[0] - 1)] # add (0,0) point to see variations better
+            y = np.insert(self.template_central.values, 0, 0)
+            y_up = np.insert(self.template_up.values, 0, 0)
+            y_down = np.insert(self.template_down.values, 0, 0)
+            plt.plot(x, y, label = 'central', color='black', marker='o', markersize=20, linestyle=':', fillstyle='none', linewidth=2)
+            plt.plot(x, y_up, label = 'up', color='tan', marker='o', markersize=20, linestyle=':', fillstyle='none', linewidth=2)
+            plt.plot(x, y_down, label = 'down', color='steelblue', marker='o', markersize=20, linestyle=':', fillstyle='none', linewidth=2)
+            # plt.hlines(0.98, var_range[0], var_range[1], linestyles='dotted', colors='steelblue', linewidths=5) # can be used to imitate histogram look
+            plt.legend(fontsize=15)
+            plot_name = self.sample
         
         if save_plot:
             if not os.path.exists(f'{out_plots_path}/{self.systematic_name}/'):
-                os.mkdir(f'{out_plots_path}/{self.systematic_name}/')            
-            plt.savefig(f'{out_plots_path}/{self.systematic_name}/{var_name}.pdf')
+                os.mkdir(f'{out_plots_path}/{self.systematic_name}/')   
+                path = f'{out_plots_path}/{self.systematic_name}'            
+            if self.systematic_type == 'datacard':
+                if not os.path.exists(f'{path}/{self.category}_{self.year}'):
+                    os.mkdir(f'{path}/{self.category}_{self.year}')   
+                    path = f'{path}/{self.category}_{self.year}'
+                if not os.path.exists(f'{path}/{self.decay_mode}'):
+                    os.mkdir(f'{path}/{self.decay_mode}')   
+                    path = f'{path}/{self.decay_mode}'                             
+            plt.savefig(f'{path}/{plot_name}.pdf')
         if not verbose:
             plt.close()
             
-    def plot_var_ratio_shifts(self, var_name, var_range, nbins, normalise=False, out_plots_path='./', verbose=False, save_plot=True):
-        if var_name not in self.data_central.columns:
-            print(f'Can\'t find variable {var_name} in data_central' )
-            raise     
-        if verbose:    
-            print(f'\n\nLooking into systematic: {self.systematic_name}\nplotting up(down)/central ratio for variable: {var_name}\n\n')
+    def plot_var_ratio_shifts(self, var_name=None, var_range=None, nbins=None, normalise=False, out_plots_path='./', verbose=False, save_plot=True):
+        if verbose:  
+            if self.systematic_type != 'datacard': 
+                print(f'\n\nLooking into systematic: {self.systematic_name}\nplotting up(down)/central ratio for variable: {var_name}\n\n')
+            else:
+                print(f'\n\nLooking into systematic: {self.systematic_name}\nplotting up(down)/central ratio for {self.sample} template in category: mt_{self.decay_mode}_{self.category}_{self.year}\n\n')
     
-        counts, edges, _ = plt.hist(self.data_central[var_name], label='central', range=var_range, bins=nbins, weights=self.weights, histtype='step', alpha=0.7, color='black')
         if self.systematic_type == 'weight':
             weights_up = self.weights * self.weight_up
             weights_down = self.weights * self.weight_down
-            counts_up, edges_up, _ = plt.hist(self.data_central[var_name], label='up', range=var_range, bins=nbins, weights = weights_up, histtype='step', linewidth=5, alpha=0.7, color='tan')
+            counts, edges, _ = plt.hist(self.data_central[var_name], label='central', range=var_range, bins=nbins, weights=self.weights, histtype='step', alpha=0.7, color='black')
+            counts_up, _, _ = plt.hist(self.data_central[var_name], label='up', range=var_range, bins=nbins, weights = weights_up, histtype='step', linewidth=5, alpha=0.7, color='tan')
             counts_down, edges_down, _ = plt.hist(self.data_central[var_name], label='down', range=var_range, bins=nbins, weights = weights_down, histtype='step', linewidth=5, alpha=0.7, color='steelblue')
+            plot_name = var_name
+            plt.close()
         if self.systematic_type == 'tree':
             weights_up = self.weights
             weights_down = self.weights
-            counts_up, edges_up, _ = plt.hist(self.data_up[var_name], label='up', range=var_range, bins=nbins, weights = weights_up, histtype='step', linewidth=5, alpha=1., color='tan')
-            counts_down, edges_down, _ = plt.hist(self.data_down[var_name], label='down', range=var_range, bins=nbins, weights = weights_down, histtype='step', linewidth=5, alpha=1., color='steelblue')        
-        plt.close()
+            counts, edges, _ = plt.hist(self.data_central[var_name], label='central', range=var_range, bins=nbins, weights=self.weights, histtype='step', alpha=0.7, color='black')
+            counts_up, _, _ = plt.hist(self.data_up[var_name], label='up', range=var_range, bins=nbins, weights = weights_up, histtype='step', linewidth=5, alpha=1., color='tan')
+            counts_down, edges_down, _ = plt.hist(self.data_down[var_name], label='down', range=var_range, bins=nbins, weights = weights_down, histtype='step', linewidth=5, alpha=1., color='steelblue') 
+            plot_name = var_name    
+            plt.close()
+        if self.systematic_type == 'datacard':
+            counts = self.template_central.values
+            edges = self.template_central.edges
+            counts_up = self.template_up.values
+            counts_down = self.template_down.values
+            plot_name = self.sample
         
         if normalise:
             counts = counts/np.sum(counts)
@@ -127,13 +216,15 @@ class SystExplorer(object):
         ratio_up = counts_up / counts
         ratio_down = counts_down / counts
         central_edges = [edges[i] + (edges[i+1] - edges[i])/2 for i in range(edges.shape[0] - 1)]
-
+        
         plt.figure(figsize=(15,10))
         plt.plot(central_edges, ratio_up, color='tan', marker='o', linestyle='None', markersize=15, label='up')
         plt.plot(central_edges, ratio_down, color='steelblue', marker='o', linestyle='None', markersize=15, label='down')
         # plt.hlines(0.98, var_range[0], var_range[1], linestyles='dotted', colors='steelblue', linewidths=5)
         # plt.hlines(1.02, var_range[0], var_range[1], linestyles='dotted', colors='steelblue', linewidths=5)
-        plt.hlines(1., var_range[0], var_range[1], linestyles='dashed', colors='grey', linewidths=5)
+        x_min = var_range[0] if self.systematic_type != 'datacard' else edges[0]
+        x_max = var_range[1] if self.systematic_type != 'datacard' else edges[-1]
+        plt.hlines(1., x_min, x_max, linestyles='dashed', colors='grey', linewidths=5)
         #     plt.ylim(0.95, 1.05)
         plt.xlabel(var_name, size=20)
         plt.ylabel("{up, down} / central", size=20)
@@ -144,8 +235,16 @@ class SystExplorer(object):
         
         if save_plot:
             if not os.path.exists(f'{out_plots_path}/{self.systematic_name}/'):
-                os.mkdir(f'{out_plots_path}/{self.systematic_name}/')            
-            plt.savefig(f'{out_plots_path}/{self.systematic_name}/ratio_{var_name}.pdf')
+                os.mkdir(f'{out_plots_path}/{self.systematic_name}/')   
+                path = f'{out_plots_path}/{self.systematic_name}'            
+            if self.systematic_type == 'datacard':
+                if not os.path.exists(f'{path}/{self.category}_{self.year}'):
+                    os.mkdir(f'{path}/{self.category}_{self.year}')   
+                    path = f'{path}/{self.category}_{self.year}'
+                if not os.path.exists(f'{path}/{self.decay_mode}'):
+                    os.mkdir(f'{path}/{self.decay_mode}')   
+                    path = f'{path}/{self.decay_mode}'                             
+            plt.savefig(f'{path}/ratio_{plot_name}.pdf')
         if not verbose:
             plt.close()
 
