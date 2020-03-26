@@ -1,4 +1,5 @@
 import os
+import numpy as np
 
 def create_folders(path_to_datacard, category_names, channel, DM_name, year):
     if not os.path.exists(path_to_datacard):
