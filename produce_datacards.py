@@ -155,7 +155,7 @@ process_to_cuts = {
 subprocess_to_cuts = {}
 
 
-print("\n\n---- Loading files")
+print("\n\n---- Loading dataframes")
 
 sample_to_dataframe = {}
 for sample, sample_filename in sample_to_filename.items():
@@ -164,7 +164,7 @@ for sample, sample_filename in sample_to_filename.items():
     dataframe = data_tree.pandas.df(branches) 
     sample_to_dataframe[sample] = dataframe
     
-print("---- Constructing bigboy")    
+print("\n---- Constructing bigboy")    
 bigboy = pd.concat(sample_to_dataframe, axis=0).reset_index()
 bigboy.rename(columns={'level_0':'input_tuple', 'entry': 'event_id'}, inplace=True)
 
@@ -172,7 +172,7 @@ bigboy.rename(columns={'level_0':'input_tuple', 'entry': 'event_id'}, inplace=Tr
 # think of a smarter and faster way of doing this
 # use cython?
 
-print("---- Setting processes")    
+print("\n---- Setting processes")    
 bigboy['process'] = None
 for process_name, (sample_names, selection) in process_to_samples.items(): 
     print(f'     > {process_name}')   
@@ -181,13 +181,13 @@ for process_name, (sample_names, selection) in process_to_samples.items():
         mask &= bigboy.eval(selection)
     bigboy.loc[mask, 'process'] = process_name
     
-print("---- Setting indices")        
-# can we do w/o it? takes time
-bigboy.set_index('input_tuple', append=True, inplace=True)
-bigboy.set_index('process', append=True, inplace=True)
-bigboy.set_index('event_id', append=True, inplace=True)
-bigboy = bigboy.droplevel(level=0)
-# bigboy = bigboy.reorder_levels(['input_tuple', 'process', 'event_id'])
+# print("\n---- Setting indices")        
+# # can we do w/o it? takes time
+# bigboy.set_index('input_tuple', append=True, inplace=True)
+# bigboy.set_index('process', append=True, inplace=True)
+# bigboy.set_index('event_id', append=True, inplace=True)
+# bigboy = bigboy.droplevel(level=0)
+# # bigboy = bigboy.reorder_levels(['input_tuple', 'process', 'event_id'])
 
 
 def make_datacard(data, observable_names, cuts, weight_names, category_name, process_name, subprocess_name, save=False):    
