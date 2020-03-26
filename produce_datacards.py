@@ -22,18 +22,17 @@ if not os.path.exists('bigboy_feather'):
         
     print("\n---- Constructing bigboy")    
     bigboy = pd.concat(sample_to_dataframe, axis=0, ignore_index=True)
-
-    print("\n---- Setting processes")    
-    bigboy['process'] = None
-    for process_name, (sample_names, selection) in process_to_samples.items(): 
-        print(f'     > {process_name}')   
-        mask = np.isin(bigboy['input_tuple'], sample_names)
-        if selection:
-            mask &= bigboy.eval(selection)
-        bigboy.loc[mask, 'process'] = process_name
     bigboy.to_feather('bigboy_feather')
     
 bigboy = pd.read_feather('bigboy_feather')
+print("\n---- Setting processes")    
+bigboy['process'] = None
+for process_name, (sample_names, selection) in process_to_samples.items(): 
+    print(f'     > {process_name}')   
+    mask = np.isin(bigboy['input_tuple'], sample_names)
+    if selection:
+        mask &= bigboy.eval(selection)
+    bigboy.loc[mask, 'process'] = process_name
 
 ################################################################################
     
