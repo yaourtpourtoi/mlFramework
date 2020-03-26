@@ -155,11 +155,11 @@ process_to_cuts = {
 subprocess_to_cuts = {}
 
 
-print("---- Loading files")
+print("\n\n---- Loading files")
 
 sample_to_dataframe = {}
 for sample, sample_filename in sample_to_filename.items():
-    print(f'     > Loading {sample_filename}')
+    print(f'     > {sample_filename}')
     data_tree = uproot.open(f'{path}/{sample_filename}')[tree_name]
     dataframe = data_tree.pandas.df(branches) 
     sample_to_dataframe[sample] = dataframe
