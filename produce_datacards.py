@@ -162,11 +162,11 @@ for sample, sample_filename in sample_to_filename.items():
     print(f'     > {sample_filename}')
     data_tree = uproot.open(f'{path}/{sample_filename}')[tree_name]
     dataframe = data_tree.pandas.df(branches) 
+    dataframe['input_tuple'] = sample
     sample_to_dataframe[sample] = dataframe
     
 print("\n---- Constructing bigboy")    
-bigboy = pd.concat(sample_to_dataframe, axis=0).reset_index()
-bigboy.rename(columns={'level_0':'input_tuple', 'entry': 'event_id'}, inplace=True)
+bigboy = pd.concat(sample_to_dataframe, axis=0, ignore_index=True)
 
 
 # think of a smarter and faster way of doing this
