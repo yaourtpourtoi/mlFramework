@@ -159,6 +159,7 @@ print("---- Loading files")
 
 sample_to_dataframe = {}
 for sample, sample_filename in sample_to_filename.items():
+    print(f'     > Loading {sample_filename}')
     data_tree = uproot.open(f'{path}/{sample_filename}')[tree_name]
     dataframe = data_tree.pandas.df(branches) 
     sample_to_dataframe[sample] = dataframe
@@ -173,7 +174,8 @@ bigboy.rename(columns={'level_0':'input_tuple', 'entry': 'event_id'}, inplace=Tr
 
 print("---- Setting processes")    
 bigboy['process'] = None
-for process_name, (sample_names, selection) in process_to_samples.items():    
+for process_name, (sample_names, selection) in process_to_samples.items(): 
+    print(f'     > {process_name}')   
     mask = np.isin(bigboy['input_tuple'], sample_names)
     if selection:
         mask &= bigboy.eval(selection)
