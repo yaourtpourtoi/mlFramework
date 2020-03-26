@@ -155,6 +155,7 @@ process_to_cuts = {
 subprocess_to_cuts = {}
 
 
+print("---- Loading files")
 
 sample_to_dataframe = {}
 for sample, sample_filename in sample_to_filename.items():
@@ -162,6 +163,7 @@ for sample, sample_filename in sample_to_filename.items():
     dataframe = data_tree.pandas.df(branches) 
     sample_to_dataframe[sample] = dataframe
     
+print("---- Constructing bigboy")    
 bigboy = pd.concat(sample_to_dataframe, axis=0).reset_index()
 bigboy.rename(columns={'level_0':'input_tuple', 'entry': 'event_id'}, inplace=True)
 
@@ -169,6 +171,7 @@ bigboy.rename(columns={'level_0':'input_tuple', 'entry': 'event_id'}, inplace=Tr
 # think of a smarter and faster way of doing this
 # use cython?
 
+print("---- Setting processes")    
 bigboy['process'] = None
 for process_name, (sample_names, selection) in process_to_samples.items():    
     mask = np.isin(bigboy['input_tuple'], sample_names)
@@ -176,6 +179,7 @@ for process_name, (sample_names, selection) in process_to_samples.items():
         mask &= bigboy.eval(selection)
     bigboy.loc[mask, 'process'] = process_name
     
+print("---- Setting indices")        
 # can we do w/o it? takes time
 bigboy.set_index('input_tuple', append=True, inplace=True)
 bigboy.set_index('process', append=True, inplace=True)
