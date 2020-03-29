@@ -189,60 +189,50 @@ def run(samples, channel, era, use, train, short, input_model_name, datacard=Fal
 def sandbox(channel, model, scaler, sample, variables, outname, outpath, config = None, modify = None):
     # needed because of memory management
     # iterate over chunks of sample and do splitting on the fly
-    first = True
+
     if sample is None:
         print(f'\nSandbox for sample: {config["histname"]} and tree: {config["tree_name"]} is None. Skipping.\n')
         return
-    for i, part in enumerate(sample):
-        if config['select'] != "None": # "None" is defined in cuts_{era}.json 
-            part.query(config['select'], inplace=True) # sample is iterator - can't filter events in _getDF() so implement it here
-            
-        # This is awful. Try to figure out a better way to add stuff to generator.
+    if config['select'] != "None": # "None" is defined in cuts_{era}.json 
+        sample.query(config['select'], inplace=True) # sample is iterator - can't filter events in _getDF() so implement it here
         
-        if np.sum(part.isna()).sum() != 0:
-            nan_columns = part.columns[(np.sum(part.isna())) != 0].values
-            drop_nan_columns = config["drop_nan_columns"]
-            print('\n\n**********\n')
-            print('Warning!')
-            print(f'sample {config["histname"]} has in {i}th chunk {np.sum(part.isna()).sum()} NaNs in columns: {nan_columns}')
-            if any(elem in nan_columns for elem in drop_nan_columns):    
-                print(f'will drop them for {drop_nan_columns}\n')
-                part.dropna(subset=drop_nan_columns, inplace=True)
-            else:
-                print(f'\nLeaving them, dropping is set only for {drop_nan_columns}')
-            print('**********\n')
-            
-        for var_substring, replace_value in config['replace_nan_columns'].items():
-            replace_nan_columns = [var_name for var_name in part.columns if var_substring in var_name]
-            if np.sum(part[replace_nan_columns].isna()).sum() != 0:
-                print(f'found {np.sum(part[replace_nan_columns].isna()).sum()} NaNs in \"*{var_substring}*\" branches')
-                print(f'will replace them with {replace_value}\n')
-                part[replace_nan_columns] = part[replace_nan_columns].fillna(replace_value)
-            
-        if modify:
-            modify(part, config)
-
-        # Carefull!! Check if splitting is done the same for training. This is the KIT splitting
-        folds = [part.query( "abs(evt % 2) != 0 " ).reset_index(drop=True), part.query( "abs(evt % 2) == 0 " ).reset_index(drop=True) ]
-        predictions = pd.concat(model.predict( [fold[variables] for fold in folds] ), axis=0)
-        folds = pd.concat(folds, axis=0)
-        df = pd.concat([folds, predictions], axis=1).reset_index()
+    # This is awful. Try to figure out a better way to add stuff to generator.
+    
+    if np.sum(sample.isna()).sum() != 0:
+        nan_columns = sample.columns[(np.sum(sample.isna())) != 0].values
+        drop_nan_columns = config["drop_nan_columns"]
+        print('\n\n**********\n')
+        print('Warning!')
+        print(f'sample {config["histname"]} has in {i}th chunk {np.sum(sample.isna()).sum()} NaNs in columns: {nan_columns}')
+        if any(elem in nan_columns for elem in drop_nan_columns):    
+            print(f'will drop them for {drop_nan_columns}\n')
+            sample.dropna(subset=drop_nan_columns, inplace=True)
+        else:
+            print(f'\nLeaving them, dropping is set only for {drop_nan_columns}')
+        print('**********\n')
         
-        outfile_name = "{0}/{1}-{2}.root".format(outpath, channel, outname)
-        df.to_root(outfile_name, key=config['tree_name'], mode = 'a')
-
-        # print('pt_1 = ', folds[0].pt_1[0])
-        # print('pt_1 = ', folds[1].pt_1[0])
-        # addPrediction(channel, model.predict( [fold[variables] for fold in folds] ), folds, outname, config['tree_name'], outpath, new = first )
+    for var_substring, replace_value in config['replace_nan_columns'].items():
+        replace_nan_columns = [var_name for var_name in sample.columns if var_substring in var_name]
+        if np.sum(sample[replace_nan_columns].isna()).sum() != 0:
+            print(f'found {np.sum(sample[replace_nan_columns].isna()).sum()} NaNs in \"*{var_substring}*\" branches')
+            print(f'will replace them with {replace_value}\n')
+            sample[replace_nan_columns] = sample[replace_nan_columns].fillna(replace_value)
         
-        # folds.drop(folds.index, inplace=True)
-        # folds[0].drop(folds[0].index, inplace=True)
-        # folds[1].drop(folds[1].index, inplace=True)
-        # part.drop(part.index, inplace=True)
+    # if modify:
+    #     modify(sample, config)
 
-        first = False
-    del sample
-    return True
+    # Carefull!! Check if splitting is done the same for training. This is the KIT splitting
+    folds = [sample.query( "abs(evt % 2) != 0 " ).reset_index(drop=True), sample.query( "abs(evt % 2) == 0 " ).reset_index(drop=True) ]
+    predictions = pd.concat(model.predict( [fold[variables] for fold in folds] ), axis=0)
+    print(predictions)
+    # folds = pd.concat(folds, axis=0)
+    # df = pd.concat([folds, predictions], axis=1).reset_index()
+    # 
+    # outfile_name = "{0}/{1}-{2}.root".format(outpath, channel, outname)
+    # print('about to write to root')
+    # df.to_root(outfile_name, key=config['tree_name'], mode = 'a')
+        
+    return predictions
 
 def addPrediction(channel, prediction, df, sample, tree_name, outpath, new = True):
     outfile_name = "{0}/{1}-{2}.root".format(outpath, channel, sample)
