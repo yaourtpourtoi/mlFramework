@@ -15,6 +15,8 @@ from keras.models import load_model as lm
 import xgboost as xgb 
 import lightgbm as lgb
 
+from dask import delayed
+
 def main():
 
     parser = argparse.ArgumentParser()
@@ -183,6 +185,7 @@ def run(samples, channel, era, use, train, short, input_model_name, datacard=Fal
         for sample, sampleConfig in read.get(what = "full", add_jec = not short, for_prediction = True):
             sandbox(channel, model, scaler, sample, variables,  "NOMINAL_ntuple_" + sampleConfig["histname"].split("_")[0], outpath, sampleConfig, read.modifyDF )
 
+@delayed
 def sandbox(channel, model, scaler, sample, variables, outname, outpath, config = None, modify = None):
     # needed because of memory management
     # iterate over chunks of sample and do splitting on the fly
@@ -239,6 +242,7 @@ def sandbox(channel, model, scaler, sample, variables, outname, outpath, config 
 
         first = False
     del sample
+    return True
 
 def addPrediction(channel, prediction, df, sample, tree_name, outpath, new = True):
     outfile_name = "{0}/{1}-{2}.root".format(outpath, channel, sample)
