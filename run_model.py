@@ -185,7 +185,7 @@ def run(samples, channel, era, use, train, short, input_model_name, datacard=Fal
         for sample, sampleConfig in read.get(what = "full", add_jec = not short, for_prediction = True):
             sandbox(channel, model, scaler, sample, variables,  "NOMINAL_ntuple_" + sampleConfig["histname"].split("_")[0], outpath, sampleConfig, read.modifyDF )
 
-@delayed
+# @delayed
 def sandbox(channel, model, scaler, sample, variables, outname, outpath, config = None, modify = None):
     # needed because of memory management
     # iterate over chunks of sample and do splitting on the fly
