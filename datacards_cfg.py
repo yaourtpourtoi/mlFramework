@@ -12,6 +12,7 @@ def create_folders(path_to_datacard, category_names, channel, DM_name, year):
             
 path = '/nfs/dust/cms/user/rasp/storage/cardinia/2018/OutputDNN/March18/predictions_2018'
 path_to_datacard = '/nfs/dust/cms/user/filatovo/HTT/CMSSW_10_2_16/src/mlFramework/my_first_datacard'
+path_to_feather = '/nfs/dust/cms/user/filatovo/HTT/CMSSW_10_2_16/src/mlFramework/bigboy_feather_full'
 
 ### used in naming of folders in the datacard, as follows:
 ### {channel}_{DM_name}_{category_name}_{year}

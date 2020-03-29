@@ -10,7 +10,7 @@ from matplotlib import pyplot as plt
 from datacards_cfg import *
 
 
-if not os.path.exists('bigboy_feather'):
+if not os.path.exists(path_to_feather):
     print("\n\n---- Loading dataframes")
     sample_to_dataframe = {}
     for sample, sample_filename in sample_to_filename.items():
@@ -22,9 +22,9 @@ if not os.path.exists('bigboy_feather'):
         
     print("\n---- Constructing bigboy")    
     bigboy = pd.concat(sample_to_dataframe, axis=0, ignore_index=True)
-    bigboy.to_feather('bigboy_feather')
+    bigboy.to_feather(path_to_feather)
     
-bigboy = pd.read_feather('bigboy_feather')
+bigboy = pd.read_feather(path_to_feather)
 print("\n---- Setting processes")    
 bigboy['process'] = None
 for process_name, (sample_names, selection) in process_to_samples.items(): 
