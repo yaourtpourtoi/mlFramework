@@ -1,16 +1,16 @@
 from Reader import Reader
-import copy
+# import copy
 import pandas as pd
 import numpy as np
-import json
-import sys
+# import json
+# import sys
 import os
 from glob import glob
 import argparse
-import pickle
-import subprocess as sp
-import multiprocessing as mp
-import keras
+# import pickle
+# import subprocess as sp
+# import multiprocessing as mp
+# import keras
 from keras.models import load_model as lm
 import xgboost as xgb 
 import lightgbm as lgb
@@ -32,7 +32,7 @@ def main():
     print("---------------------------")
     print("Era: ", args.era)
     print("Running over {0} samples".format(args.channel))
-    print("Using {0}".format(args.model), keras.__version__)
+    # print("Using {0}".format(args.model), keras.__version__)
     if args.train:
         print("Training new model")
     if args.short:
@@ -82,7 +82,6 @@ def run(samples, channel, era, use, train, short, input_model_name, datacard=Fal
     scaler = None
 
     if train:
-        print("Training new model")
         print("Loading Training set")
         trainSet = read.getSamplesForTraining()
 
@@ -263,12 +262,12 @@ def trainScaler(folds, variables):
 
     return Scaler
 
-def applyScaler(scaler, folds, variables):
-    if not scaler: return folds
-    newFolds = copy.deepcopy(folds)
-    for i,fold in enumerate(newFolds):
-        fold[variables] = scaler[i].transform( fold[variables] )
-    return newFolds
+# def applyScaler(scaler, folds, variables):
+#     if not scaler: return folds
+#     newFolds = copy.deepcopy(folds)
+#     for i,fold in enumerate(newFolds):
+#         fold[variables] = scaler[i].transform( fold[variables] )
+#     return newFolds
 
 
 if __name__ == '__main__':

@@ -2,7 +2,7 @@ from keras.models import Sequential
 from keras.layers import *
 from keras.optimizers import *
 from keras.regularizers import l2
-from theano.tensor import lt
+# from theano.tensor import lt
 
 def example(num_inputs, num_outputs):
     """

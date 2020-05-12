@@ -1,5 +1,5 @@
-import ROOT
-ROOT.PyConfig.IgnoreCommandLineOptions = True  # disable ROOT internal argument parser
+# import ROOT
+# ROOT.PyConfig.IgnoreCommandLineOptions = True  # disable ROOT internal argument parser
 import numpy as np
 import pandas as pd
 import json
