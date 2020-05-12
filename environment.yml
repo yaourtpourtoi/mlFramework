@@ -1,0 +1,13 @@
+name: ml-htt 
+channels:
+  - defaults
+  - conda-forge
+dependencies:
+  - root=6.20
+  - uproot=3.11
+  - pandas=1.0
+  - numpy=1.18
+  - xgboost=1.0
+  - lightgbm=2.3
+prefix: /nfs/dust/cms/user/filatovo/miniconda3/envs/ml-htt
+  
