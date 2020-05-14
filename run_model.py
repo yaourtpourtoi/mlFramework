@@ -11,9 +11,7 @@ import argparse
 # import subprocess as sp
 # import multiprocessing as mp
 # import keras
-from keras.models import load_model as lm
-import xgboost as xgb 
-import lightgbm as lgb
+import root_pandas
 
 def main():
 
@@ -54,14 +52,17 @@ def main():
 def run(samples, channel, era, use, train, short, input_model_name, datacard=False, add_nominal=False ):
 
     if use == "xgb":
+        import xgboost as xgb 
         from XGBModel import XGBObject as modelObject
         parameters = "conf/parameters_xgb.json"
 
     if use == "keras":
+        from keras.models import load_model as lm
         from KerasModel import KerasObject as modelObject
         parameters = "conf/parameters_keras.json"
 
     if use == "lgb":
+        import lightgbm as lgb
         from LGBModel import LGBObject as modelObject
         parameters = "conf/parameters_lgb.json"
 
