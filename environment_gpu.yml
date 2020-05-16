@@ -1,0 +1,25 @@
+name: ml-htt-gpu
+channels:
+  - defaults
+  - conda-forge
+  - plotly
+dependencies:
+  - python=3.7
+  - pip=20.1
+  - root=6.20
+  - root_pandas
+  - root_numpy
+  - uproot=3.11
+  - mplhep=0.1.21
+  - scikit-learn=0.23
+  - plotly=4.7
+  - pandas=1.0
+  - numpy=1.18
+  - xgboost=1.0
+  - lightgbm=2.3
+  - matplotlib=3.2
+  - keras
+  - tensorflow
+  - tensorflow-gpu
+prefix: /nfs/dust/cms/user/filatovo/miniconda3/envs/ml-htt-gpu
+  

@@ -1,0 +1,23 @@
+name: ml-htt-dev
+channels:
+  - defaults
+  - conda-forge
+  - plotly
+dependencies:
+  - python=3.8
+  - pip=20.1
+  - root=6.20
+  - uproot=3.11
+  - mplhep=0.1.21
+  - scikit-learn=0.23
+  - plotly=4.7
+  - pandas=1.0
+  - numpy=1.18
+  - xgboost=1.0
+  - lightgbm=2.3
+  - matplotlib=3.2
+  - keras=2.2
+  - tensorflow=1.15
+  # - tensorflow-gpu
+prefix: /nfs/dust/cms/user/filatovo/miniconda3/envs/ml-htt-dev
+  
