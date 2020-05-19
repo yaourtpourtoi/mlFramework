@@ -1,8 +1,16 @@
+###### comments
+
+# jupyter labextension install @jupyter-widgets/jupyterlab-manager
+# jupyter labextension install @bokeh/jupyter_bokeh
+# jupyter labextension install jupyterlab-plotly@4.7.1
+# jupyter labextension install @pyviz/jupyterlab_pyviz
+
 name: ml-htt-dev
 channels:
   - defaults
   - conda-forge
   - plotly
+  - bokeh
 dependencies:
   - python=3.8
   - pip=20.1
@@ -16,8 +24,13 @@ dependencies:
   - xgboost=1.0
   - lightgbm=2.3
   - matplotlib=3.2
-  - keras=2.2
-  - tensorflow=1.15
-  # - tensorflow-gpu
+  - shap=0.35
+  - jupyterlab=2.1
+  - hvplot=0.5
+  - holoviews=1.13
+  - bokeh=2.0
+  - jupyter_bokeh
+  - ipywidgets
+  - nodejs=13.13 # required for jupyterlab extensions
 prefix: /nfs/dust/cms/user/filatovo/miniconda3/envs/ml-htt-dev
   
