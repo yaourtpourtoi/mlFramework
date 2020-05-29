@@ -236,14 +236,14 @@ class SystExplorer(object):
         if save_plot:
             if not os.path.exists(f'{out_plots_path}/{self.systematic_name}/'):
                 os.mkdir(f'{out_plots_path}/{self.systematic_name}/')   
-                path = f'{out_plots_path}/{self.systematic_name}'            
+            path = f'{out_plots_path}/{self.systematic_name}'            
             if self.systematic_type == 'datacard':
                 if not os.path.exists(f'{path}/{self.category}_{self.year}'):
                     os.mkdir(f'{path}/{self.category}_{self.year}')   
-                    path = f'{path}/{self.category}_{self.year}'
+                path = f'{path}/{self.category}_{self.year}'
                 if not os.path.exists(f'{path}/{self.decay_mode}'):
                     os.mkdir(f'{path}/{self.decay_mode}')   
-                    path = f'{path}/{self.decay_mode}'                             
+                path = f'{path}/{self.decay_mode}'                             
             plt.savefig(f'{path}/ratio_{plot_name}.pdf')
         if not verbose:
             plt.close()
