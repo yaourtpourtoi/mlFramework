@@ -199,8 +199,8 @@ class SystExplorer(object):
             plot_name = var_name
             plt.close()
         if self.systematic_type == 'tree':
-            weights_up = self.weights
-            weights_down = self.weights
+            weights_up = self.weights_up
+            weights_down = self.weights_down
             counts, edges, _ = plt.hist(self.data_central[var_name], label='central', range=var_range, bins=nbins, weights=self.weights, histtype='step', alpha=0.7, color='black')
             counts_up, _, _ = plt.hist(self.data_up[var_name], label='up', range=var_range, bins=nbins, weights = weights_up, histtype='step', linewidth=5, alpha=1., color='tan')
             counts_down, edges_down, _ = plt.hist(self.data_down[var_name], label='down', range=var_range, bins=nbins, weights = weights_down, histtype='step', linewidth=5, alpha=1., color='steelblue') 
