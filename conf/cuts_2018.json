@@ -2,6 +2,7 @@
 	"-NONE-":"None",
 	"-SS-":"os < 0.5",
 	"-OS-":"os > 0.5",
+	"-SINGLELEP-":"is_SingleLepTrigger > 0.5",
 	"-VETO-":{
 		"mt":"1",
 		"et":"((extramuon_veto < 0.5) & (extraelec_veto < 0.5) & (dilepton_veto<0.5) & (byVVVLooseDeepTau2017v2p1VSmu_2>0.5) & (byVLoosetDeepTau2017v2p1VSe_2>0.5) )",
@@ -22,7 +23,7 @@
 	},
 	"-ISO-":{
 		"mt":"byMediumDeepTau2017v2p1VSjet_2 > 0.5 & iso_1 < 0.15",
-		"et":"byMediumDeepTau2017v2p1VSjet_2  & iso_1 < 0.15",
+		"et":"byMediumDeepTau2017v2p1VSjet_2 > 0.5 & iso_1 < 0.15",
 		"tt":"(byTightIsolationMVArun2017v2DBoldDMwLT2017_1 > 0.5 )  & (byMediumDeepTau2017v2p1VSjet_2 > 0.5 )",
 		"em":"iso_2 < 0.2 & iso_1 < 0.15"
 	},

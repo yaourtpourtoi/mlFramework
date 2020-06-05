@@ -216,3 +216,15 @@ def cp_htt_mt(num_inputs, num_outputs):
     model.compile(loss="categorical_crossentropy", optimizer=Adam(lr=1e-4), metrics=['categorical_accuracy'])
 
     return model
+
+def cp_htt_et_dev(num_inputs, num_outputs):
+    model = Sequential()
+    model.add( Dense( 100, kernel_initializer="glorot_normal", input_dim=num_inputs) )
+    model.add(BatchNormalization())
+    model.add(Activation("relu"))
+    model.add(Dropout(0.5))
+    
+    model.add( Dense( num_outputs, kernel_initializer="glorot_normal", activation="softmax"))
+    model.compile(loss="categorical_crossentropy", optimizer=Adam(lr=1e-4), metrics=['categorical_accuracy'])
+
+    return model

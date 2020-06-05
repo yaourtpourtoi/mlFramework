@@ -1,6 +1,6 @@
 {
-    "path": "/nfs/dust/cms/user/filatovo/HTT/CMSSW_10_2_16/src/mlFramework/In_Tuples_2016/et/17June", 
-    "outpath": "/nfs/dust/cms/user/filatovo/HTT/CMSSW_10_2_16/src/mlFramework/Out_Tuples_2016/et/17June",
+    "path": "/nfs/dust/cms/user/filatovo/HTT/CMSSW_10_2_16/src/mlFramework/In_Tuples_2018/et/17June", 
+    "outpath": "/nfs/dust/cms/user/filatovo/HTT/CMSSW_10_2_16/src/mlFramework/Out_Tuples_2018/et/17June",
     "tree_name_prefix":"TauCheck",
     "variables":{
         "et": [
@@ -30,11 +30,11 @@
     "version":{
         "et":"v5"
     },
-    "lumi": 35.9,
+    "lumi": 59.9,
     "class_weight":{
-        "higgs":   {"et":199.1},
-        "taus":     {"et":1.6},
-        "fakes":   {"et":2.8}
+        "higgs":   {"et":174.3},
+        "taus":     {"et":2.0},
+        "fakes":   {"et":2.0}
       },
 
     "target_values":{
@@ -52,152 +52,152 @@
         "ggH125": {
             "target":{"mt":"higgs", "et":"higgs"},
             "select": "-OS- & -ISO- & -SINGLELEP-", 
-            "name": "NOMINAL_ntuple_GluGluHToUncorrTauTau_2016", 
-            "event_weight": "gen_sm_htt125*weight"
+            "name": "NOMINAL_ntuple_GluGluHToUncorrTauTau_2018", 
+            "event_weight": "gen_sm_htt125*weight*trigweight_1/trigweight"
         },
         "qqH125": {
             "target":{"mt":"higgs", "et":"higgs"},
             "select": "-OS- & -ISO- & -SINGLELEP-", 
-            "name": "NOMINAL_ntuple_VBFHToUncorrTauTau_2016", 
-            "event_weight": "gen_sm_htt125*weight"
+            "name": "NOMINAL_ntuple_VBFHToUncorrTauTau_2018", 
+            "event_weight": "gen_sm_htt125*weight*trigweight_1/trigweight"
         }, 
         "ZTT": {
             "target":{"mt":"taus", "et":"taus"},
             "select": "-OS- & -ISO- & -SINGLELEP- & -GENTAU-", 
-            "name": "NOMINAL_ntuple_DYJets_2016", 
-            "event_weight": "weight"
+            "name": "NOMINAL_ntuple_DYJets_2018", 
+            "event_weight": "weight*trigweight_1/trigweight"
         },
         "ZL": {
             "target":{"mt":"fakes", "et":"fakes"},
             "select": "-OS- & -ISO- & -SINGLELEP- &  ((-GENJET- | -GENTAU-) < 0.5)", 
-            "name": "NOMINAL_ntuple_DYJets_2016", 
-            "event_weight": "weight"
+            "name": "NOMINAL_ntuple_DYJets_2018", 
+            "event_weight": "weight*trigweight_1/trigweight"
         },
         "ZJ": {
             "target":{"mt":"fakes", "et":"fakes"},
             "select": "-OS- & -ISO- & -SINGLELEP- & -GENJET-", 
-            "name": "NOMINAL_ntuple_DYJets_2016", 
-            "event_weight": "weight"
+            "name": "NOMINAL_ntuple_DYJets_2018", 
+            "event_weight": "weight*trigweight_1/trigweight"
         },
         "TTT": {
             "target":{"mt":"taus", "et":"taus"},
             "select": "-OS- & -ISO- & -SINGLELEP- & -GENTAU- ", 
-            "name": "NOMINAL_ntuple_TTbar_2016", 
-            "event_weight": "weight"
+            "name": "NOMINAL_ntuple_TTbar_2018", 
+            "event_weight": "weight*trigweight_1/trigweight"
         },
         "TTL": {
             "target":{"mt":"fakes", "et":"fakes"},
             "select": "-OS- & -ISO- & -SINGLELEP- & ((-GENJET- | -GENTAU-) < 0.5)", 
-            "name": "NOMINAL_ntuple_TTbar_2016", 
-            "event_weight": "weight"
+            "name": "NOMINAL_ntuple_TTbar_2018", 
+            "event_weight": "weight*trigweight_1/trigweight"
         },        
         "TTJ": {
             "target":{"mt":"fakes", "et":"fakes"},
             "select": "-OS- & -ISO- & -SINGLELEP- & -GENJET- ", 
-            "name": "NOMINAL_ntuple_TTbar_2016", 
-            "event_weight": "weight"
+            "name": "NOMINAL_ntuple_TTbar_2018", 
+            "event_weight": "weight*trigweight_1/trigweight"
         },
         "VVT": {
             "target":{"mt":"taus", "et":"taus"},
             "select": "-OS- & -ISO- & -SINGLELEP- & -GENTAU- ", 
-            "name": "NOMINAL_ntuple_Diboson_2016", 
-            "event_weight": "weight"
+            "name": "NOMINAL_ntuple_Diboson_2018", 
+            "event_weight": "weight*trigweight_1/trigweight"
         },
         "VVL": {
             "target":{"mt":"fakes", "et":"fakes"},
             "select": "-OS- & -ISO- & -SINGLELEP- & ((-GENJET- | -GENTAU-) < 0.5)", 
-            "name": "NOMINAL_ntuple_Diboson_2016", 
-            "event_weight": "weight"
+            "name": "NOMINAL_ntuple_Diboson_2018", 
+            "event_weight": "weight*trigweight_1/trigweight"
         },        
         "VVJ": {
             "target":{"mt":"fakes", "et":"fakes"},
             "select": "-OS- & -ISO- & -SINGLELEP- & -GENJET-", 
-            "name": "NOMINAL_ntuple_Diboson_2016", 
-            "event_weight": "weight"
+            "name": "NOMINAL_ntuple_Diboson_2018", 
+            "event_weight": "weight*trigweight_1/trigweight"
         },
         "W": {
             "target":{"mt":"fakes", "et":"fakes"},
             "select": "-OS- & -ISO- & -SINGLELEP-", 
-            "name": "NOMINAL_ntuple_WJets_2016", 
-            "event_weight": "weight"
+            "name": "NOMINAL_ntuple_WJets_2018", 
+            "event_weight": "weight*trigweight_1/trigweight"
         },
         "estimate": {
             "target":{"mt":"fakes", "et":"fakes"},
             "select": "-SS- & -ISO- & -SINGLELEP-",
-            "name": "NOMINAL_ntuple_SingleElectron_2016",
+            "name": "NOMINAL_ntuple_SingleElectron_2018",
             "event_weight": 1.0
         },
         "VV_full": {
           "target":"none",
           "select": "-NONE-",
-          "name": "NOMINAL_ntuple_Diboson_2016", 
+          "name": "NOMINAL_ntuple_Diboson_2018", 
           "event_weight": 1.0
         },
         "DY_full": {
           "target":"none",
           "select": "-NONE-",
-          "name": "NOMINAL_ntuple_DYJets_2016", 
+          "name": "NOMINAL_ntuple_DYJets_2018", 
           "event_weight": 1.0
         },
         "EMB_full": {
           "target":"none",
           "select": "-NONE-",
-          "name": "NOMINAL_ntuple_EmbeddedElTau_2016", 
+          "name": "NOMINAL_ntuple_EmbeddedElTau_2018", 
           "event_weight": 1.0
         },        
         "TT_full": {
           "target":"none",
           "select": "-NONE-",
-          "name": "NOMINAL_ntuple_TTbar_2016", 
+          "name": "NOMINAL_ntuple_TTbar_2018", 
           "event_weight": 1.0
         },
         "W_full": {
           "target":"none",
           "select": "-NONE-",
-          "name": "NOMINAL_ntuple_WJets_2016", 
+          "name": "NOMINAL_ntuple_WJets_2018", 
           "event_weight": 1.0
         },
         "EWKZ_full": {
           "target":"none",
           "select": "-NONE-",
-          "name": "NOMINAL_ntuple_EWKZ_2016", 
+          "name": "NOMINAL_ntuple_EWKZ_2018", 
           "event_weight": 1.0
         },
         "data_full": {
           "target":"none",
           "select": "-NONE-",
-          "name": "NOMINAL_ntuple_SingleElectron_2016",
+          "name": "NOMINAL_ntuple_SingleElectron_2018",
           "event_weight": 1.0
         },
         "HToWW_full": {
           "target":"none",
           "select": "-NONE-", 
-          "name": "NOMINAL_ntuple_HToWW_2016", 
+          "name": "NOMINAL_ntuple_HToWW_2018", 
           "event_weight": 1.0
         },
         "ggH125_full": {
           "target":"none",
           "select": "-NONE-", 
-          "name": "NOMINAL_ntuple_GluGluHToUncorrTauTau_2016", 
+          "name": "NOMINAL_ntuple_GluGluHToUncorrTauTau_2018", 
           "event_weight": 1.0
         },
         "qqH125_full": {
           "target":"none",
           "select": "-NONE-", 
-          "name": "NOMINAL_ntuple_VBFHToUncorrTauTau_2016", 
+          "name": "NOMINAL_ntuple_VBFHToUncorrTauTau_2018", 
           "event_weight": 1.0
         },
         "WH125_full": {
           "target":"none",
           "select": "-NONE-", 
-          "name": "NOMINAL_ntuple_WHToUncorrTauTau_2016", 
+          "name": "NOMINAL_ntuple_WHToUncorrTauTau_2018", 
           "event_weight": 1.0
         },
         "ZH125_full": {
           "target":"none",
           "select": "-NONE-", 
-          "name": "NOMINAL_ntuple_ZHToUncorrTauTau_2016", 
+          "name": "NOMINAL_ntuple_ZHToUncorrTauTau_2018", 
           "event_weight": 1.0
-        } 
+        }    
     }
 }

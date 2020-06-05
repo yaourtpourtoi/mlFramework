@@ -100,7 +100,7 @@ class SystExplorer(object):
             self.data_up = self.data_central.copy()
             self.data_down = self.data_central.copy()
         else:
-            print('systematic type should be either tree or weight: will do nothing')
+            print('systematic type should be either tree or weight to set dataframes: will do nothing. \nFor a \"datacard\" option please use set_templates() method.')
         
         if (self.systematic_type == 'tree' or self.systematic_type == 'weight'):
             if cut:
@@ -114,7 +114,7 @@ class SystExplorer(object):
                 self.weights_up = np.ones(self.data_up.shape[0])
                 self.weights_down = np.ones(self.data_down.shape[0])
         else:
-            print('can apply weights only to tree and weight options!')
+            print('can apply weights only to \"tree\" and \"weight\" options!')
 
         if self.systematic_type == 'weight':
             self.weights_up *= self.data_central[f'{systematic_name}Up']

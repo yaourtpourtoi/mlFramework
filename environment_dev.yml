@@ -1,9 +1,8 @@
 ###### comments
 
-# jupyter labextension install @jupyter-widgets/jupyterlab-manager
-# jupyter labextension install @bokeh/jupyter_bokeh
-# jupyter labextension install jupyterlab-plotly@4.7.1
-# jupyter labextension install @pyviz/jupyterlab_pyviz
+# jupyter labextension install @jupyter-widgets/jupyterlab-manager @bokeh/jupyter_bokeh jupyterlab-plotly @pyviz/jupyterlab_pyviz
+# jupyter lab build
+# ipython kernel install --user --name=ml-htt-dev
 
 name: ml-htt-dev
 channels:
