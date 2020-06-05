@@ -194,11 +194,11 @@ def run(samples, channel, era, use, train, short, input_model_name, datacard=Fal
             with uproot.recreate(outfile_name) as outfile:
                 for data, cfg in syst_pack:
                     tree_name = cfg['tree_name']
-                    predictions = get_predictions(data, cfg, read.modifyDF)
+                    predictions = get_predictions(model, data, variables, cfg, read.modifyDF)
                     outfile[tree_name] = uproot.newtree({c: float for c in predictions.columns})
                     outfile[tree_name].extend({c: predictions[c] for c in predictions.columns})
             
-def get_predictions(data, cfg, modify):
+def get_predictions(model, data, variables, cfg, modify):
     if data is None:
         print(f'\nSandbox for sample: {cfg["sample_name"]} and tree: {cfg["tree_name"]} is None. Skipping.\n')
         return
