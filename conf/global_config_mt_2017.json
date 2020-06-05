@@ -133,6 +133,54 @@
           "select": "-NONE-",
           "name": "NOMINAL_ntuple_Diboson_2017", 
           "event_weight": 1.0
+        },
+        "DY_full": {
+          "target":"none",
+          "select": "-NONE-",
+          "name": "NOMINAL_ntuple_DYJets_2017", 
+          "event_weight": 1.0
+        },
+        "EMB_full": {
+          "target":"none",
+          "select": "-NONE-",
+          "name": "NOMINAL_ntuple_EmbeddedMuTau_2017", 
+          "event_weight": 1.0
+        },        
+        "TT_full": {
+          "target":"none",
+          "select": "-NONE-",
+          "name": "NOMINAL_ntuple_TTbar_2017", 
+          "event_weight": 1.0
+        },
+        "W_full": {
+          "target":"none",
+          "select": "-NONE-",
+          "name": "NOMINAL_ntuple_WJets_2017", 
+          "event_weight": 1.0
+        },
+        "data_full": {
+          "target":"none",
+          "select": "-NONE-",
+          "name": "NOMINAL_ntuple_SingleMuon_2017",
+          "event_weight": 1.0
+        },
+        "ggH125_full": {
+          "target":"none",
+          "select": "-NONE-", 
+          "name": "NOMINAL_ntuple_GluGluHToUncorrTauTau_2017", 
+          "event_weight": 1.0
+        },
+        "qqH125_full": {
+          "target":"none",
+          "select": "-NONE-", 
+          "name": "NOMINAL_ntuple_VBFHToUncorrTauTau_2017", 
+          "event_weight": 1.0
+        },        
+        "data": {
+          "target":"none",
+          "select": "-NONE-",
+          "event_weight": 1.0,
+          "name": "NOMINAL_ntuple_SingleMuon_2017"         
         }
     }
 }
