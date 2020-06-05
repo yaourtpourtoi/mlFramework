@@ -1,6 +1,6 @@
 {
-    "path": "/nfs/dust/cms/user/rasp/storage/cardinia/2017/InputDNN_v3", 
-    "outpath": "/nfs/dust/cms/user/filatovo/HTT/CMSSW_10_2_16/src/mlFramework/Out_Tuples_2017/test_campaign_v3_LGB_12Mar",
+    "path": "/nfs/dust/cms/user/rasp/storage/cardinia/2017/InputDNN_March18/", 
+    "outpath": "/nfs/dust/cms/user/filatovo/HTT/CMSSW_10_2_16/src/mlFramework/Out_Tuples_2017/mt/test",
     "tree_name_prefix":"TauCheck",
     "variables":{
         "mt": [
@@ -46,41 +46,7 @@
     "weights":["*weight*","gen_match*","gen_sm_htt125","gen_ps_htt125","gen_mm_htt125"],
     "shape_from_file":["TES1p0p0","TES1p1p0","TES3p0p0","MES1p0p0","MES1p1p0"],
     "shape_from_tree":[
-      "CMS_scale_t_1prong_13TeV",
-      "CMS_scale_t_1prong1pizero_13TeV",
-      "CMS_scale_t_3prong_13TeV",
-      "CMS_shape_dyShape_13TeV",
-      "topPtWeight",
-      "CMS_htt_ZLShape_1prong_13TeV",
-      "CMS_htt_ZLShape_1prong1pi_13TeV",
-      "CMS_htt_boson_reso_met_13TeV",
-      "CMS_htt_boson_scale_met_13TeV",
-      "CMS_scale_met_unclustered_13TeV",
-      "CMS_scale_met_boson_resolution_13TeV",
-      "CMS_scale_met_boson_response_13TeV",
-      "CMS_scale_j_FlavorQCD_13TeV",
-      "CMS_scale_j_RelativeBal_13TeV",
-      "CMS_scale_j_HF_13TeV",
-      "CMS_scale_j_BBEC1_13TeV",
-      "CMS_scale_j_EC2_13TeV",
-      "CMS_scale_j_Absolute_13TeV",
-      "CMS_scale_j_Absolute_2016_13TeV",
-      "CMS_scale_j_HF_2016_13TeV",
-      "CMS_scale_j_EC2_2016_13TeV",
-      "CMS_scale_j_RelativeSample_2016_13TeV",
-      "CMS_scale_j_BBEC1_2016_13TeV",
-      "CMS_scale_j_Absolute_2017_13TeV",
-      "CMS_scale_j_HF_2017_13TeV",
-      "CMS_scale_j_EC2_2017_13TeV",
-      "CMS_scale_j_RelativeSample_2017_13TeV",
-      "CMS_scale_j_BBEC1_2017_13TeV",
-      "CMS_scale_j_Absolute_2018_13TeV",
-      "CMS_scale_j_HF_2018_13TeV",
-      "CMS_scale_j_EC2_2018_13TeV",
-      "CMS_scale_j_RelativeSample_2018_13TeV",
-      "CMS_scale_j_BBEC1_2018_13TeV",
-      "CMS_scale_mu_13TeV",
-      "CMS_res_j_13TeV"
+      "CMS_scale_t_1prong_13TeV"
 ],
     
     "samples":{
@@ -167,54 +133,6 @@
           "select": "-NONE-",
           "name": "NOMINAL_ntuple_Diboson_2017", 
           "event_weight": 1.0
-        },
-        "DY_full": {
-          "target":"none",
-          "select": "-NONE-",
-          "name": "NOMINAL_ntuple_DYJets_2017", 
-          "event_weight": 1.0
-        },
-        "EMB_full": {
-          "target":"none",
-          "select": "-NONE-",
-          "name": "NOMINAL_ntuple_EmbeddedMuTau_2017", 
-          "event_weight": 1.0
-        },        
-        "TT_full": {
-          "target":"none",
-          "select": "-NONE-",
-          "name": "NOMINAL_ntuple_TTbar_2017", 
-          "event_weight": 1.0
-        },
-        "W_full": {
-          "target":"none",
-          "select": "-NONE-",
-          "name": "NOMINAL_ntuple_WJets_2017", 
-          "event_weight": 1.0
-        },
-        "data_full": {
-          "target":"none",
-          "select": "-NONE-",
-          "name": "NOMINAL_ntuple_SingleMuon_2017",
-          "event_weight": 1.0
-        },
-        "ggH125_full": {
-          "target":"none",
-          "select": "-NONE-", 
-          "name": "NOMINAL_ntuple_GluGluHToUncorrTauTau_2017", 
-          "event_weight": 1.0
-        },
-        "qqH125_full": {
-          "target":"none",
-          "select": "-NONE-", 
-          "name": "NOMINAL_ntuple_VBFHToUncorrTauTau_2017", 
-          "event_weight": 1.0
-        },        
-        "data": {
-          "target":"none",
-          "select": "-NONE-",
-          "event_weight": 1.0,
-          "name": "NOMINAL_ntuple_SingleMuon_2017"         
         }
     }
 }
