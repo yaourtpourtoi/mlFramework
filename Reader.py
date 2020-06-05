@@ -369,18 +369,18 @@ class Reader():
             print(f'\nCouldnt find {tree_name} tree in {sample_path}, skipping it\n') 
             return
                 
-        if self.for_prediction:
-            chunksize = self.config['chunksize_for_inference'] 
-        
-            # return iterator when predicting samples
-            # selection is done in for-loop of sandbox()
-            print(branches)
-            tmp = uproot.pandas.iterate(sample_path, tree_name, branches, entrysteps=chunksize)
-        else:
-            data_tree = data_file[tree_name]
-            tmp = data_tree.pandas.df(branches)
-            if select != "None": # "None" is defined in cuts_{era}.json 
-                tmp.query(select, inplace=True)
+        # if self.for_prediction:
+        #     chunksize = self.config['chunksize_for_inference'] 
+        # 
+        #     # return iterator when predicting samples
+        #     # selection is done in for-loop of sandbox()
+        #     print(branches)
+        #     tmp = uproot.pandas.iterate(sample_path, tree_name, branches, entrysteps=chunksize)
+        # else:
+        data_tree = data_file[tree_name]
+        tmp = data_tree.pandas.df(branches)
+        if select != "None": # "None" is defined in cuts_{era}.json 
+            tmp.query(select, inplace=True)
             
             # tmp = rp.read_root( paths = sample_path,
             #                     key = tree_name,
