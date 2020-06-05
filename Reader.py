@@ -118,7 +118,7 @@ class Reader():
         self.for_prediction = False
         self.setNominalSamples()
         samples = []
-        for sample,histname in self:
+        for sample,sample_name in self:
             samples.append(sample)
         print("Combining for training")
         return self.combineFolds(samples)
@@ -134,7 +134,7 @@ class Reader():
             tmp = self._getCommonSettings(sample)
 
             tmp["path"] = self.config["samples"][sample]["name"] 
-            tmp["histname"] = sample
+            tmp["sample_name"] = sample
             tmp["tree_name"] = self.config['tree_name_prefix']
             tmp['drop_nan_columns'] = self.config['drop_nan_columns']
             tmp['replace_nan_columns'] = self.config['replace_nan_columns']
@@ -160,7 +160,7 @@ class Reader():
 
                 tmp = self._getCommonSettings(sample)
                 tmp["path"] = self.config["samples"][sample]["name"] 
-                tmp["histname"   ] = sample
+                tmp["sample_name"   ] = sample
                 tmp["tree_name"   ] = self.config['tree_name_prefix']
                 tmp['drop_nan_columns'] = self.config['drop_nan_columns']
                 tmp['replace_nan_columns'] = self.config['replace_nan_columns']
@@ -178,7 +178,7 @@ class Reader():
                         tmp['replace_nan_columns'] = self.config['replace_nan_columns']
 
                         tmp["path"] = self.config["samples"][sample]["shapes"][shape] 
-                        tmp["histname"   ] = sample
+                        tmp["sample_name"   ] = sample
                         tmp["rename"      ] = self._getRenaming( shape )
 
                         self.itersamples.append( tmp )                
@@ -202,7 +202,7 @@ class Reader():
                 tmp["path"] = self.config["samples"][sample]["shapes"][shape]
                 if not tmp["path"]: continue
 
-                tmp["histname"   ] =  shape +"_ntuple_" + sample.replace("_full","")
+                tmp["sample_name"   ] =  shape +"_ntuple_" + sample.replace("_full","")
                 tmp["rename"      ] = {}
 
                 self.itersamples.append( tmp )
@@ -213,7 +213,7 @@ class Reader():
         if not os.path.exists( sample_info["path"] ):
             print(f'Warning: couldn\'t find {sample_info["path"]}')
             return []        
-        print(f'\n\n\n------> Loading: {sample_info["histname"]} from {sample_info["path"].split("/")[-1]}, tree = {sample_info["tree_name"]}\n')
+        print(f'\n\n\n------> Loading: {sample_info["sample_name"]} from {sample_info["path"].split("/")[-1]}, tree = {sample_info["tree_name"]}\n')
         
         DF = self._getDF(sample_path = sample_info["path"], 
                           select = sample_info["select"],
@@ -226,7 +226,7 @@ class Reader():
             return DF
 
         self.modifyDF(DF, sample_info)
-        print(f'size of {sample_info["histname"]} is {DF.shape[0]}')
+        print(f'size of {sample_info["sample_name"]} is {DF.shape[0]}')
         return self._getFolds( DF[ self.config["variables"] + ["target","train_weight","evt","event_weight"] ] )
 
     def modifyDF(self, DF, sample_info):

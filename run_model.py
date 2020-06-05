@@ -178,17 +178,17 @@ def run(samples, channel, era, use, train, short, input_model_name, datacard=Fal
         if add_nominal:
             print("Predicting Nominal")
             for sample, sampleConfig in read.get(what = "nominal", for_prediction = True):
-                sandbox(channel, model, scaler, sample, variables, "nom_" + sampleConfig["histname"], outpath ,sampleConfig, read.modifyDF )
-
+                sandbox(channel, model, scaler, sample, variables, "nom_" + sampleConfig["sample_name"], outpath ,sampleConfig, read.modifyDF )
+                    
         for sample, sampleConfig in read.get(what = "full", add_jec = not short, for_prediction = True):
-            sandbox(channel, model, scaler, sample, variables,  "NOMINAL_ntuple_" + sampleConfig["histname"].split("_")[0], outpath, sampleConfig, read.modifyDF )
+            sandbox(channel, model, scaler, sample, variables,  "NOMINAL_ntuple_" + sampleConfig["sample_name"].split("_")[0], outpath, sampleConfig, read.modifyDF )
 
 def sandbox(channel, model, scaler, sample, variables, outname, outpath, config = None, modify = None):
     # needed because of memory management
     # iterate over chunks of sample and do splitting on the fly
     first = True
     if sample is None:
-        print(f'\nSandbox for sample: {config["histname"]} and tree: {config["tree_name"]} is None. Skipping.\n')
+        print(f'\nSandbox for sample: {config["sample_name"]} and tree: {config["tree_name"]} is None. Skipping.\n')
         return
     for i, part in enumerate(sample):
         if config['select'] != "None": # "None" is defined in cuts_{era}.json 
@@ -201,7 +201,7 @@ def sandbox(channel, model, scaler, sample, variables, outname, outpath, config 
             drop_nan_columns = config["drop_nan_columns"]
             print('\n\n**********\n')
             print('Warning!')
-            print(f'sample {config["histname"]} has in {i}th chunk {np.sum(part.isna()).sum()} NaNs in columns: {nan_columns}')
+            print(f'sample {config["sample_name"]} has in {i}th chunk {np.sum(part.isna()).sum()} NaNs in columns: {nan_columns}')
             if any(elem in nan_columns for elem in drop_nan_columns):    
                 print(f'will drop them for {drop_nan_columns}\n')
                 part.dropna(subset=drop_nan_columns, inplace=True)

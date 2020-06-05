@@ -48,8 +48,8 @@ def getWeights(samples, channel, era):
         target =  read.config["target_names"][ sample[0]["target"].iloc[0] ]
 
 
-        numbers[ sampleName["histname"] ] = {"total": len(sample[0]) + len(sample[1]) }
-        numbers[ sampleName["histname"] ]["evt"] = sample[0]["event_weight"].sum() + sample[1]["event_weight"].sum()
+        numbers[ sampleName["sample_name"] ] = {"total": len(sample[0]) + len(sample[1]) }
+        numbers[ sampleName["sample_name"] ]["evt"] = sample[0]["event_weight"].sum() + sample[1]["event_weight"].sum()
 
 
         if numbers.get(target, None) == None:
