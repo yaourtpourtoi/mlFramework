@@ -172,6 +172,7 @@ def run(samples, channel, era, use, train, short, input_model_name, datacard=Fal
         for f in files:
             os.remove(f)
             
+        sample_dict = {}
         predictions = {}
         print('*' * 35)
         print()
@@ -181,7 +182,60 @@ def run(samples, channel, era, use, train, short, input_model_name, datacard=Fal
                 sandbox(channel, model, scaler, sample, variables, "nom_" + sampleConfig["sample_name"], outpath ,sampleConfig, read.modifyDF )
                     
         for sample, sampleConfig in read.get(what = "full", add_jec = not short, for_prediction = True):
-            sandbox(channel, model, scaler, sample, variables,  "NOMINAL_ntuple_" + sampleConfig["sample_name"].split("_")[0], outpath, sampleConfig, read.modifyDF )
+            # sandbox(channel, model, scaler, sample, variables,  "NOMINAL_ntuple_" + sampleConfig["sample_name"].split("_")[0], outpath, sampleConfig, read.modifyDF )
+            sample_name = sampleConfig['sample_name'].split('_')[0] # sample_name is "*_full"
+            if sample_name not in sample_dict:
+                sample_dict[sample_name] = []
+            sample_dict[sample_name].append((sample, sampleConfig))
+            
+        for sample_name, syst_pack in sample_dict.items():
+            outfile_name = f'{outpath}/{channel}-NOMINAL_ntuple_{sample_name}.root'
+            with uproot.recreate(outfile_name) as outfile:
+                for data, cfg in syst_pack:
+                    tree_name = cfg['tree_name']
+                    predictions = get_predictions(data, cfg)
+                    outfile[tree_name] = uproot.newtree({c: float for c in predictions.columns})
+                    outfile[tree_name].extend({c: predictions[c] for c in predictions.columns})
+            
+def get_predictions(data, cfg):
+    if data is None:
+        print(f'\nSandbox for sample: {cfg["sample_name"]} and tree: {cfg["tree_name"]} is None. Skipping.\n')
+        return
+    
+    for chunk in data:
+        # "None" is defined in cuts_{era}.json 
+        if cfg['select'] != "None": chunk.query(cfg['select'], inplace=True) # sample is iterator - can't filter events in _getDF() so implement it here
+        process_nans(chunk, cfg)                    
+        if modify: modify(chunk, cfg)
+
+        # Carefull!! Check if splitting is done the same for training. This is the KIT splitting
+        folds = [chunk.query( "abs(evt % 2) != 0 " ).reset_index(drop=True), chunk.query( "abs(evt % 2) == 0 " ).reset_index(drop=True) ]
+        predictions = pd.concat(model.predict( [fold[variables] for fold in folds] ), axis=0)
+        return predictions
+        
+def process_nans(data, cfg):
+    # dropping nans
+    if np.sum(data.isna()).sum() != 0:
+        nan_columns = data.columns[(np.sum(data.isna())) != 0].values
+        drop_nan_columns = cfg["drop_nan_columns"]
+        print('\n\n**********\n')
+        print('Warning!')
+        print(f'found {np.sum(data.isna()).sum()} NaNs in sample {cfg["sample_name"]} in columns: {nan_columns}')
+        if any(elem in nan_columns for elem in drop_nan_columns):    
+            print(f'will drop them for {drop_nan_columns}\n')
+            data.dropna(subset=drop_nan_columns, inplace=True)
+        else:
+            print(f'\nLeaving them, dropping is set only for {drop_nan_columns}')
+            print('**********\n')
+            
+        # replacing nans
+        for var_substring, replace_value in cfg['replace_nan_columns'].items():
+            replace_nan_columns = [var_name for var_name in data.columns if var_substring in var_name]
+            if np.sum(data[replace_nan_columns].isna()).sum() != 0:
+                print(f'found {np.sum(data[replace_nan_columns].isna()).sum()} NaNs in \"*{var_substring}*\" branches')
+                print(f'will replace them with {replace_value}\n')
+                data[replace_nan_columns] = data[replace_nan_columns].fillna(replace_value)
+
 
 def sandbox(channel, model, scaler, sample, variables, outname, outpath, config = None, modify = None):
     # needed because of memory management
