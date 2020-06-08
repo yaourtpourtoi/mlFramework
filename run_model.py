@@ -197,7 +197,7 @@ def run(samples, channel, era, use, train, short, input_model_name, datacard=Fal
                     outfile[tree_name] = uproot.newtree({'predicted_class': float, 'predicted_prob': float})
                     for chunk in data:
                         predictions = get_predictions(model, chunk, variables, cfg, read.modifyDF)
-                        outfile[tree_name].extend({c: predictions[c] for c in predictions.columns})
+                        outfile[tree_name].extend({'predicted_class': predictions['predicted_class'], 'predicted_prob': predictions['predicted_prob']})
             
 def get_predictions(model, data, variables, cfg, modify):
     if data is None:
