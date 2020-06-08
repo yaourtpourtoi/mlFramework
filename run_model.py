@@ -203,16 +203,16 @@ def get_predictions(model, data, variables, cfg, modify):
         print(f'\nSandbox for sample: {cfg["sample_name"]} and tree: {cfg["tree_name"]} is None. Skipping.\n')
         return
     
-    # for chunk in data:
+    for chunk in data:
         # "None" is defined in cuts_{era}.json 
-        # if cfg['select'] != "None": chunk.query(cfg['select'], inplace=True) # sample is iterator - can't filter events in _getDF() so implement it here
-    process_nans(data, cfg)                    
-    if modify: modify(data, cfg)
+        if cfg['select'] != "None": chunk.query(cfg['select'], inplace=True) # sample is iterator - can't filter events in _getDF() so implement it here
+        process_nans(chunk, cfg)                    
+        if modify: modify(chunk, cfg)
 
-    # Carefull!! Check if splitting is done the same for training. This is the KIT splitting
-    folds = [data.query( "abs(evt % 2) != 0 " ).reset_index(drop=True), data.query( "abs(evt % 2) == 0 " ).reset_index(drop=True) ]
-    predictions = pd.concat(model.predict( [fold[variables] for fold in folds] ), axis=0)
-    return predictions
+        # Carefull!! Check if splitting is done the same for training. This is the KIT splitting
+        folds = [chunk.query( "abs(evt % 2) != 0 " ).reset_index(drop=True), chunk.query( "abs(evt % 2) == 0 " ).reset_index(drop=True) ]
+        predictions = pd.concat(model.predict( [fold[variables] for fold in folds] ), axis=0)
+        return predictions
         
 def process_nans(data, cfg):
     # dropping nans
