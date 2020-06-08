@@ -193,10 +193,11 @@ def run(samples, channel, era, use, train, short, input_model_name, datacard=Fal
             outfile_name = f'{outpath}/{channel}-NOMINAL_ntuple_{sample_name}.root'
             with uproot.recreate(outfile_name) as outfile:
                 for data, cfg in syst_pack:
-                    tree_name = cfg['tree_name']
-                    predictions = get_predictions(model, data, variables, cfg, read.modifyDF)
-                    outfile[tree_name] = uproot.newtree({c: float for c in predictions.columns})
-                    outfile[tree_name].extend({c: predictions[c] for c in predictions.columns})
+                    for chunk in data:
+                        tree_name = cfg['tree_name']
+                        predictions = get_predictions(model, chunk, variables, cfg, read.modifyDF)
+                        outfile[tree_name] = uproot.newtree({c: float for c in predictions.columns})
+                        outfile[tree_name].extend({c: predictions[c] for c in predictions.columns})
             
 def get_predictions(model, data, variables, cfg, modify):
     if data is None:
