@@ -127,73 +127,73 @@
             "name": "NOMINAL_ntuple_SingleElectron_2016",
             "event_weight": 1.0
         },
-        "VV_full": {
+        "Diboson_2016_full": {
           "target":"none",
           "select": "-NONE-",
           "name": "NOMINAL_ntuple_Diboson_2016", 
           "event_weight": 1.0
         },
-        "DY_full": {
+        "DYJets_2016_full": {
           "target":"none",
           "select": "-NONE-",
           "name": "NOMINAL_ntuple_DYJets_2016", 
           "event_weight": 1.0
         },
-        "EMB_full": {
+        "EmbeddedElTau_2016_full": {
           "target":"none",
           "select": "-NONE-",
           "name": "NOMINAL_ntuple_EmbeddedElTau_2016", 
           "event_weight": 1.0
         },        
-        "TT_full": {
+        "TTbar_2016_full": {
           "target":"none",
           "select": "-NONE-",
           "name": "NOMINAL_ntuple_TTbar_2016", 
           "event_weight": 1.0
         },
-        "W_full": {
+        "WJets_2016_full": {
           "target":"none",
           "select": "-NONE-",
           "name": "NOMINAL_ntuple_WJets_2016", 
           "event_weight": 1.0
         },
-        "EWKZ_full": {
+        "EWKZ_2016_full": {
           "target":"none",
           "select": "-NONE-",
           "name": "NOMINAL_ntuple_EWKZ_2016", 
           "event_weight": 1.0
         },
-        "data_full": {
+        "SingleElectron_2016_full": {
           "target":"none",
           "select": "-NONE-",
           "name": "NOMINAL_ntuple_SingleElectron_2016",
           "event_weight": 1.0
         },
-        "HToWW_full": {
+        "HToWW_2016_full": {
           "target":"none",
           "select": "-NONE-", 
           "name": "NOMINAL_ntuple_HToWW_2016", 
           "event_weight": 1.0
         },
-        "ggH125_full": {
+        "GluGluHToUncorrTauTau_2016_full": {
           "target":"none",
           "select": "-NONE-", 
           "name": "NOMINAL_ntuple_GluGluHToUncorrTauTau_2016", 
           "event_weight": 1.0
         },
-        "qqH125_full": {
+        "VBFHToUncorrTauTau_2016_full": {
           "target":"none",
           "select": "-NONE-", 
           "name": "NOMINAL_ntuple_VBFHToUncorrTauTau_2016", 
           "event_weight": 1.0
         },
-        "WH125_full": {
+        "WHToUncorrTauTau_2016_full": {
           "target":"none",
           "select": "-NONE-", 
           "name": "NOMINAL_ntuple_WHToUncorrTauTau_2016", 
           "event_weight": 1.0
         },
-        "ZH125_full": {
+        "ZHToUncorrTauTau_2016_full": {
           "target":"none",
           "select": "-NONE-", 
           "name": "NOMINAL_ntuple_ZHToUncorrTauTau_2016", 
