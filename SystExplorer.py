@@ -86,7 +86,7 @@ class SystExplorer(object):
         branches = variables + weights if weights else variables
         if cut:
             cut_pruned = re.sub('[\s()\[\]]', '', cut)
-            cut_branches = [re.split('\s|>|<|=', s)[0] for s in re.split('&|\|', cut_pruned)]
+            cut_branches = [re.split('\s|>|<|=|!', s)[0] for s in re.split('&|\|', cut_pruned)]
             branches = branches + cut_branches
         branches = list(set(branches))
         
