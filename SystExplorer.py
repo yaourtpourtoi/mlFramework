@@ -59,7 +59,7 @@ class SystExplorer(object):
         self.tree_up = self.data_file[self.systematic_name + 'Up']
         self.tree_down = self.data_file[self.systematic_name + 'Down']
 
-    def set_templates(self, channel, decay_mode, category, sample, year, systematic_name):
+    def set_templates(self, channel, decay_mode, category, sample, year, systematic_name, template_folder_name = None):
         self.channel = channel
         self.decay_mode = decay_mode
         self.category = category
@@ -68,10 +68,13 @@ class SystExplorer(object):
         self.systematic_name = systematic_name
         self.systematic_type = 'datacard'
         
-        if self.decay_mode is not None:
-            self.template_folder_name = f'{self.channel}_{self.decay_mode}_{self.category}_{self.year}'
+        if template_folder_name is not None:
+            if self.decay_mode is not None:
+                self.template_folder_name = f'{self.channel}_{self.decay_mode}_{self.category}_{self.year}'
+            else:
+                self.template_folder_name = f'{self.channel}_{self.category}_{self.year}'
         else:
-            self.template_folder_name = f'{self.channel}_{self.category}_{self.year}'
+            self.template_folder_name = template_folder_name
             
         self._set_central_template()
         self._set_updown_templates()
