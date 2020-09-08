@@ -22,10 +22,9 @@ class SystExplorer(object):
         for template_name in template_names:
             print(template_name) 
 
-    def print_templates_info(self):
+    def print_category_summary(self, category_name):
         samples = set()
         systematics = set()
-        category_name = self._process_names(self.data_file.keys())[0] # taking the first one
         template_names = self._process_names(self.data_file[category_name].keys())
         for template_name in template_names:
             if 'Up' not in template_name and 'Down' not in template_name:
