@@ -17,8 +17,7 @@ class SystExplorer(object):
         for dir_name in directories:
             print(dir_name) 
             
-    def print_category_content(self):
-        category_name = self._process_names(self.data_file.keys())[0] # taking the first one
+    def print_category_content(self, category_name):
         template_names = self._process_names(self.data_file[category_name].keys())
         for template_name in template_names:
             print(template_name) 
