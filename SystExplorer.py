@@ -71,9 +71,9 @@ class SystExplorer(object):
         self.systematic_type = 'datacard'
         
         if self.decay_mode is not None:
-            self.template_folder_name = f'{self.channel}_{self.decay_mode}_{self.category}_{self.year}
+            self.template_folder_name = f'{self.channel}_{self.decay_mode}_{self.category}_{self.year}'
         else:
-            self.template_folder_name = f'{self.channel}_{self.category}_{self.year}
+            self.template_folder_name = f'{self.channel}_{self.category}_{self.year}'
             
         self._set_central_template()
         self._set_updown_templates()
