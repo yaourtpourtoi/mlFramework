@@ -61,22 +61,29 @@ class SystExplorer(object):
         self.tree_up = self.data_file[self.systematic_name + 'Up']
         self.tree_down = self.data_file[self.systematic_name + 'Down']
 
-    def set_templates(self, decay_mode, category, sample, year, systematic_name):
+    def set_templates(self, channel, decay_mode, category, sample, year, systematic_name):
+        self.channel = channel
         self.decay_mode = decay_mode
         self.category = category
         self.sample = sample
         self.year = year
         self.systematic_name = systematic_name
         self.systematic_type = 'datacard'
+        
+        if self.decay_mode is not None:
+            self.template_folder_name = f'{self.channel}_{self.decay_mode}_{self.category}_{self.year}
+        else:
+            self.template_folder_name = f'{self.channel}_{self.category}_{self.year}
+            
         self._set_central_template()
         self._set_updown_templates()
         
     def _set_central_template(self):
-        self.template_central = self.data_file[f'mt_{self.decay_mode}_{self.category}_{self.year}/{self.sample}']
+        self.template_central = self.data_file[f'{self.template_folder_name}/{self.sample}']
 
     def _set_updown_templates(self):
-        self.template_up = self.data_file[f'mt_{self.decay_mode}_{self.category}_{self.year}/{self.sample}_{self.systematic_name}Up']
-        self.template_down = self.data_file[f'mt_{self.decay_mode}_{self.category}_{self.year}/{self.sample}_{self.systematic_name}Down']
+        self.template_up = self.data_file[f'{self.template_folder_name}/{self.sample}_{self.systematic_name}Up']
+        self.template_down = self.data_file[f'{self.template_folder_name}/{self.sample}_{self.systematic_name}Down']
     
     def set_dataframes(self, variables, systematic_name, systematic_type, weights=None, cut=None):
         # picking just branches of interest speeds loading
@@ -132,7 +139,7 @@ class SystExplorer(object):
             if self.systematic_type != 'datacard': 
                 print(f'\n\nLooking into systematic: {self.systematic_name}\nplotting up/down shifts for variable: {var_name}\n\n')
             else:
-                print(f'\n\nLooking into systematic: {self.systematic_name}\nplotting up/down shifts for {self.sample} template in category: mt_{self.decay_mode}_{self.category}_{self.year}\n\n')
+                print(f'\n\nLooking into systematic: {self.systematic_name}\nplotting up/down shifts for {self.sample} template in category: {self.template_folder_name}\n\n')
                 
         plt.figure(figsize=(15,10))
         plt.xlabel(var_name, size=20)
@@ -185,7 +192,7 @@ class SystExplorer(object):
             if self.systematic_type != 'datacard': 
                 print(f'\n\nLooking into systematic: {self.systematic_name}\nplotting up(down)/central ratio for variable: {var_name}\n\n')
             else:
-                print(f'\n\nLooking into systematic: {self.systematic_name}\nplotting up(down)/central ratio for {self.sample} template in category: mt_{self.decay_mode}_{self.category}_{self.year}\n\n')
+                print(f'\n\nLooking into systematic: {self.systematic_name}\nplotting up(down)/central ratio for {self.sample} template in category: {self.template_folder_name}\n\n')
     
         if self.systematic_type == 'tree' or self.systematic_type == 'weight':
             weights_central = self.weights
