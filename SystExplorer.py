@@ -68,7 +68,7 @@ class SystExplorer(object):
         self.systematic_name = systematic_name
         self.systematic_type = 'datacard'
         
-        if template_folder_name is not None:
+        if template_folder_name is None:
             if self.decay_mode is not None:
                 self.template_folder_name = f'{self.channel}_{self.decay_mode}_{self.category}_{self.year}'
             else:
